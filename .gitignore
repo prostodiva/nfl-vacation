@@ -38,3 +38,27 @@ frontend/coverage/
 # Additional backend-specific ignores
 backend/logs/
 backend/uploads/ 
+
+# Excel data files
+*.xlsx
+*.xls
+teams-stadiums.xlsx
+stadium-distances.xlsx
+
+# Python virtual environment
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
