@@ -11,6 +11,10 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+      {
+        path: "/teams",
+        element: <div>Teams Page</div>
+      },
     ]
   }
 ]);
