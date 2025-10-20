@@ -20,12 +20,19 @@ export interface Stadium {
 }
 
 export interface Team {
-  _id: string;  
-  teamName: string; 
+  _id: string;
+  teamName: string;
   conference: 'American Football Conference' | 'National Football Conference';
-  division: 'AFC East' | 'AFC West' | 'AFC North' | 'AFC South' | 
-            'NFC East' | 'NFC West' | 'NFC North' | 'NFC South';
-  stadium: Stadium;  
+  division:
+    | 'AFC East'
+    | 'AFC West'
+    | 'AFC North'
+    | 'AFC South'
+    | 'NFC East'
+    | 'NFC West'
+    | 'NFC North'
+    | 'NFC South';
+  stadium: Stadium;
   souvenirs: Souvenir[];
   createdAt?: string;
   updatedAt?: string;

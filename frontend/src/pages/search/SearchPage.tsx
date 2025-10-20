@@ -6,18 +6,20 @@ import TeamCard from '../../components/TeamCard';
 function SearchPage() {
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get('term') || '';
-  
+
   const { data: teamsData, isLoading, error } = useGetAllTeamsQuery();
-  
+
   // Filter teams based on search term (or show all if no term)
-  const filteredTeams = teamsData?.data.filter(team =>
-    !searchTerm || 
-    team.teamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    team.stadium.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    team.division.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    team.conference.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    team.stadium.location.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredTeams =
+    teamsData?.data.filter(
+      (team) =>
+        !searchTerm ||
+        team.teamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        team.stadium.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        team.division.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        team.conference.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        team.stadium.location.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -29,19 +31,21 @@ function SearchPage() {
           </h1>
           <SearchInput />
         </div>
-        
+
         {/* Search Term Display */}
         {searchTerm && (
           <div className="mb-6">
             <p className="text-lg text-gray-600">
-              Showing results for: <strong className="text-gray-800">"{searchTerm}"</strong>
+              Showing results for:{' '}
+              <strong className="text-gray-800">"{searchTerm}"</strong>
             </p>
             <p className="text-sm text-gray-500">
-              {filteredTeams.length} team{filteredTeams.length !== 1 ? 's' : ''} found
+              {filteredTeams.length} team{filteredTeams.length !== 1 ? 's' : ''}{' '}
+              found
             </p>
           </div>
         )}
-        
+
         {/* Loading State */}
         {isLoading && (
           <div className="flex justify-center items-center py-20">
@@ -49,7 +53,7 @@ function SearchPage() {
             <span className="ml-3 text-lg text-gray-600">Loading teams...</span>
           </div>
         )}
-        
+
         {/* Error State */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
@@ -57,7 +61,7 @@ function SearchPage() {
             <p className="text-red-500 text-sm mt-2">Please try again later</p>
           </div>
         )}
-        
+
         {/* Results - Single render location */}
         {!isLoading && !error && (
           <div className="space-y-6">

@@ -8,7 +8,7 @@ export default function SearchInput() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
     if (term.trim()) {
       navigate(`/search?term=${term}`);
     }
@@ -20,11 +20,11 @@ export default function SearchInput() {
         <div className="absolute inset-y-0 flex items-center pl-3">
           <VscSearch className="h-5 w-5 text-gray-500" />
         </div>
-        <input 
+        <input
           value={term}
-          onChange={e => setTerm(e.target.value)}
-          className="w-100 pl-10 px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Search teams..."
+          onChange={(e) => setTerm(e.target.value)}
+          className="w-200 pl-10 px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Search stadiums, cities, or teams..."
         />
       </div>
     </form>

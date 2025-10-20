@@ -1,13 +1,19 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { store } from "./store/index";
-import Root from "./root/Root";
-import HomePage from "./pages/HomePage";
-import { Provider } from "react-redux";
-import SearchPage from "./pages/search/SearchPage";
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { store } from './store/index';
+import Root from './root/Root';
+import HomePage from './pages/HomePage';
+import { Provider } from 'react-redux';
+import SearchPage from './pages/search/SearchPage';
+import TeamsPage from './pages/TeamsPage';
+import StadiumsPage from './pages/StadiumsPage';
+import TripPage from './pages/TripPage';
+import ShoppingPage from './pages/ShoppingPage';
+import AlgorithmsPage from './pages/AlgorithmsPage';
+import StatisticsPage from './pages/StatisticsPage';
 
 const router = createBrowserRouter([
-  { 
-    path: "/",
+  {
+    path: '/',
     element: <Root />,
     children: [
       {
@@ -15,17 +21,36 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/teams",
-        element: <div>Teams Page</div>
+        path: '/teams',
+        element: <TeamsPage />,
       },
       {
-        path: "/search",
-        element: <SearchPage />
-      }
-    ]
-  }
+        path: '/search',
+        element: <SearchPage />,
+      },
+      {
+        path: '/stadiums',
+        element: <StadiumsPage />,
+      },
+      {
+        path: '/trip',
+        element: <TripPage />,
+      },
+      {
+        path: '/shopping',
+        element: <ShoppingPage />,
+      },
+      {
+        path: '/algorithms',
+        element: <AlgorithmsPage />,
+      },
+      {
+        path: '/statistics',
+        element: <StatisticsPage />,
+      },
+    ],
+  },
 ]);
-
 
 function App() {
   return (
