@@ -14,6 +14,9 @@ function Hero() {
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-4 py-8 flex justify-center items-center">
         <div className="flex flex-col items-center space-y-6">
+        <h1 className="font-bold text-8xl text-center">Explore the Home of Champions NFL/JOURNEY</h1>
+        <h3>From historic arenas to modern domes - discover <br></br> where legends play and fans unite.</h3>
+
           <SearchInput />
 
           <Button primary rounded onClick={handleClick}>
