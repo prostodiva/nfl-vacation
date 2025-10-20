@@ -10,7 +10,7 @@ const teamSchema = new mongoose.Schema({
   conference: {
     type: String,
     required: true,
-    enum: ['AFC', 'NFC']
+    enum: ['American Football Conference', 'National Football Conference']
   },
   division: {
     type: String,
