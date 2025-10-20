@@ -1,6 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { store } from "./store/index";
 import Root from "./root/Root";
 import HomePage from "./pages/HomePage";
+import { Provider } from "react-redux";
+import SearchPage from "./pages/search/SearchPage";
 
 const router = createBrowserRouter([
   { 
@@ -15,6 +18,10 @@ const router = createBrowserRouter([
         path: "/teams",
         element: <div>Teams Page</div>
       },
+      {
+        path: "/search",
+        element: <SearchPage />
+      }
     ]
   }
 ]);
@@ -22,7 +29,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   );
 }
 

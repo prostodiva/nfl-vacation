@@ -1,23 +1,27 @@
+import { useState } from "react";
 import Button from "./Button";
-import Input from "./Input";
+import TeamsList from "./TeamsList";
+import SearchInput from "./SearchInput";
 
 function Hero() {
+const [showTeams, setShowTeams] = useState(false);  
 
 const handleClick = () => {
-    console.log("Button clicked!");
+    setShowTeams(!showTeams);       //Toggle visibility
 }
 
     return (
         <div>
-            <h1>Hero Section: Reusable components test</h1>
-            <Input />
+            <SearchInput />
             <Button 
                 primary
                 rounded
                 onClick={handleClick}
             >
-                List all Teams
+               Show Teams
             </Button>
+        
+            {showTeams && <TeamsList />}
         </div>
         
     );
