@@ -26,7 +26,7 @@ const Button = memo(
     ...rest
   }: ButtonProps) => {
     const buttonClasses = classNames(
-      'text-center py-2 px-18 border',
+      'text-center py-4 px-26 border font-inter',
       {
         'bg-black text-white text-sm hover:bg-gray-800': primary,
         'bg-purple-700 text-white hover:bg-purple-800': secondary,

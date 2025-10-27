@@ -1,5 +1,12 @@
+import TeamsList from "../components/TeamsList.tsx";
+import {useState} from "react";
+
 function TeamsPage() {
-  return <div>Teams Page</div>;
+  const showTeams = useState(false);
+
+  return <div>
+    {showTeams && <TeamsList />}
+  </div>;
 }
 
 export default TeamsPage;

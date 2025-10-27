@@ -13,7 +13,7 @@ function Link({ to, children, className, activeClassName }: LinkProps) {
   const { navigate, currentPath } = useNavigation();
 
   const classes = classNames(
-    'text-blue-500',
+    'text-black',
     className,
     currentPath === to && activeClassName
   );

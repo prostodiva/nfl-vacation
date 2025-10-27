@@ -1,1 +1,12 @@
 @import 'tailwindcss';
+
+@font-face {
+    font-family: 'SCHABO';
+    src: url('./assets/fonts/SCHABO-Condensed.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font-stretch-condensed {
+    font-stretch: condensed;
+}

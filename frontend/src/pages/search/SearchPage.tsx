@@ -64,22 +64,26 @@ function SearchPage() {
 
         {/* Results - Single render location */}
         {!isLoading && !error && (
-          <div className="space-y-6">
-            {filteredTeams.length > 0 ? (
-              filteredTeams.map((team) => (
-                <TeamCard key={team._id} team={team} />
-              ))
-            ) : searchTerm ? (
-              <div className="bg-white rounded-lg shadow p-12 text-center">
-                <p className="text-xl text-gray-600 mb-2">
-                  No teams found matching "{searchTerm}"
-                </p>
-                <p className="text-gray-500">
-                  Try searching with a different term
-                </p>
-              </div>
-            ) : null}
-          </div>
+            <div className="space-y-6">
+              {filteredTeams.length > 0 ? (
+                  filteredTeams.map((team) => (
+                      <TeamCard key={team._id} team={team} />
+                  ))
+              ) : (
+                  <div className="bg-white rounded-lg shadow p-12 text-center">
+                    <p className="text-xl text-gray-600 mb-2">
+                      {searchTerm
+                          ? `No teams found matching "${searchTerm}"`
+                          : 'Enter a search term to find teams'}
+                    </p>
+                    {searchTerm && (
+                        <p className="text-gray-500">
+                          Try searching with a different term
+                        </p>
+                    )}
+                  </div>
+              )}
+            </div>
         )}
       </div>
     </div>

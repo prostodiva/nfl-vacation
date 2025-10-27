@@ -2,7 +2,19 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'schabo': ['SCHABO', 'sans-serif'],
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        '.font-stretch-condensed': {
+          'font-stretch': 'condensed',
+        },
+      })
+    },
+  ],
 };
