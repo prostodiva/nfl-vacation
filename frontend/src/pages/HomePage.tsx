@@ -1,11 +1,11 @@
 import Hero from '../components/Hero';
-import Sorting from "../components/Sorting.tsx";
+import SortingSection from "../components/SortingSection";
 
 function HomePage() {
   return (
     <div>
       <Hero />
-        <Sorting />
+        <SortingSection />
     </div>
   );
 }

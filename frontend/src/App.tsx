@@ -4,12 +4,11 @@ import Root from './root/Root';
 import HomePage from './pages/HomePage';
 import { Provider } from 'react-redux';
 import SearchPage from './pages/search/SearchPage';
-import TeamsPage from './pages/TeamsPage';
-import StadiumsPage from './pages/StadiumsPage';
 import TripPage from './pages/TripPage';
 import ShoppingPage from './pages/ShoppingPage';
 import AlgorithmsPage from './pages/AlgorithmsPage';
 import StatisticsPage from './pages/StatisticsPage';
+import SortingSection from "./components/SortingSection.tsx";
 
 const router = createBrowserRouter([
   {
@@ -22,7 +21,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/teams',
-        element: <TeamsPage />,
+        element: <SortingSection/>,
       },
       {
         path: '/search',
@@ -30,7 +29,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/stadiums',
-        element: <StadiumsPage />,
+        element: <SortingSection />,
       },
       {
         path: '/trip',

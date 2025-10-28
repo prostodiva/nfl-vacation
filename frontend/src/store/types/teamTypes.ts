@@ -1,7 +1,4 @@
 //Team types
-
-// Team types
-
 export interface Souvenir {
   _id?: string;
   name: string;
