@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useGetAllTeamsQuery } from "../store/apis/teamsApi";
 import { useFilter } from "../hooks/useFilter";
 import type { FilterConfig } from "../config/filterConfigs.ts";
+import Skeleton from "./Skeleton";
 
 interface FilterSectionProps {
     filters: FilterConfig[];
@@ -45,8 +46,20 @@ function FilterSection({ filters  }: FilterSectionProps) {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <p>Loading...</p>
+            <div className="flex flex-col items-center space-y-6 w-full">
+                {<Skeleton times={1} className="h-8 w-48" />}
+
+                {/* Dropdown skeletons */}
+                <div className="flex items-center gap-6 flex-wrap">
+                    <Skeleton times={filters.length} className="h-12 w-64" />
+                </div>
+
+                {/* Card skeletons */}
+                <div className="w-full max-w-6xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <Skeleton times={6} className="h-48 w-full" />
+                    </div>
+                </div>
             </div>
         );
     }
