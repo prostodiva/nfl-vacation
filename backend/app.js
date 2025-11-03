@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const basicMiddleware = require('./middleware/basic');
 const errorHandler = require('./middleware/errorHandler');
 const teamRoutes = require('./routes/teamRoutes');
+const graphRoutes = require('./routes/graphRoutes');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(basicMiddleware);
 
 //Routes
 app.use('/api/teams', teamRoutes);
+app.use('/api/graph', graphRoutes);
 
 //test route
 app.get('/api/test', (req, res) => {
