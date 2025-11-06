@@ -1,21 +1,26 @@
 import Button from "../components/Button";
 import Map from "../components/Map"
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+// Define the type
+type Algorithm = {
+  type: 'DFS' | 'BFS' | 'DIJKSTRA';
+  team: string;
+} | null;
 
 function AlgorithmsPage() {
-  const navigate = useNavigate();
-
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm>(null);
 
   const handleDFSClick = () => {
-    navigate('/dfs'); 
+    setSelectedAlgorithm({ type: 'DFS', team: 'MINNESOTA VIKINGS'})
   }
 
   const handleBFSClick = () => {
-    navigate('/bfs'); 
+    setSelectedAlgorithm({ type: 'BFS', team: 'LOS ANGELES RAMS' });
   }
 
   const handleDijkstraClick = () => {
-    navigate('/dijkstra'); 
+    setSelectedAlgorithm({ type: 'DIJKSTRA', team: 'GREEN BAY PACKERS' });
   }
 
   return (
@@ -37,7 +42,7 @@ function AlgorithmsPage() {
           </div>
 
           <div>
-            <Map />
+            <Map algorithm={selectedAlgorithm} />
           </div>
           </div>
       </div>
