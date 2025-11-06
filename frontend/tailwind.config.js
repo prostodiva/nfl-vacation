@@ -3,8 +3,9 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      fontFamily: {
-        'schabo': ['SCHABO', 'sans-serif'],
+      colors: {
+        'dark-bg': '#262422',
+        'orange-button': '#f76d1b',
       },
     },
   },
