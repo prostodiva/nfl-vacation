@@ -1,0 +1,30 @@
+export interface MapProps {
+    algorithm: {
+        type: 'DFS' | 'BFS' | 'DIJKSTRA';
+        team: string;
+    } | null;
+}
+
+export interface AlgorithmData {
+    algorithm: string;
+    startCity: string;
+    visitOrder?: string[];
+    levels?: string[][];
+    discoveryEdges: Edge[];
+    backEdges?: Edge[];
+    crossEdges?: Edge[];
+    totalDistance: number;
+}
+
+export interface Edge {
+    from: string;
+    to: string;
+    distance: number;
+}
+
+export interface Coordinate {
+    x: number;
+    y: number;
+}
+
+export type StadiumCoordinates = Record<string, Coordinate>;
