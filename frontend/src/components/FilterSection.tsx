@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Dropdown, { type DropdownOption } from './Dropdown';
 import TeamCard from "./TeamCard";
 import { useMemo } from "react";
@@ -9,11 +10,15 @@ import Skeleton from "./Skeleton";
 interface FilterSectionProps {
     filters: FilterConfig[];
     title?: string;
+    enableSorting?: boolean;
 }
 
-function FilterSection({ filters  }: FilterSectionProps) {
+function FilterSection({ filters, title, enableSorting = false }: FilterSectionProps) {
     const { data, isLoading, isError } = useGetAllTeamsQuery();
     const teams = data?.data || [];
+
+    const [sortBy, setSortBy] = useState<string | null>(null);
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
 
     // Generate filter config from definitions
     const filterConfig = useMemo(() =>
@@ -32,6 +37,48 @@ function FilterSection({ filters  }: FilterSectionProps) {
         hasActiveFilters
     } = useFilter(teams, filterConfig);
 
+     const sortedAndFilteredTeams = useMemo(() => {
+        if (!sortBy || !sortOrder) return filteredTeams; 
+
+        return [...filteredTeams].sort((a, b) => {
+            let valueA: number;
+            let valueB: number;
+
+            if (sortBy === 'yearOpened') {
+                valueA = a.stadium.yearOpened;
+                valueB = b.stadium.yearOpened;
+            } else if (sortBy === 'capacity') {
+                valueA = a.stadium.seatingCapacity;
+                valueB = b.stadium.seatingCapacity;
+            } else {
+                return 0;
+            }
+            
+            return sortOrder === 'asc' 
+                ? valueA - valueB
+                : valueB - valueA;
+        });
+    }, [filteredTeams, sortBy, sortOrder]);
+
+    const uniqueStadiumCount = useMemo(() => {
+        const stadiumNames = new Set(filteredTeams.map(team => team.stadium.name));
+        return stadiumNames.size;
+    }, [sortedAndFilteredTeams]); 
+
+    const totalUniqueCapacity = useMemo(() => {
+        const uniqueStadiums = new Map<string, Team>();
+        
+        sortedAndFilteredTeams.forEach(team => {
+            const stadiumName = team.stadium.name;
+            if (!uniqueStadiums.has(stadiumName)) {
+                uniqueStadiums.set(stadiumName, team);
+            }
+        });
+        
+        return Array.from(uniqueStadiums.values())
+            .reduce((total, team) => total + team.stadium.seatingCapacity, 0);
+    }, [sortedAndFilteredTeams]);
+
     const dropdownOptions = useMemo(() => {
         return filters.reduce((acc, filter) => {
             acc[filter.key] = filter.getOptions(teams);
@@ -39,9 +86,37 @@ function FilterSection({ filters  }: FilterSectionProps) {
         }, {} as Record<string, DropdownOption[]>);
     }, [teams, filters]);
 
+    const sortOptions: DropdownOption[] = [
+        { value: 'none', label: 'No sorting' },
+        { value: 'yearOpened-asc', label: 'Oldest first (1924→2023)' },
+        { value: 'yearOpened-desc', label: 'Newest first (2023→1924)' },
+        { value: 'capacity-asc', label: 'Capacity: Smallest first' },
+        { value: 'capacity-desc', label: 'Capacity: Largest first' }
+    ];
+
+    const getCurrentSortValue = () => {
+        if (!sortBy) return 'none';
+        return `${sortBy}-${sortOrder}`;
+    };
+
+     const selectedSortOption = sortOptions.find(opt => 
+        opt.value === getCurrentSortValue()
+    ) || sortOptions[0];
+
     const getSelectedOption = (filterKey: string) => {
         const options = dropdownOptions[filterKey];
         return options?.find(opt => opt.value === activeFilters[filterKey]) || null;
+    };
+
+    const handleSortChange = (option: DropdownOption) => {
+        if (option.value === 'none') {
+            setSortBy(null);
+            setSortOrder(null);
+        } else {
+            const [field, order] = option.value.split('-');
+            setSortBy(field);
+            setSortOrder(order as 'asc' | 'desc');
+        }
     };
 
     if (isLoading) {
@@ -89,26 +164,48 @@ function FilterSection({ filters  }: FilterSectionProps) {
                 ))}
             </div>
 
+             {enableSorting && (
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Sort by:</span>
+                    <Dropdown
+                        options={sortOptions}
+                        value={selectedSortOption}
+                        onChange={handleSortChange}  
+                        placeholder="Sort order..."
+                        className="w-64"
+                    />
+                </div>
+            )}
+
             {/* Clear Filters Button */}
-            {hasActiveFilters && (
+           {(hasActiveFilters || sortBy) && (
                 <button
-                    onClick={clearAllFilters}
+                    onClick={() => {
+                        clearAllFilters();
+                        setSortBy(null);
+                        setSortOrder(null); 
+                    }}
                     className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm transition-colors"
                 >
-                    Clear All Filters
+                    Clear All Filters & Sorting
                 </button>
             )}
 
             {/* Results Count */}
-            <div className="text-gray-600">
-                Showing {filteredTeams.length} team{filteredTeams.length !== 1 ? 's' : ''}
+             <div className="text-gray-600 text-center space-y-1">
+                <p className="text-lg font-semibold">
+                    {uniqueStadiumCount} unique stadium{uniqueStadiumCount !== 1 ? 's' : ''}
+                </p>
+                <p className="text-sm text-gray-500">
+                    ({sortedAndFilteredTeams.length} team{sortedAndFilteredTeams.length !== 1 ? 's' : ''})
+                </p>
             </div>
 
             {/* Display Filtered Teams */}
-            <div className="w-full max-w-6xl">
-                {filteredTeams.length > 0 ? (
+             <div className="w-full max-w-6xl">
+                {sortedAndFilteredTeams.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
-                        {filteredTeams.map(team => (
+                        {sortedAndFilteredTeams.map(team => (
                             <TeamCard key={team._id} team={team} />
                         ))}
                     </div>
