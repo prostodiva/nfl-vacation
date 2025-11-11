@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Map from "../components/Map";
 import Button from "../components/Button";
+import Trip from "../components/Trip";
 
 type Trip = {
-  type: 'CUSTOM' | 'OPTMAL' | 'Efficient';
+  type: 'CUSTOM' | 'OPTIMAL' | 'Efficient';
   team: string;
 } | null;
 
@@ -32,14 +32,37 @@ const [selectedTrip, setSelectedTrip] = useState<Trip>(null);
             </h1>
 
             <div className="flex flex-row items-center space-x-10 mt-10">
-                <Button secondary rounded onClick={handleCustomTripClick}>CUSTOM TRIP<br></br>CREATE YOUR OWN NFL DREAM TRIP</Button>
-                <Button secondary rounded onClick={handleEfficientCustomClick}>EFFICIENT CUSTOM TRIP<br></br>Minimize travel time and distance</Button>
-                <Button secondary rounded onClick={handleOptimalTripClick}>OPTIMAL TRIP<br></br>Starting from New England Patriots</Button>
+            <Button 
+                  secondary 
+                  rounded 
+                  active={selectedTrip?.type === 'CUSTOM'}
+                  onClick={handleCustomTripClick}
+                >
+                  CUSTOM TRIP<br></br>CREATE YOUR OWN NFL DREAM TRIP
+                </Button>
+                
+                <Button 
+                  secondary 
+                  rounded 
+                  active={selectedTrip?.type === 'Efficient'}
+                  onClick={handleEfficientCustomClick}
+                >
+                  EFFICIENT CUSTOM TRIP<br></br>Minimize travel time and distance
+                </Button>
+                
+                <Button 
+                  secondary 
+                  rounded 
+                  active={selectedTrip?.type === 'OPTIMAL'}
+                  onClick={handleOptimalTripClick}
+                >
+                  OPTIMAL TRIP<br></br>Starting from New England Patriots
+                </Button>
             </div>
           </div>
 
           <div>
-            <Map trip={selectedTrip}/>
+            <Trip trip={selectedTrip}/>
           </div>
           </div>
       </div>

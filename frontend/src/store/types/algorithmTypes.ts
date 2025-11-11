@@ -5,6 +5,13 @@ export interface MapProps {
     } | null;
 }
 
+export interface TripProps {
+    trip: {
+        type: 'CUSTOM' | 'OPTIMAL' | 'Efficient';
+        team: string;
+    } | null;
+}
+
 export interface AlgorithmData {
     algorithm: string;
     startCity: string;

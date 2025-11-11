@@ -5,8 +5,10 @@ interface ButtonProps {
   children: React.ReactNode;
   primary?: boolean;
   secondary?: boolean;
+  ternary?: boolean;
   rounded?: boolean;
   outline?: boolean;
+  active?: boolean;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   className?: string;
@@ -18,8 +20,10 @@ const Button = memo(
     children,
     primary,
     secondary,
+    ternary,
     rounded,
     outline,
+    active = false,
     type = 'button',
     disabled = false,
     className,
@@ -29,7 +33,10 @@ const Button = memo(
       'text-center font-inter',
       {
         'py-4 px-26 border bg-black text-white text-sm hover:bg-gray-800': primary,
-        'py-6 px-8 bg-while text-black font-bold hover:bg-[#f76d1b] hover:text-white': secondary,
+        //'py-6 px-8 bg-while text-black font-bold hover:bg-[#f76d1b] hover:text-white': secondary,
+        'py-6 px-8 bg-while text-black hover:bg-[#f76d1b] hover:text-white': secondary && !active,
+        'py-6 px-8 bg-[#f76d1b] text-white': secondary && active,
+        'py-1 px-6 border bg-gray-900 text-white text-sm hover:bg-gray-800': ternary,
         'rounded-[1vw]': rounded,
         'bg-white': outline,
         'opacity-50 cursor-not-allowed': disabled,

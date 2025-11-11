@@ -94,7 +94,7 @@ function Dropdown({
     return (
         <div
             ref={divEl}
-            className={`relative ${className}`}
+            className={`relative w-50 ${className}`}
             role="combobox"
             aria-expanded={isOpen}
             aria-haspopup="listbox"
