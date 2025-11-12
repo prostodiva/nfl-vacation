@@ -86,7 +86,7 @@ function CustomTrip() {
                           <TeamCard team={team} />
                           <button
                               onClick={() => handleRemoveTeam(team._id)}
-                              className="absolute top-14 right-4 bg-gray-500 hover:bg-black text-white w-8 h-8 flex items-center justify-center "
+                              className="absolute top-14 right-4 hover:bg-black text-white w-8 h-8 flex items-center justify-center "
                               aria-label="Remove team"
                           >
                               ✕
