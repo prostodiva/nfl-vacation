@@ -38,7 +38,7 @@ const Button = memo(
         //'py-6 px-8 bg-while text-black font-bold hover:bg-[#f76d1b] hover:text-white': secondary,
         'py-6 px-8 bg-while text-black hover:bg-[#f76d1b] hover:text-white': secondary && !active,
         'py-6 px-8 bg-[#f76d1b] text-white': secondary && active,
-        'py-1 px-6 border bg-gray-900 text-white text-sm hover:bg-gray-800': ternary,
+        'py-1 px-6 border bg-gray-900 text-white text-sm hover:bg-gray-500': ternary,
         'py-1 px-6 border text-black bg-white hover:bg-[#f76d1b] hover:text-white': submit,
         'rounded-[1vw]': rounded,
         'bg-white': outline,

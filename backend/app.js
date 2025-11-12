@@ -6,6 +6,7 @@ const basicMiddleware = require('./middleware/basic');
 const errorHandler = require('./middleware/errorHandler');
 const teamRoutes = require('./routes/teamRoutes');
 const graphRoutes = require('./routes/graphRoutes');
+const customRoutes = require('./routes/customRoutes');
 
 const app = express();
 
@@ -23,7 +24,8 @@ app.use(basicMiddleware);
 
 //Routes
 app.use('/api/teams', teamRoutes);
-app.use('/api/graph', graphRoutes);
+app.use('/api', graphRoutes);
+app.use('/api', customRoutes);
 
 //test route
 app.get('/api/test', (req, res) => {

@@ -35,3 +35,20 @@ export interface Coordinate {
 }
 
 export type StadiumCoordinates = Record<string, Coordinate>;
+
+export interface CustomRouteRequest {
+    teamIds: string[];
+}
+
+export interface CustomRouteData {
+    algorithm: string;
+    route: string[];
+    edges: Edge[];
+    totalDistance: number;
+    teamCount: number;
+}
+
+export interface CustomRouteResponse {
+    success: boolean;
+    data: CustomRouteData;
+}

@@ -1,4 +1,4 @@
-import TeamsList from "../components/TeamsList.tsx";
+import TeamsList from "../components/TeamList.tsx";
 import {useState} from "react";
 
 function TeamsPage() {

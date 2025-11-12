@@ -4,17 +4,27 @@ import Dropdown from './Dropdown';
 import { useGetAllTeamsQuery } from '../store/apis/teamsApi';
 import Skeleton from './Skeleton';
 import Button from './Button';
-import TeamCard from './TeamCard';
+import type { Team } from '../store/types/teamTypes';
+import TeamList from './TeamList';
+import { useCalculateCustomRouteMutation } from "../store/apis/algorithmApi.ts";
+
 
 function CustomTrip() {
     const [selectedTeam, setSelectedTeam] = useState<DropdownOption | null>(null);
     const [addedTeams, setAddedTeams] = useState<Team[]>([]);
     const { data: teamsData, isLoading, isError } = useGetAllTeamsQuery();
+    const [routeError, setRouteError] = useState<string | null>(null);
+    const [calculateRoute, { data: routeData, isLoading: isCalculating, isError: hasError }] = 
+    useCalculateCustomRouteMutation();
 
     const teamOptions: DropdownOption[] = teamsData?.data.map(team => ({
         value: team._id,
         label: team.teamName
     })) || [];
+
+    const handleReorder = (reorderedTeams: Team[]) => {
+        setAddedTeams(reorderedTeams);
+    };
 
     const handleAddClick = () => {
         if (!selectedTeam || !teamsData) return;
@@ -31,9 +41,28 @@ function CustomTrip() {
         setAddedTeams(addedTeams.filter(team => team._id !== teamId));
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        if (addedTeams.length < 2) {
+            alert('Please add at least 2 teams to calculate the route');
+            return;
+        }
 
-    }
+        setRouteError(null);
+
+        try {
+            const teamIds = addedTeams.map(team => team._id);
+            const result = await calculateRoute({ teamIds }).unwrap();
+            console.log('Route calculated:', result.data);
+        } catch (error: any) {
+            const errorMessage = error.data?.error || 'Failed to calculate route. Please try again.';
+            setRouteError(errorMessage);
+        }
+    };
+
+    const handleClear = () => {
+        setAddedTeams([]);
+        setRouteError(null);
+    };
 
     if (isLoading) {
         return (
@@ -59,10 +88,7 @@ function CustomTrip() {
         
     return (
         <div className="flex flex-col items-center w-full">
-            <p className="text-gray-700 mb-2">
-                TEAM:
-            </p>
-            <div className="flex flex-row gap-6">
+            <div className="flex flex-row gap-6 items-center">
                     <Dropdown
                         options={teamOptions}
                         value={selectedTeam}
@@ -76,35 +102,68 @@ function CustomTrip() {
                 >
                     ADD
                 </Button>
+
+                {addedTeams.length > 0 && (
+                    <Button
+                        ternary
+                        rounded
+                        onClick={handleClear}
+                    >
+                        CLEAR ALL
+                    </Button>
+                )}
             </div>
 
-             {addedTeams.length > 0 && (
-                <div className="mt-6 space-y-4 w-full max-w-4xl">
-                    <h3 className="text-lg font-semibold">Selected Teams:</h3>
-                    {addedTeams.map((team) => (
-                          <div key={team._id} className="relative">
-                          <TeamCard team={team} />
-                          <button
-                              onClick={() => handleRemoveTeam(team._id)}
-                              className="absolute top-14 right-4 hover:bg-black text-white w-8 h-8 flex items-center justify-center "
-                              aria-label="Remove team"
-                          >
-                              ✕
-                          </button>
-                      </div>
-                    ))}
+            <div className="flex flex-col items-center w-full mt-4">
+                {/* Info message */}
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-2xl">
+                    <p className="text-blue-800 text-sm">
+                        ℹ️ <strong>Note:</strong> Only certain team connections are available.
+                        If you receive an error, try reordering your teams or choosing teams
+                        that are geographically closer together.
+                    </p>
+                </div>
+            </div>
+
+            <TeamList
+                teams={addedTeams}
+                onReorder={handleReorder}
+                onRemoveTeam={handleRemoveTeam}
+            />
+
+            {routeError && (
+                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg max-w-4xl">
+                    <div className="flex items-start gap-3">
+                        <span className="text-red-500 text-xl">⚠️</span>
+                        <div>
+                            <p className="text-red-800 font-semibold mb-1">Cannot Calculate Route</p>
+                            <p className="text-red-700 text-sm">{routeError}</p>
+                        </div>
+                    </div>
                 </div>
             )}
-            <div className='mt-4'>
-                <Button
-                    submit
-                    rounded 
-                    onClick={handleSubmit}
-                >
-                    SUBMIT
-                </Button>
-            </div>
+
+            {addedTeams.length > 0 && (
+                <div className='mt-4'>
+                    <Button
+                        submit
+                        rounded 
+                        onClick={handleSubmit}
+                        disabled={isCalculating}
+
+                    >
+                        {isCalculating ? 'CALCULATING...' : 'CALCULATE ROUTE'}
+                    </Button>
+                </div>
+            )}
             
+            {routeData?.data && (
+                <div className="flex flex-row items-center space-x-6 mt-6">
+                    <p className="text-sm text-gray-600">Total Distance: </p>
+                    <p>{routeData.data.totalDistance.toLocaleString()}</p>
+                    <p className="text-sm text-gray-500">miles</p>
+                </div> 
+            )}  
         </div>
     );
 }

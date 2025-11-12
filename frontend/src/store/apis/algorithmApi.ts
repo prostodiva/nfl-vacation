@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { AlgorithmData } from '../types/algorithmTypes';
+import type { CustomRouteRequest, CustomRouteResponse } from '../types/algorithmTypes';
 
 interface AlgorithmResponse {
     success: boolean;
@@ -9,15 +10,26 @@ interface AlgorithmResponse {
 export const algorithmApi = createApi({
     reducerPath: 'algorithmApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: '/api/graph',
+        baseUrl: '/api',
     }),
     tagTypes: ['Algorithm'],
     endpoints: (builder) => ({
+        //DFS/BFS
         getAlgorithmData: builder.query<AlgorithmResponse, string>({
             query: (algorithmType) => `/${algorithmType.toLowerCase()}`,
             providesTags: ['Algorithm'],
         }),
+
+        //custom route endpoint
+        calculateCustomRoute: builder.mutation<CustomRouteResponse, CustomRouteRequest>({
+            query: (body) => ({
+                url: '/custom-route',
+                method: 'POST',
+                body,
+            }),
+            invalidatesTags: ['Algorithm'],
+        }),
     }),
 });
 
-export const { useGetAlgorithmDataQuery } = algorithmApi;
+export const { useGetAlgorithmDataQuery, useCalculateCustomRouteMutation } = algorithmApi;
