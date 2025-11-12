@@ -6,6 +6,7 @@ interface ButtonProps {
   primary?: boolean;
   secondary?: boolean;
   ternary?: boolean;
+  submit?:boolean;
   rounded?: boolean;
   outline?: boolean;
   active?: boolean;
@@ -21,6 +22,7 @@ const Button = memo(
     primary,
     secondary,
     ternary,
+    submit,
     rounded,
     outline,
     active = false,
@@ -37,6 +39,7 @@ const Button = memo(
         'py-6 px-8 bg-while text-black hover:bg-[#f76d1b] hover:text-white': secondary && !active,
         'py-6 px-8 bg-[#f76d1b] text-white': secondary && active,
         'py-1 px-6 border bg-gray-900 text-white text-sm hover:bg-gray-800': ternary,
+        'py-1 px-6 border bg-[#f76d1b] text-white': submit,
         'rounded-[1vw]': rounded,
         'bg-white': outline,
         'opacity-50 cursor-not-allowed': disabled,
