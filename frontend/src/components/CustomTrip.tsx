@@ -27,8 +27,12 @@ function CustomTrip() {
         }
     }
 
+    const handleRemoveTeam = (teamId: string) => {
+        setAddedTeams(addedTeams.filter(team => team._id !== teamId));
+    }
+
     const handleSubmit = () => {
-        
+
     }
 
     if (isLoading) {
@@ -78,7 +82,16 @@ function CustomTrip() {
                 <div className="mt-6 space-y-4 w-full max-w-4xl">
                     <h3 className="text-lg font-semibold">Selected Teams:</h3>
                     {addedTeams.map((team) => (
-                        <TeamCard key={team._id} team={team} />
+                          <div key={team._id} className="relative">
+                          <TeamCard team={team} />
+                          <button
+                              onClick={() => handleRemoveTeam(team._id)}
+                              className="absolute top-14 right-4 bg-gray-500 hover:bg-black text-white w-8 h-8 flex items-center justify-center "
+                              aria-label="Remove team"
+                          >
+                              ✕
+                          </button>
+                      </div>
                     ))}
                 </div>
             )}
