@@ -11,6 +11,11 @@ export function useMapAnimation(algorithmData: AlgorithmData | null) {
     useEffect(() => {
         if (!algorithmData) return;
 
+        console.log('🎬 Starting animation for:', algorithmData.algorithm);
+        console.log('📊 Visit order:', algorithmData.visitOrder);
+        console.log('🔗 Discovery edges:', algorithmData.discoveryEdges.length);
+
+
         // Reset state
         setVisitedNodes([]);
         setCurrentNode(null);
@@ -26,6 +31,7 @@ export function useMapAnimation(algorithmData: AlgorithmData | null) {
         const interval = setInterval(() => {
             if (nodeIndex < visitOrder.length) {
                 const node = visitOrder[nodeIndex];
+                console.log(`✅ Visiting node ${nodeIndex + 1}/${visitOrder.length}: ${node}`);
                 setCurrentNode(node);
                 setVisitedNodes(prev => [...prev, node]);
 

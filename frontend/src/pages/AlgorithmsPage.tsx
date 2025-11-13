@@ -12,15 +12,15 @@ function AlgorithmsPage() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm>(null);
 
   const handleDFSClick = () => {
-    setSelectedAlgorithm({ type: 'DFS', team: 'MINNESOTA VIKINGS'})
+    setSelectedAlgorithm({ type: 'DFS', team: 'Minnesota Vikings'})
   }
 
   const handleBFSClick = () => {
-    setSelectedAlgorithm({ type: 'BFS', team: 'LOS ANGELES RAMS' });
+    setSelectedAlgorithm({ type: 'BFS', team: 'Los Angeles Rams' });
   }
 
   const handleDijkstraClick = () => {
-    setSelectedAlgorithm({ type: 'DIJKSTRA', team: 'GREEN BAY PACKERS' });
+    setSelectedAlgorithm({ type: 'DIJKSTRA', team: 'Green Bay Packers' });
   }
 
   return (

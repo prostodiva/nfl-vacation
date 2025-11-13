@@ -59,7 +59,10 @@ function LoadingState() {
 
 function Map({ algorithm }: MapProps) {
     const { data: response, isLoading, isError, error } = useGetAlgorithmDataQuery(
-        algorithm?.type || '',
+        {
+            algorithmType: algorithm?.type || '',
+            startTeam: algorithm?.team
+        },
         { skip: !algorithm }
     );
 
@@ -116,14 +119,15 @@ function Map({ algorithm }: MapProps) {
                                     y1={fromCoord.y}
                                     x2={toCoord.x}
                                     y2={toCoord.y}
+                                    stroke={COLORS.PRIMARY}
                                     initial={{
                                         pathLength: 0,
-                                        stroke: COLORS.TRANSPARENT,
+                                        strokeOpacity: 0,
                                         strokeWidth: 1
                                     }}
                                     animate={{
                                         pathLength: isAnimated ? 1 : 0,
-                                        stroke: isAnimated ? COLORS.PRIMARY : COLORS.TRANSPARENT,
+                                        strokeOpacity: isAnimated ? 1 : 0,
                                         strokeWidth: isAnimated ? 2 : 1
                                     }}
                                     transition={{
@@ -157,7 +161,6 @@ function Map({ algorithm }: MapProps) {
                                             animate={{
                                                 scale: 1,
                                                 opacity: 0.8,
-                                                r: isCurrent ? ANIMATION_CONFIG.CURRENT_NODE_RADIUS : ANIMATION_CONFIG.DEFAULT_NODE_RADIUS
                                             }}
                                                 transition={{ 
                                                     type: "spring",

@@ -1,8 +1,9 @@
 
 /*
 // Usage:
-// GET /api/graph/dfs?startTeam=Minnesota Vikings
-// GET /api/graph/bfs?startTeam=Los Angeles Rams
+// GET /api/dfs?startTeam=Minnesota Vikings
+// GET /api/bfs?startTeam=Los Angeles Rams
+// GET /api/dijkstra?startTeam=Green Bay Packers
 */
 
 const { GraphService } = require('../models/Graph');
@@ -90,7 +91,65 @@ const runBFS = async (req, res) => {
     }
 };
 
+// Controller for Dijkstra's shortest path
+const runDijkstra = async (req, res) => {
+    try {
+        const {
+            startTeam = 'Green Bay Packers',
+            endTeam,
+            detailed = false
+        } = req.query;
+
+        // Fetch teams and distances from database
+        const teams = await Team.find({}).lean();
+        const distances = await mongoose.connection.db
+            .collection('distances')
+            .find({})
+            .toArray();
+
+        // Transform distances into edges format
+        const edges = distances.map(dist => {
+            const toTeam = getTeamFromStadium(dist.endingStadium, teams);
+            return {
+                from: dist.teamName,
+                to: toTeam,
+                distance: dist.distance
+            };
+        }).filter(edge => edge.to !== null);
+
+        // Create graph service and run Dijkstra's
+        const graphService = new GraphService(teams, edges);
+        const result = graphService.runDijkstra(startTeam, endTeam);
+
+        // Add detailed path info if requested and single target
+        if (detailed === 'true' && endTeam && result.path) {
+            result.detailedPath = graphService.getDetailedPath(
+                result.parents,
+                result.distances,
+                startTeam,
+                endTeam
+            );
+        }
+
+        res.json({
+            success: true,
+            algorithm: 'Dijkstra',
+            timestamp: new Date().toISOString(),
+            data: result
+        });
+
+    } catch (error) {
+        console.error('Dijkstra Error:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+};
+
 module.exports = {
     runDFS,
-    runBFS
+    runBFS,
+    runDijkstra
 };

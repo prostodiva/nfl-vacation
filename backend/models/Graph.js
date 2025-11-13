@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { PriorityQueue } = require('../utils/dataStructures');
 
 class GraphService {
 
@@ -9,27 +10,27 @@ class GraphService {
         this.teamNames = [];
         this.nameToIndex = {};
         this.idToIndex = {};
-        
+
         this.buildGraph();
     }
-    
+
     buildGraph() {
         // Build team mappings
         this.teams.forEach((team, index) => {
-        const teamName = team.teamName || team.name; 
-        this.teamNames[index] = teamName;
-        this.nameToIndex[teamName] = index;
-        this.idToIndex[team._id || team.id] = index;
-    });
-        
+            const teamName = team.teamName || team.name;
+            this.teamNames[index] = teamName;
+            this.nameToIndex[teamName] = index;
+            this.idToIndex[team._id || team.id] = index;
+        });
+
         // Initialize adjacency matrix
         const N = this.teams.length;
         this.adjacencyMatrix = Array(N).fill(0).map(() => Array(N).fill(0));
-        
+
         // Fill matrix with edges
         this.edges.forEach(edge => {
             let fromIndex, toIndex;
-            
+
             // Handle different edge formats
             if (edge.from && edge.to) {
                 // Edge has team names directly
@@ -44,28 +45,29 @@ class GraphService {
                 fromIndex = this.nameToIndex[edge.fromTeam];
                 toIndex = this.nameToIndex[edge.toTeam];
             }
-            
+
             const distance = edge.distance || edge.weight || edge.mileage;
-            
+
             if (fromIndex !== undefined && toIndex !== undefined) {
                 this.adjacencyMatrix[fromIndex][toIndex] = distance;
                 this.adjacencyMatrix[toIndex][fromIndex] = distance; // Undirected
             }
         });
     }
+
 // ==================== DFS ALGORITHM ====================
-    
+
     runDFS(startTeamName) {
         const startIndex = this.nameToIndex[startTeamName];
         if (startIndex === undefined) {
             throw new Error(`Team "${startTeamName}" not found`);
         }
-        
+
         const N = this.adjacencyMatrix.length;
         const visited = Array(N).fill(false);
         const processedEdges = new Set();
         let totalDistance = 0;
-        
+
         const result = {
             algorithm: 'DFS',
             startCity: startTeamName,
@@ -74,14 +76,14 @@ class GraphService {
             backEdges: [],
             totalDistance: 0
         };
-        
+
         const dfsVisit = (currentIndex) => {
             if (visited[currentIndex]) return;
-            
+
             const teamName = this.teamNames[currentIndex];
             visited[currentIndex] = true;
             result.visitOrder.push(teamName);
-            
+
             // Get and sort neighbors by distance (smallest first)
             const neighbors = [];
             for (let i = 0; i < N; i++) {
@@ -93,22 +95,22 @@ class GraphService {
                 }
             }
             neighbors.sort((a, b) => a.distance - b.distance);
-            
+
             // Process each neighbor
             for (const neighbor of neighbors) {
-                const edgeKey = currentIndex < neighbor.index 
+                const edgeKey = currentIndex < neighbor.index
                     ? `${currentIndex}-${neighbor.index}`
                     : `${neighbor.index}-${currentIndex}`;
-                
+
                 if (processedEdges.has(edgeKey)) continue;
                 processedEdges.add(edgeKey);
-                
+
                 const edgeData = {
                     from: teamName,
                     to: this.teamNames[neighbor.index],
                     distance: neighbor.distance
                 };
-                
+
                 if (!visited[neighbor.index]) {
                     result.discoveryEdges.push(edgeData);
                     totalDistance += neighbor.distance;
@@ -118,97 +120,97 @@ class GraphService {
                 }
             }
         };
-        
+
         dfsVisit(startIndex);
         result.totalDistance = totalDistance;
-        
+
         return result;
     }
-    
+
     // ==================== BFS ALGORITHM ====================
-    
+
     runBFS(startTeamName) {
-    const startIndex = this.nameToIndex[startTeamName];
-    if (startIndex === undefined) {
-        throw new Error(`Team "${startTeamName}" not found`);
-    }
-    
-    const N = this.adjacencyMatrix.length;
-    const visited = Array(N).fill(false);
-    const processedEdges = new Set();
-    let totalDistance = 0;
-    
-    const result = {
-        algorithm: 'BFS',
-        startCity: startTeamName,
-        levels: [],
-        discoveryEdges: [],
-        crossEdges: [],
-        totalDistance: 0
-    };
-    
-    const queue = [[startIndex]]; // Level 0
-    visited[startIndex] = true;
-    result.levels.push([startTeamName]);
-    
-    let levelNum = 0;
-    
-    while (levelNum < queue.length) {
-        const currentLevel = queue[levelNum];
-        const nextLevel = [];
-        
-        for (const currentIndex of currentLevel) {
-            const teamName = this.teamNames[currentIndex];
-            
-            // Get and sort neighbors by distance
-            const neighbors = [];
-            for (let i = 0; i < N; i++) {
-                if (this.adjacencyMatrix[currentIndex][i] > 0) {
-                    neighbors.push({
-                        index: i,
-                        distance: this.adjacencyMatrix[currentIndex][i]
-                    });
+        const startIndex = this.nameToIndex[startTeamName];
+        if (startIndex === undefined) {
+            throw new Error(`Team "${startTeamName}" not found`);
+        }
+
+        const N = this.adjacencyMatrix.length;
+        const visited = Array(N).fill(false);
+        const processedEdges = new Set();
+        let totalDistance = 0;
+
+        const result = {
+            algorithm: 'BFS',
+            startCity: startTeamName,
+            levels: [],
+            discoveryEdges: [],
+            crossEdges: [],
+            totalDistance: 0
+        };
+
+        const queue = [[startIndex]]; // Level 0
+        visited[startIndex] = true;
+        result.levels.push([startTeamName]);
+
+        let levelNum = 0;
+
+        while (levelNum < queue.length) {
+            const currentLevel = queue[levelNum];
+            const nextLevel = [];
+
+            for (const currentIndex of currentLevel) {
+                const teamName = this.teamNames[currentIndex];
+
+                // Get and sort neighbors by distance
+                const neighbors = [];
+                for (let i = 0; i < N; i++) {
+                    if (this.adjacencyMatrix[currentIndex][i] > 0) {
+                        neighbors.push({
+                            index: i,
+                            distance: this.adjacencyMatrix[currentIndex][i]
+                        });
+                    }
+                }
+                neighbors.sort((a, b) => a.distance - b.distance);
+
+                for (const neighbor of neighbors) {
+                    const edgeKey = currentIndex < neighbor.index
+                        ? `${currentIndex}-${neighbor.index}`
+                        : `${neighbor.index}-${currentIndex}`;
+
+                    if (processedEdges.has(edgeKey)) continue;
+                    processedEdges.add(edgeKey);
+
+                    const edgeData = {
+                        from: teamName,
+                        to: this.teamNames[neighbor.index],
+                        distance: neighbor.distance
+                    };
+
+                    if (!visited[neighbor.index]) {
+                        visited[neighbor.index] = true;
+                        nextLevel.push(neighbor.index);
+                        result.discoveryEdges.push(edgeData);
+                        totalDistance += neighbor.distance;
+                    } else {
+                        result.crossEdges.push(edgeData);
+                    }
                 }
             }
-            neighbors.sort((a, b) => a.distance - b.distance);
-            
-            for (const neighbor of neighbors) {
-                const edgeKey = currentIndex < neighbor.index
-                    ? `${currentIndex}-${neighbor.index}`
-                    : `${neighbor.index}-${currentIndex}`;
-                
-                if (processedEdges.has(edgeKey)) continue;
-                processedEdges.add(edgeKey);
-                
-                const edgeData = {
-                    from: teamName,
-                    to: this.teamNames[neighbor.index],
-                    distance: neighbor.distance
-                };
-                
-                if (!visited[neighbor.index]) {
-                    visited[neighbor.index] = true;
-                    nextLevel.push(neighbor.index);
-                    result.discoveryEdges.push(edgeData);
-                    totalDistance += neighbor.distance;
-                } else {
-                    result.crossEdges.push(edgeData);
-                }
+
+            if (nextLevel.length > 0) {
+                queue.push(nextLevel);
+                result.levels.push(nextLevel.map(idx => this.teamNames[idx]));
             }
+
+            levelNum++;
         }
-        
-        if (nextLevel.length > 0) {
-            queue.push(nextLevel);
-            result.levels.push(nextLevel.map(idx => this.teamNames[idx]));
-        }
-        
-        levelNum++;
+
+        result.totalDistance = totalDistance;
+        return result;
     }
-    
-    result.totalDistance = totalDistance;
-    return result;
-}
-    
+
     // Helper method to get both algorithms at once
     runBothAlgorithms(startTeamName) {
         return {
@@ -216,34 +218,130 @@ class GraphService {
             bfs: this.runBFS(startTeamName)
         };
     }
+
+    // ==================== DIJKSTRA'S ALGORITHM ====================
+
+    runDijkstra(startTeamName, endTeamName = null) {
+        const startIndex = this.nameToIndex[startTeamName];
+        if (startIndex === undefined) {
+            throw new Error(`Team "${startTeamName}" not found`);
+        }
+
+        const N = this.adjacencyMatrix.length;
+        const distances = Array(N).fill(Infinity);
+        const previous = Array(N).fill(null);
+        const visited = Array(N).fill(false);
+
+        distances[startIndex] = 0;
+
+        const pq = new PriorityQueue();
+        pq.enqueue(startIndex, 0);
+
+        while (!pq.isEmpty()) {
+            const currentIndex = pq.dequeue();
+
+            if (visited[currentIndex]) continue;
+            visited[currentIndex] = true;
+
+            if (endTeamName && this.teamNames[currentIndex] === endTeamName) {
+                break;
+            }
+
+            for (let neighborIndex = 0; neighborIndex < N; neighborIndex++) {
+                const weight = this.adjacencyMatrix[currentIndex][neighborIndex];
+
+                if (weight > 0 && !visited[neighborIndex]) {
+                    const newDistance = distances[currentIndex] + weight;
+
+                    if (newDistance < distances[neighborIndex]) {
+                        distances[neighborIndex] = newDistance;
+                        previous[neighborIndex] = currentIndex;
+                        pq.enqueue(neighborIndex, newDistance);
+                    }
+                }
+            }
+        }
+
+        // Build result with UNIQUE edges only
+        const result = {
+            algorithm: 'DIJKSTRA',
+            startCity: startTeamName,
+            distances: {},
+            paths: {},
+            discoveryEdges: [],
+            visitOrder: [],  // ← This must be here!
+            totalDistance: 0
+        };
+
+        const sortedNodes = [];
+        for (let i = 0; i < N; i++) {
+            if (distances[i] !== Infinity) {
+                sortedNodes.push({ name: this.teamNames[i], distance: distances[i] });
+            }
+        }
+        sortedNodes.sort((a, b) => a.distance - b.distance);
+        result.visitOrder = sortedNodes.map(node => node.name);
+
+        // Collect unique edges from previous array (only once per destination)
+        for (let i = 0; i < N; i++) {
+            if (distances[i] !== Infinity) {
+                result.distances[this.teamNames[i]] = distances[i];
+
+                // Build path for this destination
+                const path = [];
+                let current = i;
+                while (current !== null) {
+                    path.unshift(this.teamNames[current]);
+                    current = previous[current];
+                }
+                result.paths[this.teamNames[i]] = path;
+
+                // Add edge to discoveryEdges (ONLY ONCE per destination)
+                if (previous[i] !== null) {
+                    result.discoveryEdges.push({
+                        from: this.teamNames[previous[i]],
+                        to: this.teamNames[i],
+                        distance: this.adjacencyMatrix[previous[i]][i]
+                    });
+                }
+            }
+        }
+
+        // Calculate total (sum of all unique edges in spanning tree)
+        result.totalDistance = result.discoveryEdges.reduce((sum, edge) => sum + edge.distance, 0);
+
+        return result;
+    }
 }
 
 // 1: Express.js Route Handler
-async function graphAlgorithmsHandler(req, res) {
-    try {
-        const { startTeam = 'Minnesota Vikings' } = req.query;
-        
-        // Fetch data from your existing MongoDB endpoints
-        const teams = await fetch('/api/teams').then(r => r.json());
-        const edges = await fetch('/api/edges').then(r => r.json());
-        
-        // Initialize graph service
-        const graphService = new GraphService(teams, edges);
-        
-        // Run algorithms
-        const results = graphService.runBothAlgorithms(startTeam);
-        
-        res.json({
-            success: true,
-            data: results
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
+    async function
+
+    graphAlgorithmsHandler(req, res) {
+        try {
+            const {startTeam = 'Minnesota Vikings'} = req.query;
+
+            // Fetch data from your existing MongoDB endpoints
+            const teams = await fetch('/api/teams').then(r => r.json());
+            const edges = await fetch('/api/edges').then(r => r.json());
+
+            // Initialize graph service
+            const graphService = new GraphService(teams, edges);
+
+            // Run algorithms
+            const results = graphService.runBothAlgorithms(startTeam);
+
+            res.json({
+                success: true,
+                data: results
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
     }
-}
 
 // 2: Separate endpoint for each algorithm
 async function dfsHandler(req, res) {

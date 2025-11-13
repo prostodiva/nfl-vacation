@@ -14,9 +14,16 @@ export const algorithmApi = createApi({
     }),
     tagTypes: ['Algorithm'],
     endpoints: (builder) => ({
-        //DFS/BFS
-        getAlgorithmData: builder.query<AlgorithmResponse, string>({
-            query: (algorithmType) => `/${algorithmType.toLowerCase()}`,
+        //DFS/BFS/dijkstra
+        getAlgorithmData: builder.query<AlgorithmResponse, { algorithmType: string; startTeam?: string }>({
+            query: ({ algorithmType, startTeam }) => {
+                const params = new URLSearchParams();
+                if (startTeam) {
+                    params.append('startTeam', startTeam);
+                }
+                const queryString = params.toString();
+                return `/${algorithmType.toLowerCase()}${queryString ? `?${queryString}` : ''}`;
+            },
             providesTags: ['Algorithm'],
         }),
 
