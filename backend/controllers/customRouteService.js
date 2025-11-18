@@ -1,7 +1,14 @@
 const Team = require('../models/Team');
+const { GraphService } = require('../models/Graph');
 const mongoose = require('mongoose');
 
-// Controller function for Custom Distance Route calculation
+// Helper function to get team name from stadium name
+const getTeamFromStadium = (stadiumName, teams) => {
+    const team = teams.find(t => t.stadium?.name === stadiumName);
+    return team ? team.teamName : null;
+};
+
+// Controller function for Custom Distance Route calculation using Dijkstra's
 const calculateCustomRoute = async (req, res) => {
     try {
         const { teamIds } = req.body;
@@ -25,50 +32,97 @@ const calculateCustomRoute = async (req, res) => {
             teamById[team._id.toString()] = team;
         });
 
-        // Build distance lookup by stadium names
-        const distanceMap = {};
-        distances.forEach(dist => {
-            const key1 = `${dist.beginningStadium}-${dist.endingStadium}`;
-            const key2 = `${dist.endingStadium}-${dist.beginningStadium}`;
-            distanceMap[key1] = dist.distance;
-            distanceMap[key2] = dist.distance;
-        });
+        // Transform distances into edges format for GraphService
+        const graphEdges = distances.map(dist => {
+            const toTeam = getTeamFromStadium(dist.endingStadium, teams);
+            return {
+                from: dist.teamName,
+                to: toTeam,
+                distance: dist.distance
+            };
+        }).filter(edge => edge.to !== null);
+
+        // Create graph service
+        const graphService = new GraphService(teams, graphEdges);
 
         let totalDistance = 0;
         const route = [];
-        const edges = [];
+        const routeEdges = [];
 
-        // Calculate sequential distance
-        for (let i = 0; i < teamIds.length; i++) {
+        // Use Dijkstra's algorithm to find shortest path between each consecutive pair
+        for (let i = 0; i < teamIds.length - 1; i++) {
             const currentTeam = teamById[teamIds[i]];
+            const nextTeam = teamById[teamIds[i + 1]];
 
-            if (!currentTeam) {
+            if (!currentTeam || !nextTeam) {
                 return res.status(400).json({
                     success: false,
-                    error: `Team with ID ${teamIds[i]} not found`
+                    error: `Team with ID ${teamIds[i] || teamIds[i + 1]} not found`
                 });
             }
 
-            route.push(currentTeam.teamName);
+            try {
+                // Run Dijkstra's to find shortest path from current to next team
+                const dijkstraResult = graphService.runDijkstra(
+                    currentTeam.teamName,
+                    nextTeam.teamName
+                );
 
-            // Calculate distance to next team
-            if (i < teamIds.length - 1) {
-                const nextTeam = teamById[teamIds[i + 1]];
-                const distanceKey = `${currentTeam.stadium.name}-${nextTeam.stadium.name}`;
-                const distance = distanceMap[distanceKey];
-
-                if (distance === undefined) {
+                // Get the path from current to next team
+                const path = dijkstraResult.paths[nextTeam.teamName];
+                
+                if (!path || path.length === 0) {
                     return res.status(400).json({
                         success: false,
-                        error: `Distance not available between ${currentTeam.teamName} and ${nextTeam.teamName}. Please reorder your teams or choose different teams.`
+                        error: `No path found between ${currentTeam.teamName} and ${nextTeam.teamName}`
                     });
                 }
 
-                totalDistance += distance;
-                edges.push({
-                    from: currentTeam.teamName,
-                    to: nextTeam.teamName,
-                    distance: distance
+                // Add path to route (avoid duplicates at connection points)
+                if (i === 0) {
+                    // First segment: add all nodes
+                    route.push(...path);
+                } else {
+                    // Subsequent segments: skip first node (already in route)
+                    route.push(...path.slice(1));
+                }
+
+                // Get distance from current to next team
+                const segmentDistance = dijkstraResult.distances[nextTeam.teamName];
+                
+                if (segmentDistance === undefined || segmentDistance === Infinity) {
+                    return res.status(400).json({
+                        success: false,
+                        error: `No path found between ${currentTeam.teamName} and ${nextTeam.teamName}`
+                    });
+                }
+
+                totalDistance += segmentDistance;
+
+                // Build edges for this segment
+                for (let j = 0; j < path.length - 1; j++) {
+                    const fromTeam = path[j];
+                    const toTeam = path[j + 1];
+                    
+                    // Find the distance for this edge
+                    const edgeDistance = graphEdges.find(e => 
+                        (e.from === fromTeam && e.to === toTeam) ||
+                        (e.from === toTeam && e.to === fromTeam)
+                    )?.distance;
+
+                    if (edgeDistance) {
+                        routeEdges.push({
+                            from: fromTeam,
+                            to: toTeam,
+                            distance: edgeDistance
+                        });
+                    }
+                }
+
+            } catch (error) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Error calculating path: ${error.message}`
                 });
             }
         }
@@ -76,9 +130,9 @@ const calculateCustomRoute = async (req, res) => {
         res.json({
             success: true,
             data: {
-                algorithm: 'CUSTOM',
+                algorithm: 'DIJKSTRA',
                 route: route,
-                edges: edges,
+                edges: routeEdges,
                 totalDistance: Math.round(totalDistance * 100) / 100,
                 teamCount: teamIds.length
             }

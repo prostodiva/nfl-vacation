@@ -14,7 +14,7 @@ function CustomTrip() {
     const [addedTeams, setAddedTeams] = useState<Team[]>([]);
     const { data: teamsData, isLoading, isError } = useGetAllTeamsQuery();
     const [routeError, setRouteError] = useState<string | null>(null);
-    const [calculateRoute, { data: routeData, isLoading: isCalculating, isError: hasError }] = 
+    const [calculateRoute, { data: routeData, isLoading: isCalculating, isError: hasError, reset }] =
     useCalculateCustomRouteMutation();
 
     const teamOptions: DropdownOption[] = teamsData?.data.map(team => ({
@@ -62,6 +62,7 @@ function CustomTrip() {
     const handleClear = () => {
         setAddedTeams([]);
         setRouteError(null);
+        reset?.();
     };
 
     if (isLoading) {
@@ -112,17 +113,6 @@ function CustomTrip() {
                         CLEAR ALL
                     </Button>
                 )}
-            </div>
-
-            <div className="flex flex-col items-center w-full mt-4">
-                {/* Info message */}
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-2xl">
-                    <p className="text-blue-800 text-sm">
-                        ℹ️ <strong>Note:</strong> Only certain team connections are available.
-                        If you receive an error, try reordering your teams or choosing teams
-                        that are geographically closer together.
-                    </p>
-                </div>
             </div>
 
             <TeamList
