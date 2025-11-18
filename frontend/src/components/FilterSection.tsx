@@ -6,6 +6,7 @@ import { useGetAllTeamsQuery } from "../store/apis/teamsApi";
 import { useFilter } from "../hooks/useFilter";
 import type { FilterConfig } from "../config/filterConfigs.ts";
 import Skeleton from "./Skeleton";
+import type {Team} from "../store/types/teamTypes.ts";
 
 interface FilterSectionProps {
     filters: FilterConfig[];
@@ -13,7 +14,7 @@ interface FilterSectionProps {
     enableSorting?: boolean;
 }
 
-function FilterSection({ filters, title, enableSorting = false }: FilterSectionProps) {
+function FilterSection({ filters, enableSorting = false }: FilterSectionProps) {
     const { data, isLoading, isError } = useGetAllTeamsQuery();
     const teams = data?.data || [];
 
@@ -198,6 +199,13 @@ function FilterSection({ filters, title, enableSorting = false }: FilterSectionP
                 </p>
                 <p className="text-sm text-gray-500">
                     ({sortedAndFilteredTeams.length} team{sortedAndFilteredTeams.length !== 1 ? 's' : ''})
+                </p>
+            </div>
+
+            <div className="text-gray-600 text-center space-y-1">
+                <h1>Total unique capacity</h1>
+                <p className="text-lg font-semibold">
+                    {totalUniqueCapacity}
                 </p>
             </div>
 
