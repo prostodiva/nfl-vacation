@@ -120,7 +120,12 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     } = useFilter(displayData, filterConfig);
 
     const sortedAndFilteredTeams = useMemo(() => {
-        if (!sortBy || !sortOrder) return finalFilteredData;
+        if (!sortBy || !sortOrder) {
+            // Sort by teamName to match backend's getAllTeams sorting
+            return [...finalFilteredData].sort((a, b) =>
+                a.teamName.localeCompare(b.teamName)
+            );
+        }
 
         return [...finalFilteredData].sort((a, b) => {
             let valueA: number;
@@ -133,7 +138,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                 valueA = a.stadium.seatingCapacity;
                 valueB = b.stadium.seatingCapacity;
             } else {
-                return 0;
+                return a.teamName.localeCompare(b.teamName);
             }
 
             return sortOrder === 'asc'
