@@ -12,7 +12,7 @@ export interface Stadium {
   location: string;
   seatingCapacity: number;
   surfaceType: string;
-  roofType: 'Open' | 'Dome' | 'Retractable';
+  roofType: 'Open' | 'Fixed' | 'Retractable';
   yearOpened: number;
 }
 
@@ -53,4 +53,23 @@ export interface TeamState {
   selectedTeam: Team | null;
   loading: boolean;
   error: string | null;
+}
+
+export interface StadiumItem {
+  stadiumName: string;
+  teamName: string;
+  location: string;
+  seatingCapacity: number;
+  yearOpened: number;
+  roofType: 'Open' | 'Fixed' | 'Retractable';
+  surfaceType: string;
+  teams?: string[]; // For shared stadiums
+}
+
+export interface StadiumsByRoofTypeResponse {
+  success: boolean;
+  count: number;
+  totalTeams: number;
+  roofType: 'Open' | 'Fixed' | 'Retractable';
+  data: StadiumItem[];
 }

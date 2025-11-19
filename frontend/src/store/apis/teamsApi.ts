@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Team } from '../types/teamTypes';
+import type { StadiumsByRoofTypeResponse, Team } from '../types/teamTypes';
 
 // Response types
 interface TeamResponse {
@@ -24,6 +24,11 @@ export const teamsApi = createApi({
     getAllTeams: builder.query<TeamsResponse, void>({
       query: () => '/', // GET /api/teams
       providesTags: ['Team'],
+    }),
+
+    getStadiumsByRoofType: builder.query<StadiumsByRoofTypeResponse, 'Open' | 'Fixed' | 'Retractable'>({
+      query: (roofType) =>  `/roof?roofType=${roofType}`, //GET /api/teams/open-roof
+      providesTags: ['Team']
     }),
 
     // Get all teams sorted by stadium name
@@ -52,4 +57,4 @@ export const teamsApi = createApi({
   }),
 });
 
-export const { useGetAllTeamsQuery, useGetTeamsByStadiumsQuery, useGetAllTeamsByConferenceQuery, useGetTeamsByConferenceQuery, useGetTeamByIdQuery } = teamsApi;
+export const { useGetAllTeamsQuery, useGetStadiumsByRoofTypeQuery ,useGetTeamsByStadiumsQuery, useGetAllTeamsByConferenceQuery, useGetTeamsByConferenceQuery, useGetTeamByIdQuery } = teamsApi;

@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import Dropdown, { type DropdownOption } from './Dropdown';
-import TeamCard from "./TeamCard";
-import { useMemo } from "react";
-import {
-    useGetAllTeamsQuery,
-    useGetTeamsByStadiumsQuery,
-    useGetAllTeamsByConferenceQuery
-} from "../store/apis/teamsApi";
-import { useFilter } from "../hooks/useFilter";
+import { useMemo, useState } from 'react';
 import type { FilterConfig } from "../config/filterConfigs.ts";
-import Skeleton from "./Skeleton";
+import { useFilter } from "../hooks/useFilter";
+import {
+    useGetAllTeamsByConferenceQuery,
+    useGetAllTeamsQuery,
+    useGetStadiumsByRoofTypeQuery,
+    useGetTeamsByStadiumsQuery
+} from "../store/apis/teamsApi";
 import type { Team } from "../store/types/teamTypes.ts";
+import Dropdown, { type DropdownOption } from './Dropdown';
+import Skeleton from "./Skeleton";
+import TeamCard from "./TeamCard";
 
 interface FilterSectionProps {
     filters: FilterConfig[];
@@ -42,6 +42,19 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         skip: viewType !== 'teams'  // Only fetch when on teams tab
     });
 
+    // Get the selected roof type from filters
+    const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+    const selectedRoofType = activeFilters['roofType'] as 'Open' | 'Dome' | 'Retractable' | undefined;
+
+    // Fetch stadiums by roof type when a roof type is selected
+    const {
+        data: roofTypeData,
+        isLoading: isLoadingRoofType,
+        isError: isErrorRoofType
+    } = useGetStadiumsByRoofTypeQuery(selectedRoofType!, {
+        skip: !selectedRoofType || viewType !== 'stadiums'  // Only fetch when roof type is selected and on stadiums tab
+    });
+
     const { data, isLoading, isError } = useMemo(() => {
         if (viewType === 'stadiums') {
             return {
@@ -58,7 +71,10 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         }
     }, [viewType, stadiumsData, conferenceData, allTeamsData, isLoadingStadiums, isLoadingConference, isLoadingAll, isErrorStadiums, isErrorConference, isErrorAll]);
 
+    // Get teams or stadium items based on data type
     const teams = data?.data || [];
+    const isRoofTypeData = selectedRoofType && viewType === 'stadiums' && roofTypeData;
+
     const [sortBy, setSortBy] = useState<string | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
 
@@ -71,18 +87,42 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         [filters]
     );
 
+    // Transform roof type data to Team format for unified display
+    const displayData = useMemo(() => {
+        if (isRoofTypeData && roofTypeData) {
+            // Transform StadiumItem[] to Team[] format
+            return roofTypeData.data.map((stadium, index) => ({
+                _id: `stadium-${index}`,
+                teamName: stadium.teamName,
+                conference: '' as any, // Not available in stadium data
+                division: '' as any,
+                stadium: {
+                    name: stadium.stadiumName,
+                    location: stadium.location,
+                    seatingCapacity: stadium.seatingCapacity,
+                    surfaceType: stadium.surfaceType,
+                    roofType: stadium.roofType,
+                    yearOpened: stadium.yearOpened
+                },
+                souvenirs: []
+            })) as Team[];
+        }
+        return teams; // Fallback to allTeams if not roof type data
+    }, [isRoofTypeData, roofTypeData, teams]);
+
+    // Apply client-side filtering to displayData (works for both roof type and regular data)
     const {
-        filters: activeFilters,
-        filteredData: filteredTeams,
-        setFilter,
-        clearAllFilters,
-        hasActiveFilters
-    } = useFilter(teams, filterConfig);
+        filters: clientFilters,
+        filteredData: finalFilteredData,
+        setFilter: setClientFilter,
+        clearAllFilters: clearClientFilters,
+        hasActiveFilters: hasClientFilters
+    } = useFilter(displayData, filterConfig);
 
-     const sortedAndFilteredTeams = useMemo(() => {
-        if (!sortBy || !sortOrder) return filteredTeams; 
+    const sortedAndFilteredTeams = useMemo(() => {
+        if (!sortBy || !sortOrder) return finalFilteredData;
 
-        return [...filteredTeams].sort((a, b) => {
+        return [...finalFilteredData].sort((a, b) => {
             let valueA: number;
             let valueB: number;
 
@@ -95,28 +135,32 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
             } else {
                 return 0;
             }
-            
-            return sortOrder === 'asc' 
+
+            return sortOrder === 'asc'
                 ? valueA - valueB
                 : valueB - valueA;
         });
-    }, [filteredTeams, sortBy, sortOrder]);
+    }, [finalFilteredData, sortBy, sortOrder]);
 
     const uniqueStadiumCount = useMemo(() => {
-        const stadiumNames = new Set(filteredTeams.map(team => team.stadium.name));
+        if (isRoofTypeData && roofTypeData) {
+            // Count unique stadiums from filtered data
+            const stadiumNames = new Set(finalFilteredData.map(team => team.stadium.name));
+            return stadiumNames.size;
+        }
+        const stadiumNames = new Set(finalFilteredData.map(team => team.stadium.name));
         return stadiumNames.size;
-    }, [sortedAndFilteredTeams]); 
+    }, [isRoofTypeData, roofTypeData, finalFilteredData]);
 
     const totalUniqueCapacity = useMemo(() => {
         const uniqueStadiums = new Map<string, Team>();
-        
-        sortedAndFilteredTeams.forEach(team => {
+        sortedAndFilteredTeams.forEach((team: Team) => {
             const stadiumName = team.stadium.name;
             if (!uniqueStadiums.has(stadiumName)) {
                 uniqueStadiums.set(stadiumName, team);
             }
         });
-        
+
         return Array.from(uniqueStadiums.values())
             .reduce((total, team) => total + team.stadium.seatingCapacity, 0);
     }, [sortedAndFilteredTeams]);
@@ -147,7 +191,22 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
 
     const getSelectedOption = (filterKey: string) => {
         const options = dropdownOptions[filterKey];
-        return options?.find(opt => opt.value === activeFilters[filterKey]) || null;
+        // Get value from activeFilters for roofType, otherwise from clientFilters
+        const value = filterKey === 'roofType' 
+            ? activeFilters[filterKey]
+            : clientFilters[filterKey];
+        return options?.find(opt => opt.value === value) || null;
+    };
+
+    // Add handler for filter changes
+    const handleFilterChange = (filterKey: string, value: string) => {
+        if (filterKey === 'roofType') {
+            // Update activeFilters for roof type to trigger API call
+            setActiveFilters(prev => ({ ...prev, [filterKey]: value }));
+        } else {
+            // Use client-side filtering for other filters
+            setClientFilter(filterKey, value);
+        }
     };
 
     const handleSortChange = (option: DropdownOption) => {
@@ -199,7 +258,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                         key={filter.key}
                         options={dropdownOptions[filter.key]}
                         value={getSelectedOption(filter.key)}
-                        onChange={(opt) => setFilter(filter.key, opt.value)}
+                        onChange={(opt) => handleFilterChange(filter.key, opt.value)}  // Use handleFilterChange instead of setFilter
                         placeholder={filter.placeholder}
                         className="w-54"
                     />
@@ -220,10 +279,11 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
             )}
 
             {/* Clear Filters Button */}
-           {(hasActiveFilters || sortBy) && (
+           {(activeFilters || sortBy) && (
                 <button
                     onClick={() => {
-                        clearAllFilters();
+                        setActiveFilters({});  // Clear activeFilters
+                        clearClientFilters();
                         setSortBy(null);
                         setSortOrder(null); 
                     }}
