@@ -2,22 +2,63 @@ import { useState } from 'react';
 import Dropdown, { type DropdownOption } from './Dropdown';
 import TeamCard from "./TeamCard";
 import { useMemo } from "react";
-import { useGetAllTeamsQuery } from "../store/apis/teamsApi";
+import {
+    useGetAllTeamsQuery,
+    useGetTeamsByStadiumsQuery,
+    useGetAllTeamsByConferenceQuery
+} from "../store/apis/teamsApi";
 import { useFilter } from "../hooks/useFilter";
 import type { FilterConfig } from "../config/filterConfigs.ts";
 import Skeleton from "./Skeleton";
-import type {Team} from "../store/types/teamTypes.ts";
+import type { Team } from "../store/types/teamTypes.ts";
 
 interface FilterSectionProps {
     filters: FilterConfig[];
     title?: string;
     enableSorting?: boolean;
+    viewType?: 'teams' | 'stadiums';
 }
 
-function FilterSection({ filters, enableSorting = false }: FilterSectionProps) {
-    const { data, isLoading, isError } = useGetAllTeamsQuery();
-    const teams = data?.data || [];
+function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: FilterSectionProps) {
+    const {
+        data: allTeamsData,
+        isLoading: isLoadingAll,
+        isError: isErrorAll
+    } = useGetAllTeamsQuery();
 
+    const {
+        data: stadiumsData,
+        isLoading: isLoadingStadiums,
+        isError: isErrorStadiums
+    } = useGetTeamsByStadiumsQuery(undefined, {
+        skip: viewType !== 'stadiums'  // Only fetch when on stadiums tab
+    });
+
+    const {
+        data: conferenceData,
+        isLoading: isLoadingConference,
+        isError: isErrorConference
+    } = useGetAllTeamsByConferenceQuery(undefined, {
+        skip: viewType !== 'teams'  // Only fetch when on teams tab
+    });
+
+    const { data, isLoading, isError } = useMemo(() => {
+        if (viewType === 'stadiums') {
+            return {
+                data: stadiumsData,
+                isLoading: isLoadingStadiums,
+                isError: isErrorStadiums
+            };
+        } else {
+            return {
+                data: conferenceData || allTeamsData,  // Fallback to allTeams if conference not loaded
+                isLoading: isLoadingConference || isLoadingAll,
+                isError: isErrorConference || isErrorAll
+            };
+        }
+    }, [viewType, stadiumsData, conferenceData, allTeamsData, isLoadingStadiums, isLoadingConference, isLoadingAll, isErrorStadiums, isErrorConference, isErrorAll]);
+
+    const teams = data?.data || [];
     const [sortBy, setSortBy] = useState<string | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
 

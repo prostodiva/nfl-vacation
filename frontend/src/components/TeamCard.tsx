@@ -31,6 +31,12 @@ function TeamCard({ team }: TeamCardProps) {
           </p>
         </div>
         <div>
+          <p className="text-xs text-white">Year Opened</p>
+          <p className="text-sm font-semibold text-white">
+            {team.stadium.yearOpened}
+          </p>
+        </div>
+        <div>
           <p className="text-xs text-white">Surface</p>
           <p className="text-sm font-semibold text-white">{team.stadium.surfaceType}</p>
         </div>

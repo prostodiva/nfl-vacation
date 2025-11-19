@@ -59,10 +59,10 @@ const getTeamsByConference = async (req, res) => {
     };
     
     const fullConference = conferenceMap[conference.toLowerCase()] || conference;
-    
+
     const teams = await Team.find({ conference: fullConference })
-      .sort({ teamName: 1 });
-    
+        .sort({ teamName: 1 });
+
     res.status(200).json({
       success: true,
       count: teams.length,
@@ -76,6 +76,51 @@ const getTeamsByConference = async (req, res) => {
     });
   }
 };
+
+//by stadiumName
+const getTeamsByStadiums = async (req, res) => {
+  try {
+    const teams = await Team.find({})
+        .sort({ 'stadium.name': 1 });
+
+    res.status(200).json({
+      success: true,
+      count: teams.length,
+      data: teams
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching teams by stadiums',
+      error: error.message
+    });
+  }
+};
+
+// Get all teams sorted by conference (AFC first, then NFC)
+const getAllTeamsByConference = async (req, res) => {
+  try {
+    // Sort by conference (AFC comes before NFC alphabetically), then team name
+    const teams = await Team.find({})
+        .sort({
+          conference: 1,  // AFC before NFC
+          teamName: 1     // Then alphabetically by team name
+        });
+
+    res.status(200).json({
+      success: true,
+      count: teams.length,
+      data: teams
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching teams by conference',
+      error: error.message
+    });
+  }
+};
+
 
 // Get teams by division
 const getTeamsByDivision = async (req, res) => {
@@ -179,6 +224,8 @@ module.exports = {
   getAllTeams,
   getTeamByName,
   getTeamsByConference,
+  getTeamsByStadiums,
+  getAllTeamsByConference,
   getTeamsByDivision,
   createTeam,
   updateTeam,

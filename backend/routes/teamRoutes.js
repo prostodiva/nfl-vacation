@@ -3,6 +3,8 @@ const {
   getAllTeams,
   getTeamByName,
   getTeamsByConference,
+  getTeamsByStadiums,
+  getAllTeamsByConference,
   getTeamsByDivision,
   createTeam,
   updateTeam,
@@ -14,6 +16,12 @@ const router = express.Router();
 // GET /api/teams - Get all teams
 // http://localhost:3001/api/teams
 router.get('/', getAllTeams);
+
+// GET /api/teams/stadiums - Get all teams sorted by stadium name
+router.get('/stadiums', getTeamsByStadiums);
+
+// GET /api/teams/conference-sorted - Get all teams sorted by conference (AFC first)
+router.get('/conference-sorted', getAllTeamsByConference);
 
 // GET /api/teams/conference/:conference - Get teams by conference (afc or nfc)
 // http://localhost:3001/api/teams/conference/nfc

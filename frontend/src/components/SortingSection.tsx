@@ -63,12 +63,14 @@ function SortingSection() {
                         filters={teamFilters} 
                         title="Filter Teams" 
                         enableSorting={false}
+                        viewType="teams"
                         />
                     ) : (
                         <FilterSection 
                         filters={stadiumFilters}
                         title="Filter Stadiums"
                         enableSorting={true}
+                        viewType="stadiums"
                         />
                     )}
                 </div>
