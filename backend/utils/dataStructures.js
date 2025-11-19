@@ -97,4 +97,45 @@ class PriorityQueue {
     }
 }
 
-module.exports = { MinHeap, PriorityQueue };
+/**
+ * Union-Find (Disjoint Set Union) data structure
+ * Used for Kruskal's algorithm to detect cycles
+ */
+class UnionFind {
+    constructor(n) {
+        this.parent = Array(n).fill(0).map((_, i) => i);
+        this.rank = Array(n).fill(0);
+    }
+
+    // Find with path compression
+    find(x) {
+        if (this.parent[x] !== x) {
+            this.parent[x] = this.find(this.parent[x]); // Path compression
+        }
+        return this.parent[x];
+    }
+
+    // Union by rank
+    unite(x, y) {
+        const rootX = this.find(x);
+        const rootY = this.find(y);
+
+        if (rootX === rootY) {
+            return false; // Already in same set (would create cycle)
+        }
+
+        // Union by rank
+        if (this.rank[rootX] < this.rank[rootY]) {
+            this.parent[rootX] = rootY;
+        } else if (this.rank[rootX] > this.rank[rootY]) {
+            this.parent[rootY] = rootX;
+        } else {
+            this.parent[rootY] = rootX;
+            this.rank[rootX]++;
+        }
+
+        return true;
+    }
+}
+
+module.exports = { MinHeap, PriorityQueue, UnionFind };

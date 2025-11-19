@@ -204,9 +204,51 @@ const runAStar = async (req, res) => {
     }
 }
 
+// Controller function for Kruskal's Minimum Spanning Tree
+const runKruskal = async (req, res) => {
+    try {
+        // Fetch teams and distances from database
+        const teams = await Team.find({}).lean();
+        const distances = await mongoose.connection.db
+            .collection('distances')
+            .find({})
+            .toArray();
+
+        // Transform distances into edges format
+        const edges = distances.map(dist => {
+            const toTeam = getTeamFromStadium(dist.endingStadium, teams);
+            return {
+                from: dist.teamName,
+                to: toTeam,
+                distance: dist.distance
+            };
+        }).filter(edge => edge.to !== null);
+
+        // Create graph service and run Kruskal's
+        const graphService = new GraphService(teams, edges);
+        const result = graphService.runKruskal();
+
+        res.json({
+            success: true,
+            algorithm: 'Kruskal',
+            timestamp: new Date().toISOString(),
+            data: result
+        });
+
+    } catch (error) {
+        console.error('Kruskal Error:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+};
+
 module.exports = {
     runDFS,
     runBFS,
     runDijkstra,
-    runAStar
+    runAStar,
+    runKruskal  
 };

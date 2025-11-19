@@ -11,6 +11,7 @@ import type { Team } from "../store/types/teamTypes.ts";
 import Dropdown, { type DropdownOption } from './Dropdown';
 import Skeleton from "./Skeleton";
 import TeamCard from "./TeamCard";
+import Button from "./Button.tsx";
 
 interface FilterSectionProps {
     filters: FilterConfig[];
@@ -54,6 +55,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     } = useGetStadiumsByRoofTypeQuery(selectedRoofType!, {
         skip: !selectedRoofType || viewType !== 'stadiums'  // Only fetch when roof type is selected and on stadiums tab
     });
+    const [sortByConference, setSortByConference] = useState<boolean>(false);
 
     const { data, isLoading, isError } = useMemo(() => {
         if (viewType === 'stadiums') {
@@ -63,13 +65,35 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                 isError: isErrorStadiums
             };
         } else {
+            // Use conference-sorted data if toggle is on
+            if (sortByConference) {
+                // Return conference data if available, otherwise show loading state
+                return {
+                    data: conferenceData,
+                    isLoading: isLoadingConference,
+                    isError: isErrorConference
+                };
+            }
+            // Otherwise use alphabetical sorting
             return {
-                data: conferenceData || allTeamsData,  // Fallback to allTeams if conference not loaded
-                isLoading: isLoadingConference || isLoadingAll,
-                isError: isErrorConference || isErrorAll
+                data: allTeamsData,
+                isLoading: isLoadingAll,
+                isError: isErrorAll
             };
         }
-    }, [viewType, stadiumsData, conferenceData, allTeamsData, isLoadingStadiums, isLoadingConference, isLoadingAll, isErrorStadiums, isErrorConference, isErrorAll]);
+    }, [
+        viewType,
+        stadiumsData,
+        conferenceData,
+        allTeamsData,
+        isLoadingStadiums,
+        isLoadingConference,
+        isLoadingAll,
+        isErrorStadiums,
+        isErrorConference,
+        isErrorAll,
+        sortByConference
+    ]);
 
     // Get teams or stadium items based on data type
     const teams = data?.data || [];
@@ -120,13 +144,20 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     } = useFilter(displayData, filterConfig);
 
     const sortedAndFilteredTeams = useMemo(() => {
+        // If no explicit sorting is selected
         if (!sortBy || !sortOrder) {
-            // Sort by teamName to match backend's getAllTeams sorting
+            // If conference sorting is enabled, preserve backend's conference order
+            if (sortByConference) {
+                // Don't re-sort - backend already sorted by conference, then teamName
+                return finalFilteredData;
+            }
+            // Otherwise, sort alphabetically by teamName (matches getAllTeams)
             return [...finalFilteredData].sort((a, b) =>
                 a.teamName.localeCompare(b.teamName)
             );
         }
 
+        // Apply explicit sorting (yearOpened or capacity)
         return [...finalFilteredData].sort((a, b) => {
             let valueA: number;
             let valueB: number;
@@ -138,6 +169,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                 valueA = a.stadium.seatingCapacity;
                 valueB = b.stadium.seatingCapacity;
             } else {
+                // Default to teamName sorting if sortBy doesn't match
                 return a.teamName.localeCompare(b.teamName);
             }
 
@@ -145,7 +177,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                 ? valueA - valueB
                 : valueB - valueA;
         });
-    }, [finalFilteredData, sortBy, sortOrder]);
+    }, [finalFilteredData, sortBy, sortOrder, sortByConference]);  // Add sortByConference to dependencies
 
     const uniqueStadiumCount = useMemo(() => {
         if (isRoofTypeData && roofTypeData) {
@@ -255,6 +287,21 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
 
     return (
         <div className="flex flex-col items-center space-y-6 w-full">
+            {/* Toggle for conference sorting (only show on teams tab) */}
+            {viewType === 'teams' && (
+                <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={sortByConference}
+                            onChange={(e) => setSortByConference(e.target.checked)}
+                            className="w-4 h-4"
+                        />
+                        <span className="text-sm text-gray-700">Sort by Conference (AFC first, then NFC)</span>
+                    </label>
+                </div>
+            )}
+
 
             {/* Dynamic Dropdowns */}
             <div className="flex items-center gap-4 flex-wrap">
@@ -284,18 +331,20 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
             )}
 
             {/* Clear Filters Button */}
-           {(activeFilters || sortBy) && (
-                <button
-                    onClick={() => {
-                        setActiveFilters({});  // Clear activeFilters
-                        clearClientFilters();
-                        setSortBy(null);
-                        setSortOrder(null); 
-                    }}
-                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm transition-colors"
-                >
-                    Clear All Filters & Sorting
-                </button>
+            {(activeFilters || sortBy || sortByConference) && (
+                    <Button
+                        primary
+                        rounded
+                        onClick={() => {
+                            setActiveFilters({});
+                            clearClientFilters();
+                            setSortBy(null);
+                            setSortOrder(null);
+                            setSortByConference(false);
+                        }}
+                    >
+                        Clear All Filters
+                    </Button>
             )}
 
             {/* Results Count */}

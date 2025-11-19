@@ -4,8 +4,8 @@ import { useState } from "react";
 
 // Define the type
 type Algorithm = {
-  type: 'DFS' | 'BFS' | 'DIJKSTRA' | 'A*';
-  team: string;
+  type: 'DFS' | 'BFS' | 'DIJKSTRA' | 'A*' | 'kruskal';
+  team?: string;
   endTeam?: string;
 } | null;
 
@@ -21,17 +21,15 @@ function AlgorithmsPage() {
   }
 
     const handleDijkstraClick = () => {
-        setSelectedAlgorithm({
-            type: 'DIJKSTRA',
-            team: 'Green Bay Packers'
-        });
+        setSelectedAlgorithm({ type: 'DIJKSTRA', team: 'Green Bay Packers'});
     }
 
     const handleAStarClick = () => {
-        setSelectedAlgorithm({
-            type: 'A*',
-            team: 'Green Bay Packers'
-        });
+        setSelectedAlgorithm({ type: 'A*', team: 'Green Bay Packers' });
+    }
+
+    const handleKruskalClick = () => {
+      setSelectedAlgorithm({ type: 'kruskal' });
     }
 
     const handleEndTeamSelect = (endTeam: 'Denver Broncos' | 'New England Patriots') => {
@@ -59,6 +57,7 @@ function AlgorithmsPage() {
                 <Button secondary rounded onClick={handleBFSClick}>BFS<br></br>LOS ANGLELES RAMS</Button>
                 <Button secondary rounded onClick={handleDijkstraClick}>DIJKSTRA'S<br></br>GREEN BAY PACKERS</Button>
                 <Button secondary rounded onClick={handleAStarClick}>A*<br></br>GREEN BAY PACKERS</Button>
+                <Button secondary rounded onClick={handleKruskalClick}>KRUSKAL'S ALGORITHM<br></br>MST</Button>
             </div>
               {/* Show endTeam selection when DIJKSTRA or A* is selected */}
               {(selectedAlgorithm?.type === 'DIJKSTRA' || selectedAlgorithm?.type === 'A*') && (
@@ -80,6 +79,15 @@ function AlgorithmsPage() {
                       >
                           NEW ENGLAND PATRIOTS
                       </Button>
+                  </div>
+              )}
+              {/* Show description when Kruskal's is selected */}
+              {selectedAlgorithm?.type === 'kruskal' && (
+                  <div className="mt-4 text-center">
+                      <p className="text-sm text-gray-700">
+                          Shows the minimum total distance to connect all NFL stadiums<br></br>
+                          An MST for a connected graph with N nodes has N-1 edges.
+                      </p>
                   </div>
               )}
           </div>

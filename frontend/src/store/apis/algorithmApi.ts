@@ -14,7 +14,7 @@ export const algorithmApi = createApi({
     }),
     tagTypes: ['Algorithm'],
     endpoints: (builder) => ({
-        //DFS/BFS/dijkstra/A
+        //DFS/BFS/dijkstra/A/kruskal
         getAlgorithmData: builder.query<AlgorithmResponse, { algorithmType: string; startTeam?: string; endTeam?: string }>({
             query: ({ algorithmType, startTeam, endTeam }) => {
                 // Map algorithm types to URL-safe route names
@@ -22,7 +22,8 @@ export const algorithmApi = createApi({
                     'DFS': 'dfs',
                     'BFS': 'bfs',
                     'DIJKSTRA': 'dijkstra',
-                    'A*': 'astar'  // Map A* to URL-safe 'astar'
+                    'A*': 'astar',
+                    'kruskal': 'kruskal'
                 };
                 const route = routeMap[algorithmType] || algorithmType.toLowerCase();
                 const params = new URLSearchParams();

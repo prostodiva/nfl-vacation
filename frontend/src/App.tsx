@@ -7,7 +7,6 @@ import SearchPage from './pages/search/SearchPage';
 import TripPage from './pages/TripPage';
 import ShoppingPage from './pages/ShoppingPage';
 import AlgorithmsPage from './pages/AlgorithmsPage';
-import StatisticsPage from './pages/StatisticsPage';
 import SortingSection from "./components/SortingSection.tsx";
 
 const router = createBrowserRouter([
@@ -42,10 +41,6 @@ const router = createBrowserRouter([
       {
         path: '/algorithms',
         element: <AlgorithmsPage />,
-      },
-      {
-        path: '/statistics',
-        element: <StatisticsPage />,
       }
     ],
   },

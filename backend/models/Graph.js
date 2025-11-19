@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { PriorityQueue } = require('../utils/dataStructures');
+const { PriorityQueue, UnionFind } = require('../utils/dataStructures');
 const { stadiumCoordinates } = require('../utils/stadiumCoordinates');
 
 class GraphService {
@@ -479,112 +479,112 @@ class GraphService {
             const dy = currentCoords.y - goalCoords.y;
             return Math.sqrt(dx * dx + dy * dy);
         }
-         return 0;
+        return 0;
     }
-}
 
+    // ==================== KRUSKAL'S ALGORITHM ====================
 
-// 1: Express.js Route Handler
-    async function
-
-    graphAlgorithmsHandler(req, res) {
-        try {
-            const {startTeam = 'Minnesota Vikings'} = req.query;
-
-            // Fetch data from your existing MongoDB endpoints
-            const teams = await fetch('/api/teams').then(r => r.json());
-            const edges = await fetch('/api/edges').then(r => r.json());
-
-            // Initialize graph service
-            const graphService = new GraphService(teams, edges);
-
-            // Run algorithms
-            const results = graphService.runBothAlgorithms(startTeam);
-
-            res.json({
-                success: true,
-                data: results
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                error: error.message
-            });
+    runKruskal() {
+        const N = this.adjacencyMatrix.length;
+        
+        // Step 1: Extract all unique edges from adjacency matrix
+        const allEdges = [];
+        
+        for (let i = 0; i < N; i++) {
+            for (let j = i + 1; j < N; j++) { // Only upper triangle to avoid duplicates
+                const weight = this.adjacencyMatrix[i][j];
+                if (weight > 0) {
+                    allEdges.push({
+                        from: i,
+                        to: j,
+                        weight: weight
+                    });
+                }
+            }
         }
-    }
 
-// 2: Separate endpoint for each algorithm
-async function dfsHandler(req, res) {
-    try {
-        const { startTeam = 'Minnesota Vikings' } = req.query;
-        const teams = await fetch('/api/teams').then(r => r.json());
-        const edges = await fetch('/api/edges').then(r => r.json());
-        
-        const graphService = new GraphService(teams, edges);
-        const result = graphService.runDFS(startTeam);
-        
-        res.json({ success: true, data: result });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        // Step 2: Sort edges by weight
+        allEdges.sort((a, b) => a.weight - b.weight);
+
+        // Step 3: Initialize Union-Find
+        const uf = new UnionFind(N);
+
+        // Step 4: Build MST
+        const mstEdges = [];
+        let totalWeight = 0;
+        const processedEdges = [];
+
+        for (const edge of allEdges) {
+            const fromName = this.teamNames[edge.from];
+            const toName = this.teamNames[edge.to];
+            
+            // Try to add edge to MST
+            if (uf.unite(edge.from, edge.to)) {
+                // No cycle - add to MST
+                mstEdges.push({
+                    from: fromName,
+                    to: toName,
+                    distance: edge.weight
+                });
+                totalWeight += edge.weight;
+                
+                processedEdges.push({
+                    from: fromName,
+                    to: toName,
+                    distance: edge.weight,
+                    action: 'ADDED'
+                });
+
+                // Stop if we have N-1 edges (complete MST)
+                if (mstEdges.length === N - 1) {
+                    break;
+                }
+            } else {
+                // Would create cycle - reject
+                processedEdges.push({
+                    from: fromName,
+                    to: toName,
+                    distance: edge.weight,
+                    action: 'REJECTED (cycle)'
+                });
+            }
+        }
+
+        // Extract all unique nodes from MST edges for visitOrder
+        const mstNodes = new Set();
+        mstEdges.forEach(edge => {
+            mstNodes.add(edge.from);
+            mstNodes.add(edge.to);
+        });
+
+        // Build result matching AlgorithmData interface
+        const result = {
+            algorithm: 'KRUSKAL',
+            startCity: 'MST', // Not applicable, but required by interface
+            totalVertices: N,
+            totalEdges: allEdges.length,
+            mstEdges: mstEdges.length,
+            totalDistance: Math.round(totalWeight * 100) / 100,
+            // Map edges to discoveryEdges for Map component
+            discoveryEdges: mstEdges,
+            // Create visitOrder from all nodes in MST
+            visitOrder: Array.from(mstNodes),
+            // Keep original structure for API response
+            edges: mstEdges,
+            sortedEdges: allEdges.map((edge, index) => ({
+                rank: index + 1,
+                from: this.teamNames[edge.from],
+                to: this.teamNames[edge.to],
+                distance: edge.weight
+            })),
+            processedEdges: processedEdges
+        };
+
+        return result;
     }
 }
 
-async function bfsHandler(req, res) {
-    try {
-        const { startTeam = 'Los Angeles Rams' } = req.query;
-        const teams = await fetch('/api/teams').then(r => r.json());
-        const edges = await fetch('/api/edges').then(r => r.json());
-        
-        const graphService = new GraphService(teams, edges);
-        const result = graphService.runBFS(startTeam);
-        
-        res.json({ success: true, data: result });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-}
 
-
-// 3 : Using with axios or fetch 
-async function runGraphAlgorithms(startCity = 'Los Angeles Rams') {
-    try {
-        // Use your existing API endpoints
-        const [teamsResponse, edgesResponse] = await Promise.all([
-            fetch('/api/teams'),
-            fetch('/api/edges')
-        ]);
-        
-        const teams = await teamsResponse.json();
-        const edges = await edgesResponse.json();
-        
-        // Create graph service
-        const graphService = new GraphService(teams, edges);
-        
-        // Run DFS
-        const dfsResult = graphService.runDFS(startTeam);
-        console.log('DFS Results:', dfsResult);
-        
-        // Run BFS
-        const bfsResult = graphService.runBFS(startTeam);
-        console.log('BFS Results:', bfsResult);
-        
-        return { dfs: dfsResult, bfs: bfsResult };
-    } catch (error) {
-        console.error('Error running algorithms:', error);
-        throw error;
-    }
-}
-
-// Example 4: Direct usage with MongoDB data
-async function runWithMongoData(teamsCollection, edgesCollection) {
-    // Fetch from your MongoDB collections
-    const teams = await teamsCollection.find({}).toArray();
-    const edges = await edgesCollection.find({}).toArray();
-    
-    // Run algorithms
-    const graphService = new GraphService(cities, edges);
-    return graphService.runBothAlgorithms('Los Angeles Rams');
-}
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { GraphService };

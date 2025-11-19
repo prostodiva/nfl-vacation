@@ -38,7 +38,7 @@ const [selectedTrip, setSelectedTrip] = useState<Trip>(null);
                   active={selectedTrip?.type === 'CUSTOM'}
                   onClick={handleCustomTripClick}
                 >
-                  CUSTOM TRIP<br></br>CREATE YOUR OWN NFL DREAM TRIP
+                  CUSTOM TRIP<br></br>CREATE YOUR OWN NFL DREAM TRIP(Dijkstra's)
                 </Button>
                 
                 <Button 
