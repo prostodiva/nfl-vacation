@@ -4,6 +4,7 @@
 // GET /api/dfs?startTeam=Minnesota Vikings
 // GET /api/bfs?startTeam=Los Angeles Rams
 // GET /api/dijkstra?startTeam=Green Bay Packers
+// GET /api/A?startTeam=Green Bay Packers
 */
 
 const { GraphService } = require('../models/Graph');
@@ -148,8 +149,64 @@ const runDijkstra = async (req, res) => {
     }
 };
 
+//controller function for A* from Green Bay Packers
+const runAStar = async (req, res) => {
+    try {
+        const {
+            startTeam = 'Green Bay Packers',
+            endTeam,
+            detailed = false
+        } = req.query;
+
+        // A* requires an endTeam
+        if (!endTeam) {
+            return res.status(400).json({
+                success: false,
+                error: 'A* algorithm requires both startTeam and endTeam parameters'
+            });
+        }
+
+        // Fetch teams and distances from database
+        const teams = await Team.find({}).lean();
+        const distances = await mongoose.connection.db
+            .collection('distances')
+            .find({})
+            .toArray();
+
+        // Transform distances into edges format
+        const edges = distances.map(dist => {
+            const toTeam = getTeamFromStadium(dist.endingStadium, teams);
+            return {
+                from: dist.teamName,
+                to: toTeam,
+                distance: dist.distance
+            };
+        }).filter(edge => edge.to !== null);
+
+        // Create graph service and run A*
+        const graphService = new GraphService(teams, edges);
+        const result = graphService.runAStar(startTeam, endTeam);
+
+        res.json({
+            success: true,
+            algorithm: 'astar',
+            timestamp: new Date().toISOString(),
+            data: result
+        });
+
+    } catch (error) {
+        console.error('A* Error:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+}
+
 module.exports = {
     runDFS,
     runBFS,
-    runDijkstra
+    runDijkstra,
+    runAStar
 };

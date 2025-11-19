@@ -2,7 +2,8 @@ const express = require('express');
 const {
   runBFS,
   runDFS,
-  runDijkstra
+  runDijkstra,
+  runAStar
 } = require('../controllers/graphService');
 
 const router = express.Router();
@@ -10,6 +11,7 @@ const router = express.Router();
 router.get('/dfs', runDFS);
 router.get('/bfs', runBFS);
 router.get('/dijkstra', runDijkstra);
+router.get('/astar', runAStar);
 
 module.exports = router;
 

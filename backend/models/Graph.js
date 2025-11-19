@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { PriorityQueue } = require('../utils/dataStructures');
+const { stadiumCoordinates } = require('../utils/stadiumCoordinates');
 
 class GraphService {
 
@@ -262,57 +263,226 @@ class GraphService {
             }
         }
 
-        // Build result with UNIQUE edges only
+        // Build result
         const result = {
             algorithm: 'DIJKSTRA',
             startCity: startTeamName,
             distances: {},
             paths: {},
             discoveryEdges: [],
-            visitOrder: [],  // ← This must be here!
+            visitOrder: [],
             totalDistance: 0
         };
 
-        const sortedNodes = [];
-        for (let i = 0; i < N; i++) {
-            if (distances[i] !== Infinity) {
-                sortedNodes.push({ name: this.teamNames[i], distance: distances[i] });
-            }
-        }
-        sortedNodes.sort((a, b) => a.distance - b.distance);
-        result.visitOrder = sortedNodes.map(node => node.name);
-
-        // Collect unique edges from previous array (only once per destination)
-        for (let i = 0; i < N; i++) {
-            if (distances[i] !== Infinity) {
-                result.distances[this.teamNames[i]] = distances[i];
-
-                // Build path for this destination
+        // If endTeam is specified, only build path to that team
+        if (endTeamName) {
+            const endIndex = this.nameToIndex[endTeamName];
+            
+            if (endIndex !== undefined && distances[endIndex] !== Infinity) {
+                // Build path from start to end
                 const path = [];
-                let current = i;
+                let current = endIndex;
                 while (current !== null) {
                     path.unshift(this.teamNames[current]);
                     current = previous[current];
                 }
-                result.paths[this.teamNames[i]] = path;
-
-                // Add edge to discoveryEdges (ONLY ONCE per destination)
-                if (previous[i] !== null) {
+                
+                result.path = path;
+                result.paths[endTeamName] = path;
+                result.distances[endTeamName] = distances[endIndex];
+                
+                // Build visit order (only nodes on the path)
+                result.visitOrder = [...path];
+                
+                // Build discovery edges for the path
+                for (let i = 1; i < path.length; i++) {
+                    const fromIndex = this.nameToIndex[path[i - 1]];
+                    const toIndex = this.nameToIndex[path[i]];
                     result.discoveryEdges.push({
-                        from: this.teamNames[previous[i]],
-                        to: this.teamNames[i],
-                        distance: this.adjacencyMatrix[previous[i]][i]
+                        from: path[i - 1],
+                        to: path[i],
+                        distance: this.adjacencyMatrix[fromIndex][toIndex]
                     });
+                }
+                
+                result.totalDistance = distances[endIndex];
+            } else {
+                // Path not found
+                result.visitOrder = [];
+            }
+        } else {
+            // No endTeam specified - build spanning tree (original behavior)
+            const sortedNodes = [];
+            for (let i = 0; i < N; i++) {
+                if (distances[i] !== Infinity) {
+                    sortedNodes.push({ name: this.teamNames[i], distance: distances[i] });
+                }
+            }
+            sortedNodes.sort((a, b) => a.distance - b.distance);
+            result.visitOrder = sortedNodes.map(node => node.name);
+
+            // Collect unique edges from previous array (only once per destination)
+            for (let i = 0; i < N; i++) {
+                if (distances[i] !== Infinity) {
+                    result.distances[this.teamNames[i]] = distances[i];
+
+                    // Build path for this destination
+                    const path = [];
+                    let current = i;
+                    while (current !== null) {
+                        path.unshift(this.teamNames[current]);
+                        current = previous[current];
+                    }
+                    result.paths[this.teamNames[i]] = path;
+
+                    // Add edge to discoveryEdges (ONLY ONCE per destination)
+                    if (previous[i] !== null) {
+                        result.discoveryEdges.push({
+                            from: this.teamNames[previous[i]],
+                            to: this.teamNames[i],
+                            distance: this.adjacencyMatrix[previous[i]][i]
+                        });
+                    }
+                }
+            }
+
+            // Calculate total (sum of all unique edges in spanning tree)
+            result.totalDistance = result.discoveryEdges.reduce((sum, edge) => sum + edge.distance, 0);
+        }
+
+        return result;
+    }
+
+    // ==================== A* ALGORITHM ====================
+
+    runAStar(startTeamName, endTeamName) {
+        if (!endTeamName) {
+            throw new Error('A* algorithm requires both startTeam and endTeam');
+        }
+
+        const startIndex = this.nameToIndex[startTeamName];
+        const endIndex = this.nameToIndex[endTeamName];
+
+        if (startIndex === undefined) {
+            throw new Error(`Team "${startTeamName}" not found`);
+        }
+        if (endIndex === undefined) {
+            throw new Error(`Team "${endTeamName}" not found`);
+        }
+
+        const N = this.adjacencyMatrix.length;
+
+        // g(n) = actual distance from start to current node
+        const gScore = Array(N).fill(Infinity);
+        // f(n) = g(n) + h(n) = estimated total distance
+        const fScore = Array(N).fill(Infinity);
+        const previous = Array(N).fill(null);
+        const visited = Array(N).fill(false);
+
+        gScore[startIndex] = 0;
+        fScore[startIndex] = this.heuristic(startIndex, endIndex);
+
+        // Priority queue ordered by f(n) = g(n) + h(n)
+        const pq = new PriorityQueue();
+        pq.enqueue(startIndex, fScore[startIndex]);
+
+        while (!pq.isEmpty()) {
+            const currentIndex = pq.dequeue();
+
+            if (visited[currentIndex]) continue;
+            visited[currentIndex] = true;
+
+            // If we reached the goal, reconstruct path
+            if (currentIndex === endIndex) {
+                break;
+            }
+
+            // Explore neighbors
+            for (let neighborIndex = 0; neighborIndex < N; neighborIndex++) {
+                const weight = this.adjacencyMatrix[currentIndex][neighborIndex];
+
+                if (weight > 0 && !visited[neighborIndex]) {
+                    // Calculate tentative g score
+                    const tentativeGScore = gScore[currentIndex] + weight;
+
+                    // If this path to neighbor is better, update it
+                    if (tentativeGScore < gScore[neighborIndex]) {
+                        previous[neighborIndex] = currentIndex;
+                        gScore[neighborIndex] = tentativeGScore;
+                        fScore[neighborIndex] = tentativeGScore + this.heuristic(neighborIndex, endIndex);
+                        pq.enqueue(neighborIndex, fScore[neighborIndex]);
+                    }
                 }
             }
         }
 
-        // Calculate total (sum of all unique edges in spanning tree)
-        result.totalDistance = result.discoveryEdges.reduce((sum, edge) => sum + edge.distance, 0);
+        // Build result
+        const result = {
+            algorithm: 'A*',
+            startCity: startTeamName,
+            endCity: endTeamName,
+            distances: {},
+            paths: {},
+            discoveryEdges: [],
+            visitOrder: [],
+            totalDistance: 0,
+            path: null,
+            pathDistance: gScore[endIndex] === Infinity ? null : gScore[endIndex]
+        };
+
+        // Build visit order (nodes visited during search)
+        for (let i = 0; i < N; i++) {
+            if (visited[i]) {
+                result.visitOrder.push(this.teamNames[i]);
+            }
+        }
+
+        // Reconstruct path from start to end
+        if (gScore[endIndex] !== Infinity) {
+            const path = [];
+            let current = endIndex;
+            while (current !== null) {
+                path.unshift(this.teamNames[current]);
+                current = previous[current];
+            }
+            result.path = path;
+            result.paths[endTeamName] = path;
+            result.distances[endTeamName] = gScore[endIndex];
+
+            // Build discovery edges for the path
+            for (let i = 1; i < path.length; i++) {
+                const fromIndex = this.nameToIndex[path[i - 1]];
+                const toIndex = this.nameToIndex[path[i]];
+                result.discoveryEdges.push({
+                    from: path[i - 1],
+                    to: path[i],
+                    distance: this.adjacencyMatrix[fromIndex][toIndex]
+                });
+            }
+            result.totalDistance = gScore[endIndex];
+        }
 
         return result;
     }
+
+    // Heuristic function: estimates distance from current to goal
+    heuristic(currentIndex, goalIndex) {
+        const currentTeam = this.teamNames[currentIndex];
+        const goalTeam = this.teamNames[goalIndex];
+
+        const currentCoords = stadiumCoordinates[currentTeam];
+        const goalCoords = stadiumCoordinates[goalTeam];
+
+        if (currentCoords && goalCoords) {
+            // Calculate Euclidean distance in pixel space
+            const dx = currentCoords.x - goalCoords.x;
+            const dy = currentCoords.y - goalCoords.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+         return 0;
+    }
 }
+
 
 // 1: Express.js Route Handler
     async function

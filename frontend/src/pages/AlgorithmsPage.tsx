@@ -4,8 +4,9 @@ import { useState } from "react";
 
 // Define the type
 type Algorithm = {
-  type: 'DFS' | 'BFS' | 'DIJKSTRA';
+  type: 'DFS' | 'BFS' | 'DIJKSTRA' | 'A*';
   team: string;
+  endTeam?: string;
 } | null;
 
 function AlgorithmsPage() {
@@ -19,9 +20,28 @@ function AlgorithmsPage() {
     setSelectedAlgorithm({ type: 'BFS', team: 'Los Angeles Rams' });
   }
 
-  const handleDijkstraClick = () => {
-    setSelectedAlgorithm({ type: 'DIJKSTRA', team: 'Green Bay Packers' });
-  }
+    const handleDijkstraClick = () => {
+        setSelectedAlgorithm({
+            type: 'DIJKSTRA',
+            team: 'Green Bay Packers'
+        });
+    }
+
+    const handleAStarClick = () => {
+        setSelectedAlgorithm({
+            type: 'A*',
+            team: 'Green Bay Packers'
+        });
+    }
+
+    const handleEndTeamSelect = (endTeam: 'Denver Broncos' | 'New England Patriots') => {
+        if (selectedAlgorithm) {
+            setSelectedAlgorithm({
+                ...selectedAlgorithm,
+                endTeam: endTeam
+            });
+        }
+    }
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -38,7 +58,30 @@ function AlgorithmsPage() {
                 <Button secondary rounded onClick={handleDFSClick}>DFS<br></br>MINNESOTA VIKINGS</Button>
                 <Button secondary rounded onClick={handleBFSClick}>BFS<br></br>LOS ANGLELES RAMS</Button>
                 <Button secondary rounded onClick={handleDijkstraClick}>DIJKSTRA'S<br></br>GREEN BAY PACKERS</Button>
+                <Button secondary rounded onClick={handleAStarClick}>A*<br></br>GREEN BAY PACKERS</Button>
             </div>
+              {/* Show endTeam selection when DIJKSTRA or A* is selected */}
+              {(selectedAlgorithm?.type === 'DIJKSTRA' || selectedAlgorithm?.type === 'A*') && (
+                  <div className="flex flex-row items-center space-x-4 mt-4">
+                      <p className="text-sm text-gray-600">Select destination:</p>
+                      <Button
+                          secondary
+                          rounded
+                          active={selectedAlgorithm.endTeam === 'Denver Broncos'}
+                          onClick={() => handleEndTeamSelect('Denver Broncos')}
+                      >
+                          DENVER BRONCOS
+                      </Button>
+                      <Button
+                          secondary
+                          rounded
+                          active={selectedAlgorithm.endTeam === 'New England Patriots'}
+                          onClick={() => handleEndTeamSelect('New England Patriots')}
+                      >
+                          NEW ENGLAND PATRIOTS
+                      </Button>
+                  </div>
+              )}
           </div>
 
           <div>

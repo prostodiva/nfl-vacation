@@ -58,18 +58,36 @@ function LoadingState() {
 }
 
 function Map({ algorithm }: MapProps) {
+    const requiresEndTeam = algorithm?.type === 'DIJKSTRA' || algorithm?.type === 'A*';
+    const hasEndTeam = !!algorithm?.endTeam;
+    const shouldSkip = !algorithm || (requiresEndTeam && !hasEndTeam);
+
     const { data: response, isLoading, isError, error } = useGetAlgorithmDataQuery(
         {
             algorithmType: algorithm?.type || '',
-            startTeam: algorithm?.team
+            startTeam: algorithm?.team,
+            endTeam: algorithm?.endTeam,
         },
-        { skip: !algorithm }
+        { skip: shouldSkip }
     );
 
     const algorithmData = response?.data || null;
     const { visitedNodes, currentNode, animatedEdges, isAnimating } = useMapAnimation(algorithmData);
 
     if (!algorithm) return <EmptyState />;
+    // Show message if waiting for endTeam selection
+    if (requiresEndTeam && !hasEndTeam) {
+        return (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center p-8"
+            >
+                <p className="text-gray-600">Please select a destination team</p>
+            </motion.div>
+        );
+    }
+
     if (isError) return <ErrorState error={(error as any)?.message || 'Error loading data'} />;
     if (isLoading || !algorithmData) return <LoadingState />;
 

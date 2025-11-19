@@ -14,15 +14,26 @@ export const algorithmApi = createApi({
     }),
     tagTypes: ['Algorithm'],
     endpoints: (builder) => ({
-        //DFS/BFS/dijkstra
-        getAlgorithmData: builder.query<AlgorithmResponse, { algorithmType: string; startTeam?: string }>({
-            query: ({ algorithmType, startTeam }) => {
+        //DFS/BFS/dijkstra/A
+        getAlgorithmData: builder.query<AlgorithmResponse, { algorithmType: string; startTeam?: string; endTeam?: string }>({
+            query: ({ algorithmType, startTeam, endTeam }) => {
+                // Map algorithm types to URL-safe route names
+                const routeMap: Record<string, string> = {
+                    'DFS': 'dfs',
+                    'BFS': 'bfs',
+                    'DIJKSTRA': 'dijkstra',
+                    'A*': 'astar'  // Map A* to URL-safe 'astar'
+                };
+                const route = routeMap[algorithmType] || algorithmType.toLowerCase();
                 const params = new URLSearchParams();
                 if (startTeam) {
                     params.append('startTeam', startTeam);
                 }
+                if (endTeam) {
+                    params.append('endTeam', endTeam);
+                }
                 const queryString = params.toString();
-                return `/${algorithmType.toLowerCase()}${queryString ? `?${queryString}` : ''}`;
+                return `/${route}${queryString ? `?${queryString}` : ''}`;
             },
             providesTags: ['Algorithm'],
         }),

@@ -1,7 +1,8 @@
 export interface MapProps {
     algorithm: {
-        type: 'DFS' | 'BFS' | 'DIJKSTRA';
+        type: 'DFS' | 'BFS' | 'DIJKSTRA' | 'A*';
         team: string;
+        endTeam?: string;
     } | null;
 }
 
