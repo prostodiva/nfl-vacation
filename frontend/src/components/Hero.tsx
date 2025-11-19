@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Button from './Button';
 import SearchInput from './SearchInput';
 import player from '../assets/player.png'
+import ball from '../assets/ball.png'
 
 function Hero() {
   const navigate = useNavigate();
@@ -23,6 +24,17 @@ function Hero() {
                     maxHeight: '100%',
                     transform: 'scale(2)',
                     transformOrigin: 'left top',
+                }}
+            />
+            <img
+                src={ball}
+                alt="NFL Ball"
+                className="absolute inset-0 h-full z-0 pointer-events-none opacity-10"
+                style={{
+                    objectPosition: 'center',
+                    maxHeight: '50%',
+                    transform: 'translateX(140%)',
+                    transformOrigin: 'left bottom',
                 }}
             />
             <div className="relative z-10 flex flex-col items-start space-y-2 w-[1079px]">
