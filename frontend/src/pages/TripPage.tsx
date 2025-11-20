@@ -41,14 +41,14 @@ const [selectedTrip, setSelectedTrip] = useState<Trip>(null);
                   CUSTOM TRIP<br></br>CREATE YOUR OWN NFL DREAM TRIP(Dijkstra's)
                 </Button>
                 
-                <Button 
-                  secondary 
-                  rounded 
-                  active={selectedTrip?.type === 'Efficient'}
-                  onClick={handleEfficientCustomClick}
-                >
-                  EFFICIENT CUSTOM TRIP<br></br>Minimize travel time and distance
-                </Button>
+                {/*<Button */}
+                {/*  secondary */}
+                {/*  rounded */}
+                {/*  active={selectedTrip?.type === 'Efficient'}*/}
+                {/*  onClick={handleEfficientCustomClick}*/}
+                {/*>*/}
+                {/*  EFFICIENT CUSTOM TRIP<br></br>Minimize travel time and distance*/}
+                {/*</Button>*/}
                 
                 <Button 
                   secondary 
@@ -56,7 +56,7 @@ const [selectedTrip, setSelectedTrip] = useState<Trip>(null);
                   active={selectedTrip?.type === 'OPTIMAL'}
                   onClick={handleOptimalTripClick}
                 >
-                  OPTIMAL TRIP<br></br>Starting from New England Patriots
+                  OPTIMAL TRIP<br></br>Starting from New England Patriots(Recursion)
                 </Button>
             </div>
           </div>

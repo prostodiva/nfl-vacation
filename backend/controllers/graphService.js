@@ -21,14 +21,14 @@ const getTeamFromStadium = (stadiumName, teams) => {
 const runDFS = async (req, res) => {
     try {
         const { startTeam = 'Minnesota Vikings' } = req.query;
-        
+
         // Fetch teams and distances
         const teams = await Team.find({}).lean();
         const distances = await mongoose.connection.db
             .collection('distances')
             .find({})
             .toArray();
-        
+
         // Transform distances into edges format
         const edges = distances.map(dist => {
             const toTeam = getTeamFromStadium(dist.endingStadium, teams);
@@ -38,20 +38,20 @@ const runDFS = async (req, res) => {
                 distance: dist.distance
             };
         }).filter(edge => edge.to !== null); // Remove edges where we couldn't find the team
-        
+
         // Create graph and run DFS
         const graphService = new GraphService(teams, edges);
         const result = graphService.runDFS(startTeam);
-        
-        res.json({ 
-            success: true, 
-            data: result 
+
+        res.json({
+            success: true,
+            data: result
         });
     } catch (error) {
         console.error('DFS Error:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 };
@@ -60,13 +60,13 @@ const runDFS = async (req, res) => {
 const runBFS = async (req, res) => {
     try {
         const { startTeam = 'Minnesota Vikings' } = req.query;
-        
+
         const teams = await Team.find({}).lean();
         const distances = await mongoose.connection.db
             .collection('distances')
             .find({})
             .toArray();
-        
+
         const edges = distances.map(dist => {
             const toTeam = getTeamFromStadium(dist.endingStadium, teams);
             return {
@@ -75,19 +75,19 @@ const runBFS = async (req, res) => {
                 distance: dist.distance
             };
         }).filter(edge => edge.to !== null);
-        
+
         const graphService = new GraphService(teams, edges);
         const result = graphService.runBFS(startTeam);
-        
-        res.json({ 
-            success: true, 
-            data: result 
+
+        res.json({
+            success: true,
+            data: result
         });
     } catch (error) {
         console.error('BFS Error:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 };
@@ -250,5 +250,5 @@ module.exports = {
     runBFS,
     runDijkstra,
     runAStar,
-    runKruskal  
+    runKruskal
 };

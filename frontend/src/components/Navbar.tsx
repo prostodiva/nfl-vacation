@@ -35,8 +35,7 @@ function Navbar({
     { label: 'Stadiums', path: '/stadiums' },
     { label: 'Trip Planning', path: '/trip' },
     { label: 'Shopping', path: '/shopping' },
-    { label: 'Algorithms', path: '/algorithms' },
-    { label: 'Statistics', path: '/statistics' },
+    { label: 'Algorithms', path: '/algorithms' }
   ];
 
   const navLinks = links || defaultLinks;
