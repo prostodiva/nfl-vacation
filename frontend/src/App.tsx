@@ -8,6 +8,8 @@ import TripPage from './pages/TripPage';
 import ShoppingPage from './pages/ShoppingPage';
 import AlgorithmsPage from './pages/AlgorithmsPage';
 import SortingSection from "./components/SortingSection.tsx";
+import LoginPage from './pages/LoginPage.tsx';
+import AdminDashboard from './pages/AdminDashboard.tsx';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +43,14 @@ const router = createBrowserRouter([
       {
         path: '/algorithms',
         element: <AlgorithmsPage />,
+      },
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/dashboard',
+        element: <AdminDashboard />
       }
     ],
   },

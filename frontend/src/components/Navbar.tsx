@@ -22,7 +22,7 @@ interface NavbarProps {
 function Navbar({
                   links,
                   containerClassName = '',
-                  navClassName = 'w-full inline-flex items-center gap-2 h-16 bg-gray-100',
+                  navClassName = 'w-full inline-flex items-center gap-2 h-16',
                   linkClassName = 'mx-8',
                   activeLinkClassName = 'font-bold',
                   logo,
