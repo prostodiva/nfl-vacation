@@ -18,7 +18,7 @@ const router = express.Router();
 router.get('/', getAllTeams);
 
 // GET /api/teams/stadiums - Get all teams sorted by stadium name
-router.get('/stadiums', getTeamsByStadiums);
+router.get('/team-by-stadiums', getTeamsByStadiums);
 
 // GET /api/teams/conference-sorted - Get all teams sorted by conference (AFC first)
 router.get('/conference-sorted', getAllTeamsByConference);

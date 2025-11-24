@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import type { FilterConfig } from "../config/filterConfigs.ts";
 import { useFilter } from "../hooks/useFilter";
+import { useGetStadiumsByRoofTypeQuery } from "../store/apis/stadiumsApi.ts"
 import {
     useGetAllTeamsByConferenceQuery,
     useGetAllTeamsQuery,
-    useGetStadiumsByRoofTypeQuery,
     useGetTeamsByStadiumsQuery
 } from "../store/apis/teamsApi";
 import type { Team } from "../store/types/teamTypes.ts";

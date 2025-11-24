@@ -117,8 +117,84 @@ const getAllStadiums = async (req, res) => {
   }
 };
 
+const createStadium = async (req, res) => {
+    try {
+        const stadiums = await Team.stadium.create(req.body);
+
+        res.status(201).json({
+            success: true,
+            data: stadiums
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'Error creating stadium',
+            error: error.message
+        });
+    }
+};
+
+const updateStadium = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const stadium = await Team.stadium.findOneAndUpdate(
+            { _id: id },
+            req.body,
+            { new: true, runValidations: true }
+        );
+
+        if (!stadium) {
+            return res.status(404).json({
+                success: false,
+                message: 'Stadium not found'
+            });
+        }
+
+        res.status(200).json({
+        success: true,
+        data: team
+        });
+    } catch (error) {
+        res.status(400).json({
+        success: false,
+        message: 'Error updating stadium',
+        error: error.message
+        });
+    }
+};
+
+const deleteStadium = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+         const stadium = await Team.findOneAndDelete({ _id: id });
+            
+            if (!stadium) {
+              return res.status(404).json({
+                success: false,
+                message: 'Stadium not found'
+              });
+            }
+            
+            res.status(200).json({
+              success: true,
+              message: 'Stadium deleted successfully'
+            });
+          } catch (error) {
+            res.status(500).json({
+              success: false,
+              message: 'Error deleting stadium',
+              error: error.message
+            });
+    }
+}
+
 
 module.exports = {
     getAllStadiums,
-    getStadiumsByRoofType
+    getStadiumsByRoofType,
+    createStadium,
+    updateStadium,
+    deleteStadium
 }

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { StadiumsByRoofTypeResponse, Team } from '../types/teamTypes';
+import type { Team } from '../types/teamTypes';
 
 interface TeamsResponse {
   success: boolean;
@@ -20,20 +20,9 @@ export const teamsApi = createApi({
       providesTags: ['Team'],
     }),
 
-    getStadiumsByRoofType: builder.query<StadiumsByRoofTypeResponse, 'Open' | 'Fixed' | 'Retractable'>({
-      query: (roofType) =>  `/roof?roofType=${roofType}`, //GET /api/teams/open-roof
-      providesTags: ['Team']
-    }),
-
     // Get all teams sorted by stadium name
     getTeamsByStadiums: builder.query<TeamsResponse, void>({
-      query: () => '/stadiums', // GET /api/teams/stadiums
-      providesTags: ['Team'],
-    }),
-
-    //get all stadiums
-    getAllStadiums: builder.query<TeamsResponse, void>({
-      query: () => '/all-stadiums', // GET /api/teams/all-stadiums
+      query: () => '/team-by-stadiums', // GET /api/teams/team-by-stadiums
       providesTags: ['Team'],
     }),
 
@@ -50,11 +39,11 @@ export const teamsApi = createApi({
     }),
 
     // Get team by ID
-    getTeamById: builder.query<TeamResponse, string>({
+    getTeamById: builder.query<TeamsResponse, string>({
       query: (teamId) => `/${teamId}`, // GET /api/teams/:id
       providesTags: (result, error, teamId) => [{ type: 'Team', id: teamId }],
     }),
   }),
 });
 
-export const { useGetAllTeamsQuery, useGetStadiumsByRoofTypeQuery ,useGetTeamsByStadiumsQuery, useGetAllStadiumsQuery, useGetAllTeamsByConferenceQuery, useGetTeamsByConferenceQuery, useGetTeamByIdQuery } = teamsApi;
+export const { useGetAllTeamsQuery, useGetTeamsByStadiumsQuery, useGetAllTeamsByConferenceQuery, useGetTeamsByConferenceQuery, useGetTeamByIdQuery } = teamsApi;

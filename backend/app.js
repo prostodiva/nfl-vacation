@@ -9,6 +9,7 @@ const graphRoutes = require('./routes/graphRoutes');
 const customRoutes = require('./routes/customRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const stadiumRoutes = require('./routes/stadiumRoutes');
+const souvenirRoutes = require('./routes/souvenirsRoutes');
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.use('/api', graphRoutes);
 app.use('/api', customRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/stadiums', stadiumRoutes);
+app.use('/api/souvenirs', souvenirRoutes);
+
 
 //test route
 app.get('/api/test', (req, res) => {
