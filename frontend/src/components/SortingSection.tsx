@@ -3,8 +3,7 @@ import FilterSection from "./FilterSection";
 import { teamFilters, stadiumFilters } from "../config/filterConfigs";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-
-type ActiveTab = 'teams' | 'stadiums';
+import type { ActiveTab } from "../store/types/teamTypes";
 
 function SortingSection() {
     const location = useLocation();

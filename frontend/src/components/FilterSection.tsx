@@ -50,8 +50,6 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     // Fetch stadiums by roof type when a roof type is selected
     const {
         data: roofTypeData,
-        isLoading: isLoadingRoofType,
-        isError: isErrorRoofType
     } = useGetStadiumsByRoofTypeQuery(selectedRoofType!, {
         skip: !selectedRoofType || viewType !== 'stadiums'  // Only fetch when roof type is selected and on stadiums tab
     });

@@ -73,3 +73,5 @@ export interface StadiumsByRoofTypeResponse {
   roofType: 'Open' | 'Fixed' | 'Retractable';
   data: StadiumItem[];
 }
+
+export type ActiveTab = 'teams' | 'stadiums';

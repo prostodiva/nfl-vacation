@@ -37,6 +37,12 @@ export const teamsApi = createApi({
       providesTags: ['Team'],
     }),
 
+    //get all stadiums
+    getAllStadiums: builder.query<TeamsResponse, void>({
+      query: () => '/all-stadiums', // GET /api/teams/all-stadiums
+      providesTags: ['Team'],
+    }),
+
     // Get all teams sorted by conference (AFC first, then NFC)
     getAllTeamsByConference: builder.query<TeamsResponse, void>({
       query: () => '/conference-sorted', // GET /api/teams/conference-sorted
@@ -57,4 +63,4 @@ export const teamsApi = createApi({
   }),
 });
 
-export const { useGetAllTeamsQuery, useGetStadiumsByRoofTypeQuery ,useGetTeamsByStadiumsQuery, useGetAllTeamsByConferenceQuery, useGetTeamsByConferenceQuery, useGetTeamByIdQuery } = teamsApi;
+export const { useGetAllTeamsQuery, useGetStadiumsByRoofTypeQuery ,useGetTeamsByStadiumsQuery, useGetAllStadiumsQuery, useGetAllTeamsByConferenceQuery, useGetTeamsByConferenceQuery, useGetTeamByIdQuery } = teamsApi;

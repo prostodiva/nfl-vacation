@@ -285,6 +285,58 @@ const getStadiumsByRoofType = async (req, res) => {
   }
 };
 
+const getAllStadiums = async (req, res) => {
+  try {
+    // Get all teams (no roof type filter)
+    const teams = await Team.find({})
+      .sort({ 'stadium.name': 1 }); // Sort by stadium name
+
+    // Create a map to track unique stadiums
+    const uniqueStadiums = new Map();
+
+    teams.forEach(team => {
+      const stadiumName = team.stadium.name;
+      // Only add if we haven't seen this stadium before
+      if (!uniqueStadiums.has(stadiumName)) {
+        uniqueStadiums.set(stadiumName, {
+          stadiumName: stadiumName,
+          teamName: team.teamName,
+          location: team.stadium.location,
+          seatingCapacity: team.stadium.seatingCapacity,
+          yearOpened: team.stadium.yearOpened,
+          roofType: team.stadium.roofType,
+          surfaceType: team.stadium.surfaceType
+        });
+      } else {
+        // If stadium already exists, add team name to show it's shared
+        const existing = uniqueStadiums.get(stadiumName);
+        if (!existing.teams) {
+          existing.teams = [existing.teamName];
+        }
+        existing.teams.push(team.teamName);
+        existing.teamName = existing.teams.join(', ');
+      }
+    });
+
+    // Convert map to array and sort by stadium name
+    const stadiumList = Array.from(uniqueStadiums.values())
+      .sort((a, b) => a.stadiumName.localeCompare(b.stadiumName));
+
+    res.status(200).json({
+      success: true,
+      count: stadiumList.length, 
+      totalTeams: teams.length,  
+      data: stadiumList
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching all stadiums',
+      error: error.message
+    });
+  }
+};
+
 
 module.exports = {
   getAllTeams,
@@ -296,5 +348,6 @@ module.exports = {
   getStadiumsByRoofType,
   createTeam,
   updateTeam,
-  deleteTeam
+  deleteTeam,
+  getAllStadiums
 };

@@ -1,14 +1,29 @@
-function LeftSidebar() {
-    const links = [
-        {label: '1', path: '/'},
-        {label: '2', path: '/'}
+import { useState } from "react";
+import type { ActiveTab } from "../../store/types/teamTypes";
+
+function LeftSidebar({ onTabChange }: { onTabChange: (tab: ActiveTab) => void }) {
+    const [activeTab, setActiveTab] = useState<ActiveTab>('teams');
+
+    const links: { label: ActiveTab; path: string }[] = [
+        {label: 'teams', path: '/'},
+        {label: 'stadiums', path: '/'}
     ];
+
+    const handleLinkClick = (tab: ActiveTab) => {
+        setActiveTab(tab);
+        onTabChange(tab);
+    }
 
     const renderLinks = links.map((link) => {
         return (
              <div 
                 key={link.label}
-                className="flex items-center gap-3 px-6 py-4 text-gray-300 hover:bg-gray-700 cursor-pointer w-full transition-colors"
+                onClick={() => handleLinkClick(link.label)}
+                className={`flex items-center gap-3 px-6 py-4 text-gray-300 hover:bg-gray-700 cursor-pointer w-full transition-colors ${
+                activeTab === link.label
+                   ? 'bg-gray-700 text-white' 
+                   : 'text-gray-300 hover:bg-gray-700'
+                }`}
             >
                 <span className="text-lg">{link.label}</span>
             </div>

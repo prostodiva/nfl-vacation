@@ -1,11 +1,43 @@
+import { useState } from "react";
 import LeftSidebar from "../components/dashboard/LeftSidebar";
 import girl from '../assets/girl.png'
 import Button from "../components/Button";
+import type { ActiveTab, StadiumItem } from "../store/types/teamTypes";
+import { useGetAllTeamsQuery, useGetAllStadiumsQuery } from "../store/apis/teamsApi";
+import type { Team } from "../store/types/teamTypes";
+import TeamCard from "../components/TeamCard";
+import StadiumCard from "../components/StadiumCard";
 
 function AdminDashboard() {
+    const [activeTab, setActiveTab] = useState<ActiveTab>('teams')
+
+    const teamsQuery = useGetAllTeamsQuery(undefined, { skip: activeTab !== 'teams' });
+    const stadiumsQuery = useGetAllStadiumsQuery(undefined, { skip: activeTab !== 'stadiums' });
+
+    const { data: teamsData } = teamsQuery;
+    const { data: stadiumsData } = stadiumsQuery;
+
+    const displayData = activeTab === 'teams' ? teamsData?.data : stadiumsData?.data;
+
+    const handleEditTeam = () => {
+        console.log('edit team clicked');
+    }
+
+    const handleDeleteTeam = () => {
+        console.log('delete team click');
+    }
+
+    const handleEditStadium = () => {
+        console.log('edit stadium clicked');
+    }
+
+    const handleDeleteStadium = () => {
+        console.log('delete stadium clicked');
+    }
+
     return (
        <div className="bg-gray-100 min-h-screen relative">
-            <LeftSidebar />
+            <LeftSidebar onTabChange={setActiveTab}/>
 
             <div className="px-8 py-8">
                 <div className="flex flex-col items-center space-y-2 mb-8">
@@ -59,8 +91,34 @@ function AdminDashboard() {
 
                     {/* Table section */}
                     <div className="bg-[#262422] rounded-lg p-6">
-                       
-
+                       <div className="bg-[#262422] rounded-lg p-6">
+                    {activeTab === 'teams' ? (
+                        <div className="space-y-2">
+                            <h2 className="text-white">Teams</h2>
+                             {(displayData as Team[])?.map((team: Team) => (
+                                <TeamCard 
+                                    team={team} 
+                                    isAdmin={true}
+                                    onEdit={handleEditTeam}
+                                    onDelete={handleDeleteTeam}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                            <h2 className="text-white">Stadiums</h2>
+                               {(displayData as unknown as StadiumItem[])?.map((stadium: StadiumItem) => (
+                               <StadiumCard
+                                    key={stadium.stadiumName} 
+                                    isAdmin={true}
+                                    stadium={stadium} 
+                                    onEdit={handleEditStadium}
+                                    onDelete={handleDeleteStadium}
+                                />
+                                ))}
+                        </div>
+                    )}
+                    </div>
                     </div>
                 </div>
             </div>
