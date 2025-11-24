@@ -3,10 +3,12 @@ import { teamsApi } from './apis/teamsApi';
 import { algorithmApi } from './apis/algorithmApi';
 import { adminApi } from './apis/adminApi';
 import authReducer from './slices/authSlice';
+import { stadiumApi } from './apis/stadiumsApi';
 
 const store = configureStore({
   reducer: {
     [teamsApi.reducerPath]: teamsApi.reducer,
+    [stadiumApi.reducerPath]: stadiumApi.reducer,
     [algorithmApi.reducerPath]: algorithmApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
     auth: authReducer,
@@ -14,6 +16,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(teamsApi.middleware)
+      .concat(stadiumApi.middleware)
       .concat(algorithmApi.middleware)
       .concat(adminApi.middleware)
 });

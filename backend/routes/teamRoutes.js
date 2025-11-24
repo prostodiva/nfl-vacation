@@ -8,9 +8,7 @@ const {
   getTeamsByDivision,
   createTeam,
   updateTeam,
-  deleteTeam,
-  getStadiumsByRoofType,
-  getAllStadiums
+  deleteTeam
 } = require('../controllers/teamService');
 
 const router = express.Router();
@@ -32,10 +30,6 @@ router.get('/conference/:conference', getTeamsByConference);
 // GET /api/teams/division/:division - Get teams by division
 // http://localhost:3001/api/teams/division/NFC%20West
 router.get('/division/:division', getTeamsByDivision);
-
-router.get('/roof',  getStadiumsByRoofType)
-
-router.get('/all-stadiums', getAllStadiums);
 
 // GET /api/teams/:teamName - Get single team by name
 // http://localhost:3001/api/teams/Arizona%20Cardinals

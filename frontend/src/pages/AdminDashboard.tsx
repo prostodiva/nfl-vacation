@@ -3,7 +3,8 @@ import LeftSidebar from "../components/dashboard/LeftSidebar";
 import girl from '../assets/girl.png'
 import Button from "../components/Button";
 import type { ActiveTab, StadiumItem } from "../store/types/teamTypes";
-import { useGetAllTeamsQuery, useGetAllStadiumsQuery } from "../store/apis/teamsApi";
+import { useGetAllTeamsQuery } from "../store/apis/teamsApi";
+import { useGetAllStadiumsQuery } from "../store/apis/stadiumsApi";
 import type { Team } from "../store/types/teamTypes";
 import TeamCard from "../components/TeamCard";
 import StadiumCard from "../components/StadiumCard";

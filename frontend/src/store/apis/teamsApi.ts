@@ -1,12 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { StadiumsByRoofTypeResponse, Team } from '../types/teamTypes';
 
-// Response types
-interface TeamResponse {
-  success: boolean;
-  data: Team;
-}
-
 interface TeamsResponse {
   success: boolean;
   count: number;
