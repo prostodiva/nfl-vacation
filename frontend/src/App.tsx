@@ -10,6 +10,7 @@ import AlgorithmsPage from './pages/AlgorithmsPage';
 import SortingSection from "./components/SortingSection.tsx";
 import LoginPage from './pages/LoginPage.tsx';
 import AdminDashboard from './pages/AdminDashboard.tsx';
+import ProtectedRoute from './components/auth/ProtectedRoutes.tsx';
 
 const router = createBrowserRouter([
   {
@@ -50,7 +51,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/dashboard',
-        element: <AdminDashboard />
+        element: (
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        ),
       }
     ],
   },
