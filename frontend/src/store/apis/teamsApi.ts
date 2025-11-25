@@ -7,6 +7,12 @@ interface TeamsResponse {
   data: Team[];
 }
 
+interface SingleTeamResponse {
+  success: boolean;
+  data: Team;
+}
+
+
 export const teamsApi = createApi({
   reducerPath: 'teamsApi',
   baseQuery: fetchBaseQuery({
@@ -43,7 +49,25 @@ export const teamsApi = createApi({
       query: (teamId) => `/${teamId}`, // GET /api/teams/:id
       providesTags: (result, error, teamId) => [{ type: 'Team', id: teamId }],
     }),
+
+  // store/apis/teamsApi.ts
+  updateTeam: builder.mutation<SingleTeamResponse, { id: string; teamName: string; conference: string; division: string }>({
+    query: (payload) => {
+      console.log('teamsApi - updateTeam query payload:', payload);
+      
+      const { id, ...teamData } = payload;
+      console.log('teamsApi - Team ID:', id);
+      console.log('teamsApi - Team data:', teamData);
+      
+      return {
+        url: `/${id}`,
+        method: 'PUT',
+        body: teamData,
+      };
+    },
+    invalidatesTags: ['Team'],
+  }),
   }),
 });
 
-export const { useGetAllTeamsQuery, useGetTeamsByStadiumsQuery, useGetAllTeamsByConferenceQuery, useGetTeamsByConferenceQuery, useGetTeamByIdQuery } = teamsApi;
+export const { useGetAllTeamsQuery, useGetTeamsByStadiumsQuery, useGetAllTeamsByConferenceQuery, useGetTeamsByConferenceQuery, useGetTeamByIdQuery, useUpdateTeamMutation } = teamsApi;

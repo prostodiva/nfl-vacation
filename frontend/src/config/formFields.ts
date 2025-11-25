@@ -1,61 +1,81 @@
+// config/formFields.ts
+import type { FieldConfig } from '../components/dashboard/EditModel';
 
-export const stadiumFields = [
-    { name: 'stadiumName', label: 'Stadium Name', type: 'text' as const },
-    { name: 'location', label: 'Location', type: 'text' as const },
-    { name: 'seatingCapacity', label: 'Seating Capacity', type: 'number' as const },
+export const stadiumFields: FieldConfig[] = [
+    { name: 'stadiumName', label: 'Stadium Name', type: 'text', required: true },
+    { name: 'location', label: 'Location', type: 'text', required: true },
+    { name: 'seatingCapacity', label: 'Seating Capacity', type: 'number', required: true },
     { 
         name: 'surfaceType', 
         label: 'Surface Type', 
-        type: 'select' as const,
+        type: 'select', 
+        required: true,
         options: [
-            { value: 'bermuda', label: 'Bermuda grass' },
-            { value: 'bluegrass', label: 'Kentucky Bluegrass' },
-            { value: 'fieldturf', label: 'FieldTurf' },
-            { value: 'astroturf', label: 'AstroTurf' },
-            { value: 'natural', label: 'Natural Grass' }
+            { value: 'Bermuda grass', label: 'Bermuda grass' },
+            { value: 'Kentucky Bluegrass', label: 'Kentucky Bluegrass' },
+            { value: 'FieldTurf', label: 'FieldTurf' },
+            { value: 'AstroTurf', label: 'AstroTurf' },
+            { value: 'Natural Grass', label: 'Natural Grass' }
         ]
     },
     { 
         name: 'roofType', 
         label: 'Roof Type', 
-        type: 'select' as const,
+        type: 'select', 
+        required: true,
         options: [
-            { value: 'open', label: 'Open' },
-            { value: 'fixed', label: 'Fixed' },
-            { value: 'retractable', label: 'Retractable' }
+            { value: 'Open', label: 'Open' },
+            { value: 'Fixed', label: 'Fixed' },
+            { value: 'Retractable', label: 'Retractable' }
         ]
     },
-    { name: 'yearOpened', label: 'Year Opened', type: 'number' as const }
+    { name: 'yearOpened', label: 'Year Opened', type: 'number', required: true }
 ];
 
-export const teamFields = [
-    { name: 'teamName', label: 'Team Name', type: 'text' as const, required: true },
+export const teamFields: FieldConfig[] = [
+    { name: 'teamName', label: 'Team Name', type: 'text', required: true },
     { 
         name: 'conference', 
         label: 'Conference', 
-        type: 'select' as const, 
+        type: 'select', 
         required: true,
-        options: ['AFC', 'NFC']
+        options: [
+            { value: 'AFC', label: 'AFC' },
+            { value: 'NFC', label: 'NFC' }
+        ]
     },
     { 
         name: 'division', 
         label: 'Division', 
-        type: 'select' as const, 
+        type: 'select', 
         required: true,
-        options: ['AFC East', 'AFC West', 'AFC North', 'AFC South', 
-                 'NFC East', 'NFC West', 'NFC North', 'NFC South']
+        options: [
+            { value: 'AFC East', label: 'AFC East' },
+            { value: 'AFC West', label: 'AFC West' },
+            { value: 'AFC North', label: 'AFC North' },
+            { value: 'AFC South', label: 'AFC South' },
+            { value: 'NFC East', label: 'NFC East' },
+            { value: 'NFC West', label: 'NFC West' },
+            { value: 'NFC North', label: 'NFC North' },
+            { value: 'NFC South', label: 'NFC South' }
+        ]
     }
 ];
 
-export const souvenirFields = [
-    { name: 'name', label: 'Souvenir Name', type: 'text' as const, required: true },
-    { name: 'price', label: 'Price', type: 'number' as const, required: true },
+export const souvenirFields: FieldConfig[] = [
+    { name: 'name', label: 'Souvenir Name', type: 'text', required: true },
+    { name: 'price', label: 'Price', type: 'number', required: true },
     { 
         name: 'category', 
         label: 'Category', 
-        type: 'select' as const, 
+        type: 'select', 
         required: true,
-        options: ['Apparel', 'Accessories', 'Collectibles', 'Food & Beverage']
+        options: [
+            { value: 'Apparel', label: 'Apparel' },
+            { value: 'Accessories', label: 'Accessories' },
+            { value: 'Collectibles', label: 'Collectibles' },
+            { value: 'Food & Beverage', label: 'Food & Beverage' }
+        ]
     },
-    { name: 'isTraditional', label: 'Traditional', type: 'checkbox' as const }
+    { name: 'isTraditional', label: 'Traditional', type: 'checkbox' }
 ];

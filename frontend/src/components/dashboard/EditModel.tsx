@@ -10,11 +10,12 @@ interface EditModalProps<T> {
   onClose: () => void;
 }
 
-interface FieldConfig {
+export interface FieldConfig {
   name: string;
   label: string;
-  type: 'text' | 'number' | 'select';
+  type: 'text' | 'number' | 'select' | 'checkbox';
   options?: { value: string; label: string }[];
+  required?: boolean;
 }
 
 function EditModal<T extends Record<string, any>>({
