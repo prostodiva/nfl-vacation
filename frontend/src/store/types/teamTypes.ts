@@ -56,6 +56,7 @@ export interface TeamState {
 }
 
 export interface StadiumItem {
+  _id: string;
   stadiumName: string;
   teamName: string;
   location: string;
@@ -63,7 +64,7 @@ export interface StadiumItem {
   yearOpened: number;
   roofType: 'Open' | 'Fixed' | 'Retractable';
   surfaceType: string;
-  teams?: string[]; // For shared stadiums
+  teams?: string[]; 
 }
 
 export interface StadiumsByRoofTypeResponse {

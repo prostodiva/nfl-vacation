@@ -7,6 +7,32 @@ interface StadiumResponse {
   data: StadiumItem[];
 }
 
+interface SingleStadiumResponse {
+  success: boolean;
+  data: StadiumItem;
+}
+
+interface CreateStadiumRequest {
+  teamId: string;
+  stadium: {
+    name: string;
+    location: string;
+    seatingCapacity: number;
+    surfaceType: 'Bermuda grass' | 'Kentucky Bluegrass' | 'FieldTurf' | 'AstroTurf' | 'Natural Grass';
+    roofType: 'Open' | 'Fixed' | 'Retractable';
+    yearOpened: number;
+  };
+}
+
+interface UpdateStadiumRequest {
+  name?: string
+  location?: string;
+  seatingCapacity?: number;
+  surfaceType?: string;
+  roofType?: string;
+  yearOpened?: number;
+}
+
 export const stadiumApi = createApi({
   reducerPath: 'stadiumApi',
   baseQuery: fetchBaseQuery({
@@ -26,7 +52,41 @@ export const stadiumApi = createApi({
       query: () => '/all-stadiums', // GET /api/stadiums/all-stadiums
       providesTags: ['StadiumItem'],
     }),
+
+    // POST - Create stadium
+     createStadium: builder.mutation<SingleStadiumResponse, CreateStadiumRequest>({
+      query: ({ stadium }) => ({ // Remove teamId from destructure
+        url: '/', // POST /api/stadiums/
+        method: 'POST',
+        body: stadium,
+      }),
+      invalidatesTags: ['StadiumItem'],
+    }),
+
+    // PUT - Update stadium 
+    updateStadium: builder.mutation<SingleStadiumResponse, { id: string, stadium: UpdateStadiumRequest }>({
+      query: ({ id, stadium }) => ({ 
+        url: `/${id}`, // PUT /api/stadiums/:id
+        method: 'PUT',
+        body: stadium,
+      }),
+      invalidatesTags: ['StadiumItem'],
+    }),
+
+
+     // DELETE - Delete stadium
+    deleteStadium: builder.mutation<{ success: boolean; message: string }, string>({
+      query: (id) => ({ 
+        url: `/${id}`, // DELETE /api/stadiums/:id
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['StadiumItem'],
+    }),
   }),
 });
 
-export const { useGetStadiumsByRoofTypeQuery , useGetAllStadiumsQuery } = stadiumApi;
+export const { useGetStadiumsByRoofTypeQuery,
+  useGetAllStadiumsQuery, 
+  useCreateStadiumMutation,
+  useUpdateStadiumMutation,
+  useDeleteStadiumMutation, } = stadiumApi;

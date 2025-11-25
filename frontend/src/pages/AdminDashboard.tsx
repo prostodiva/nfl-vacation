@@ -4,10 +4,13 @@ import girl from '../assets/girl.png'
 import Button from "../components/Button";
 import type { ActiveTab, StadiumItem } from "../store/types/teamTypes";
 import { useGetAllTeamsQuery } from "../store/apis/teamsApi";
-import { useGetAllStadiumsQuery } from "../store/apis/stadiumsApi";
 import type { Team } from "../store/types/teamTypes";
 import TeamCard from "../components/TeamCard";
 import StadiumCard from "../components/StadiumCard";
+import {
+    useGetAllStadiumsQuery, 
+    useUpdateStadiumMutation,
+} from "../store/apis/stadiumsApi";
 
 function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<ActiveTab>('teams')
@@ -20,6 +23,8 @@ function AdminDashboard() {
 
     const displayData = activeTab === 'teams' ? teamsData?.data : stadiumsData?.data;
 
+    const [updateStadium] = useUpdateStadiumMutation();
+
     const handleEditTeam = () => {
         console.log('edit team clicked');
     }
@@ -28,13 +33,38 @@ function AdminDashboard() {
         console.log('delete team click');
     }
 
-    const handleEditStadium = () => {
-        console.log('edit stadium clicked');
-    }
+    const handleEditStadium = async (stadium: StadiumItem) => {
+    console.log('Full stadium object:', stadium); // Add this
+    console.log('Stadium _id:', stadium._id); // Add this
+    
+    try {
+        if (!stadium._id) {
+            console.error('Stadium ID not found');
+            console.error('Available keys:', Object.keys(stadium));
+            return;
+        }
 
-    const handleDeleteStadium = () => {
-        console.log('delete stadium clicked');
+        const result = await updateStadium({
+            id: stadium._id,
+            stadium: {
+                name: stadium.stadiumName,
+                location: stadium.location,
+                seatingCapacity: stadium.seatingCapacity,
+                surfaceType: stadium.surfaceType,
+                roofType: stadium.roofType,
+                yearOpened: stadium.yearOpened
+            }
+        }).unwrap();
+        
+        console.log('Stadium updated successfully:', result);
+    } catch (error) {
+        console.error('Failed to update stadium:', error);
     }
+};
+
+const handleDeleteStadium = async () => {
+    
+};
 
     return (
        <div className="bg-gray-100 min-h-screen relative">

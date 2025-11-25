@@ -79,6 +79,7 @@ const getAllStadiums = async (req, res) => {
       // Only add if we haven't seen this stadium before
       if (!uniqueStadiums.has(stadiumName)) {
         uniqueStadiums.set(stadiumName, {
+          _id: team._id,
           stadiumName: stadiumName,
           teamName: team.teamName,
           location: team.stadium.location,
