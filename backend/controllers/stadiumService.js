@@ -139,28 +139,38 @@ const updateStadium = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const stadium = await Team.stadium.findOneAndUpdate(
-            { _id: id },
-            req.body,
-            { new: true, runValidations: true }
+        const team = await Team.findByIdAndUpdate(
+            id,
+            { stadium: req.body }, 
+            { new: true, runValidators: true }
         );
 
-        if (!stadium) {
+        if (!team) {
             return res.status(404).json({
                 success: false,
-                message: 'Stadium not found'
+                message: 'Team not found'
             });
         }
 
         res.status(200).json({
-        success: true,
-        data: team
+            success: true,
+            data: {
+                _id: team._id,
+                teamName: team.teamName,
+                stadiumName: team.stadium.name,
+                location: team.stadium.location,
+                seatingCapacity: team.stadium.seatingCapacity,
+                surfaceType: team.stadium.surfaceType,
+                roofType: team.stadium.roofType,
+                yearOpened: team.stadium.yearOpened
+            }
         });
     } catch (error) {
+        console.error('Update error:', error);
         res.status(400).json({
-        success: false,
-        message: 'Error updating stadium',
-        error: error.message
+            success: false,
+            message: 'Error updating stadium',
+            error: error.message
         });
     }
 };
@@ -169,27 +179,32 @@ const deleteStadium = async (req, res) => {
     try {
         const { id } = req.params;
 
-         const stadium = await Team.findOneAndDelete({ _id: id });
+        const team = await Team.findOneAndUpdate(
+            { _id: id },
+            { $unset: { stadium: "" } },
+            { new: true }
+        );
             
-            if (!stadium) {
-              return res.status(404).json({
+        if (!team) {
+            return res.status(404).json({
                 success: false,
-                message: 'Stadium not found'
-              });
-            }
-            
-            res.status(200).json({
-              success: true,
-              message: 'Stadium deleted successfully'
+                message: 'Team not found'
             });
-          } catch (error) {
-            res.status(500).json({
-              success: false,
-              message: 'Error deleting stadium',
-              error: error.message
-            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            message: 'Stadium deleted successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting stadium',
+            error: error.message
+        });
     }
 }
+
 
 
 module.exports = {

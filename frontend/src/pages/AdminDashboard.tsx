@@ -7,23 +7,29 @@ import { useGetAllTeamsQuery } from "../store/apis/teamsApi";
 import type { Team } from "../store/types/teamTypes";
 import TeamCard from "../components/TeamCard";
 import StadiumCard from "../components/StadiumCard";
-import {
-    useGetAllStadiumsQuery, 
-    useUpdateStadiumMutation,
-} from "../store/apis/stadiumsApi";
+import { useGetAllStadiumsQuery } from "../store/apis/stadiumsApi";
+import { useStadiumEdit } from "../hooks/useStadiumEdit";
+import EditModal from "../components/dashboard/EditModel";
+
 
 function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState<ActiveTab>('teams')
+    const stadium = useStadiumEdit();
 
+    const [activeTab, setActiveTab] = useState<ActiveTab>('teams')
     const teamsQuery = useGetAllTeamsQuery(undefined, { skip: activeTab !== 'teams' });
     const stadiumsQuery = useGetAllStadiumsQuery(undefined, { skip: activeTab !== 'stadiums' });
-
     const { data: teamsData } = teamsQuery;
     const { data: stadiumsData } = stadiumsQuery;
-
     const displayData = activeTab === 'teams' ? teamsData?.data : stadiumsData?.data;
 
-    const [updateStadium] = useUpdateStadiumMutation();
+    const handleEditStadium = (stadiumData: StadiumItem) => {
+        stadium.handleEdit(stadiumData);
+    }
+
+
+    const handleDeleteStadium = async () => {
+        
+    };
 
     const handleEditTeam = () => {
         console.log('edit team clicked');
@@ -32,39 +38,6 @@ function AdminDashboard() {
     const handleDeleteTeam = () => {
         console.log('delete team click');
     }
-
-    const handleEditStadium = async (stadium: StadiumItem) => {
-    console.log('Full stadium object:', stadium); // Add this
-    console.log('Stadium _id:', stadium._id); // Add this
-    
-    try {
-        if (!stadium._id) {
-            console.error('Stadium ID not found');
-            console.error('Available keys:', Object.keys(stadium));
-            return;
-        }
-
-        const result = await updateStadium({
-            id: stadium._id,
-            stadium: {
-                name: stadium.stadiumName,
-                location: stadium.location,
-                seatingCapacity: stadium.seatingCapacity,
-                surfaceType: stadium.surfaceType,
-                roofType: stadium.roofType,
-                yearOpened: stadium.yearOpened
-            }
-        }).unwrap();
-        
-        console.log('Stadium updated successfully:', result);
-    } catch (error) {
-        console.error('Failed to update stadium:', error);
-    }
-};
-
-const handleDeleteStadium = async () => {
-    
-};
 
     return (
        <div className="bg-gray-100 min-h-screen relative">
@@ -150,6 +123,15 @@ const handleDeleteStadium = async () => {
                         </div>
                     )}
                     </div>
+                    <EditModal
+                        title="Edit Stadium"
+                        isOpen={!!stadium.editingStadium}
+                        data={stadium.editingStadium || {}}
+                        fields={stadium.fields}
+                        isLoading={stadium.isLoading}
+                        onSave={stadium.handleSave}
+                        onClose={stadium.handleClose}
+                    />
                     </div>
                 </div>
             </div>
