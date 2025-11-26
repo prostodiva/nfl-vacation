@@ -1,5 +1,6 @@
 
 import girl from '../../assets/girl.png';
+import SearchInput from '../SearchInput';
 
 interface DashboardGreetingProps {
     userName: string;
@@ -31,7 +32,7 @@ function DashboardGreeting({ userName }: DashboardGreetingProps) {
             <div className="bg-[#262422] rounded-lg p-6 flex items-center justify-between w-110">
                 <div className="text-white">
                     <h2 className="text-2xl font-bold mb-2">SEARCH & MANAGE STADIUMS</h2>
-                    {/* Search component goes here */}
+                    <SearchInput className="w-95" />
                 </div>
             </div>
         </div>

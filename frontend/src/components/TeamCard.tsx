@@ -1,5 +1,7 @@
 import type { Team } from '../store/types/teamTypes';
 import Button from './Button';
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { CiEdit } from "react-icons/ci";
 
 interface TeamCardProps {
   team: Team;
@@ -36,8 +38,12 @@ function TeamCard({ team, isAdmin = false, onEdit, onDelete  }: TeamCardProps) {
       </div>
       {isAdmin && onEdit && onDelete && (
         <div className="flex gap-2">
-          <Button rounded onClick={() => onEdit(team)}>Edit</Button>
-          <Button rounded onClick={() => onDelete(team._id)}>Delete</Button>
+          <Button rounded onClick={() => onEdit(team)}>
+            <CiEdit />
+          </Button>
+          <Button rounded onClick={() => onDelete(team._id)}>
+            <RiDeleteBin6Line />
+          </Button>
         </div>
       )}
     </div>

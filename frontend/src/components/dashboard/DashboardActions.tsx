@@ -1,5 +1,6 @@
 import Button from '../Button';
 import type { ActiveTab } from '../../store/types/teamTypes';
+import { IoIosAddCircle } from "react-icons/io";
 
 interface DashboardActionsProps {
     activeTab: ActiveTab;
@@ -19,6 +20,7 @@ function DashboardActions({ activeTab, onAdd }: DashboardActionsProps) {
                     <Button rounded submit outline>
                         Add {entityName}s
                     </Button>
+                    <IoIosAddCircle className="size-10"/>
                     <Button rounded add onClick={onAdd}>
                         ADD
                     </Button>

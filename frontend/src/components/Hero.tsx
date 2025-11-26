@@ -45,7 +45,7 @@ function Hero() {
                 From historic arenas to modern domes - discover <br></br> legends
                 play and fans unite.
               </p>
-              <SearchInput />
+              <SearchInput className="w-[1079px]" />
             </div>
 
             <Button primary rounded onClick={handleClick} className="-mt-7 -mb-3">

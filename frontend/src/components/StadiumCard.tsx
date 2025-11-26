@@ -1,5 +1,7 @@
 import type { StadiumItem } from '../store/types/teamTypes';
 import Button from './Button';
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { CiEdit } from "react-icons/ci";
 
 
 interface StadiumCardProps {
@@ -33,8 +35,12 @@ function StadiumCard({ stadium, isAdmin = false, onEdit, onDelete }: StadiumCard
       
       {isAdmin && onEdit && onDelete && (
         <div className="flex gap-2">
-          <Button rounded onClick={() => onEdit(stadium)}>Edit</Button>
-          <Button rounded onClick={() => onDelete(stadium.stadiumName)}>Delete</Button>
+          <Button rounded onClick={() => onEdit(stadium)}>
+              <CiEdit />
+          </Button>
+          <Button rounded onClick={() => onDelete(stadium.stadiumName)}>
+              <RiDeleteBin6Line />
+          </Button>
         </div>
       )}
     </div>

@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function SearchInput() {
+interface SearchInputProps {
+  className?: string;
+}
+
+export default function SearchInput({ className = '' }: SearchInputProps) {
   const [term, setTerm] = useState('');
   const navigate = useNavigate();
 
@@ -19,7 +23,7 @@ export default function SearchInput() {
         <input
           value={term}
           onChange={(e) => setTerm(e.target.value)}
-          className="w-[1079px] h-[79px] mt-10 mb-[25px] pt-[30px] pr-[815px] pb-[30px] pl-[25px] opacity-70 rounded-[20px] border border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={`h-[79px] px-6 py-[30px] opacity-70 rounded-[20px] border border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
           placeholder="Search teams..."
         />
       </div>
