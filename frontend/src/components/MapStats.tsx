@@ -19,9 +19,9 @@ export function MapStats({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-4 p-4 bg-white rounded-lg shadow max-w-[1200px]"
+            className="mt-4 p-4 bg-white rounded-md shadow mb-10"
         >
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-1 gap-4 text-center h-50 w-30 text-[#3b3c5e]">
                 <StatItem label="Algorithm" value={algorithmData.algorithm} />
                 <StatItem 
                     label="Nodes Visited" 

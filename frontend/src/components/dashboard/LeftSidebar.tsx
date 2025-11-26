@@ -20,10 +20,10 @@ function LeftSidebar({ onTabChange }: { onTabChange: (tab: ActiveTab) => void })
              <div 
                 key={link.label}
                 onClick={() => handleLinkClick(link.label)}
-                className={`flex items-center gap-3 px-6 py-4 text-gray-300 hover:bg-gray-700 cursor-pointer w-full transition-colors ${
+                className={`flex items-center gap-3 px-6 py-4 text-gray-300 cursor-pointer w-full transition-colors ${
                 activeTab === link.label
-                   ? 'bg-gray-700 text-white' 
-                   : 'text-gray-300 hover:bg-gray-700'
+                   ? 'hover:bg-[#e93448] text-white' 
+                   : 'text-gray-300 hover:bg-[#e93448]'
                 }`}
             >
                 <span className="text-lg">{link.label}</span>
@@ -32,7 +32,7 @@ function LeftSidebar({ onTabChange }: { onTabChange: (tab: ActiveTab) => void })
     });
     
     return(
-        <div className="absolute flex flex-col bg-[#262422] w-45 h-150 rounded ml-35 mt-45">
+        <div className="absolute flex flex-col bg-[#3b3c5e] w-45 h-150 rounded ml-35 mt-45">
             <nav className="flex-1 overflow-y-auto py-4">
                 {renderLinks}
             </nav>

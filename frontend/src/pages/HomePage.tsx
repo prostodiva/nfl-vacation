@@ -5,7 +5,7 @@ function HomePage() {
   return (
     <div>
       <Hero />
-        <SortingSection />
+      <SortingSection />
     </div>
   );
 }

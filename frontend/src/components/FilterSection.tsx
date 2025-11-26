@@ -308,7 +308,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                         key={filter.key}
                         options={dropdownOptions[filter.key]}
                         value={getSelectedOption(filter.key)}
-                        onChange={(opt) => handleFilterChange(filter.key, opt.value)}  // Use handleFilterChange instead of setFilter
+                        onChange={(opt) => handleFilterChange(filter.key, opt.value)} 
                         placeholder={filter.placeholder}
                         className="w-54"
                     />
@@ -331,7 +331,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
             {/* Clear Filters Button */}
             {(activeFilters || sortBy || sortByConference) && (
                     <Button
-                        primary
+                        primaryTwo
                         rounded
                         onClick={() => {
                             setActiveFilters({});
@@ -363,7 +363,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
             </div>
 
             {/* Display Filtered Teams */}
-             <div className="w-full max-w-6xl">
+             <div className="w-full max-w-6xl ml-50">
                 {sortedAndFilteredTeams.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
                         {sortedAndFilteredTeams.map(team => (

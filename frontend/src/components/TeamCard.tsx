@@ -12,7 +12,7 @@ interface TeamCardProps {
 
 function TeamCard({ team, isAdmin = false, onEdit, onDelete  }: TeamCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 hover:bg-[#f76d1b]">
+    <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 hover:bg-[#3b3c5e] hover:text-white w-230">
       <div className="flex justify-between items-start mb-2">
         <div>
           <h2 className="text-2xl font-bold">{team.teamName}</h2>

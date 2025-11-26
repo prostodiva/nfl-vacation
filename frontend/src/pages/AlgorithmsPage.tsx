@@ -42,11 +42,11 @@ function AlgorithmsPage() {
     }
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="container mx-auto px-4 py-8 flex justify-center items-center">
+    <div className="bg-[#3b3c5e] min-h-screen">
+      <div className="container mx-auto px-4 py-8 flex justify-center items-center text-white">
         <div className="flex flex-col items-center space-y-6">
           <div className="flex flex-col items-center space-y-2 w-full">
-            <h1 className="text-[35px] leading-tight text-black mt-6" style={{ fontFamily: 'SCHABO, sans-serif'}}>
+            <h1 className="text-[35px] leading-tight mt-6" style={{ fontFamily: 'SCHABO, sans-serif'}}>
                         INTERACTIVE PATH SIMULATION
             </h1>
             <p className="text-l leading-relaxed ml-16">
@@ -62,7 +62,7 @@ function AlgorithmsPage() {
               {/* Show endTeam selection when DIJKSTRA or A* is selected */}
               {(selectedAlgorithm?.type === 'DIJKSTRA' || selectedAlgorithm?.type === 'A*') && (
                   <div className="flex flex-row items-center space-x-4 mt-4">
-                      <p className="text-sm text-gray-600">Select destination:</p>
+                      <p className="text-sm text-gray-400">Select destination:</p>
                       <Button
                           secondary
                           rounded

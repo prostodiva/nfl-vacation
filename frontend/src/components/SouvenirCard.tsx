@@ -19,7 +19,7 @@ function SouvenirCard({ souvenir, isAdmin = false, onEdit, onDelete }: SouvenirC
     };
 
     return (
-        <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 hover:bg-[#f76d1b]">
+        <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 hover:bg-[#e93448]">
             <div className="flex justify-between items-start mb-2">
                 <div>
                     <h2 className="text-2xl font-bold">{souvenir.name}</h2>

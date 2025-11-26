@@ -10,7 +10,7 @@ function DashboardGreeting({ userName }: DashboardGreetingProps) {
     return (
         <div className="flex flex-row space-x-4">
             {/* Greeting card */}
-            <div className="bg-[#262422] rounded-lg p-6 flex items-center justify-between w-150">
+            <div className="bg-[#3b3c5e] rounded-lg p-6 flex items-center justify-between w-150">
                 <div className="text-white">
                     <h2 className="text-2xl font-bold mb-2">HELLO {userName}!</h2>
                     <p className="text-gray-300">
@@ -29,7 +29,7 @@ function DashboardGreeting({ userName }: DashboardGreetingProps) {
             </div>
 
             {/* Search section */}
-            <div className="bg-[#262422] rounded-lg p-6 flex items-center justify-between w-110">
+            <div className="bg-[#3b3c5e] rounded-lg p-6 flex items-center justify-between w-110">
                 <div className="text-white">
                     <h2 className="text-2xl font-bold mb-2">SEARCH & MANAGE STADIUMS</h2>
                     <SearchInput className="w-95" />

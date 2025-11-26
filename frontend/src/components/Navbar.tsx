@@ -23,8 +23,8 @@ function Navbar({
                   links,
                   containerClassName = '',
                   navClassName = 'w-full inline-flex items-center gap-2 h-16',
-                  linkClassName = 'mx-8',
-                  activeLinkClassName = 'font-bold',
+                  linkClassName = 'mx-8 text-gray-400',
+                  activeLinkClassName = 'font-bold text-white',
                   logo,
                   variant = 'horizontal',
                   alignment = 'start'

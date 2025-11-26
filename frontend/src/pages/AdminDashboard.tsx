@@ -51,7 +51,7 @@ function AdminDashboard() {
                     />
 
                     {/* Content Section */}
-                    <div className="bg-[#262422] rounded-lg p-6">
+                    <div className="bg-[#3b3c5e] rounded-lg p-6">
                         {activeTab === 'teams' ? (
                             <TeamsListDash
                                 teams={teamsQuery.data?.data}

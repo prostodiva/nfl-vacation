@@ -18,7 +18,7 @@ function DashboardActions({ activeTab, onAdd }: DashboardActionsProps) {
                 </h3>
                 <div className="flex gap-4">
                     <Button rounded submit outline>
-                        Add {entityName}s
+                        ADD {entityName}s
                     </Button>
                     <IoIosAddCircle className="size-10"/>
                     <Button rounded add onClick={onAdd}>

@@ -4,6 +4,7 @@ import { memo } from 'react';
 interface ButtonProps {
   children: React.ReactNode;
   primary?: boolean;
+  primaryTwo?: boolean;
   secondary?: boolean;
   ternary?: boolean;
   submit?:boolean;
@@ -21,6 +22,7 @@ const Button = memo(
   ({
     children,
     primary,
+    primaryTwo,
     secondary,
     ternary,
     submit,
@@ -36,13 +38,13 @@ const Button = memo(
     const buttonClasses = classNames(
       'text-center font-inter',
       {
-        'py-4 px-26 border bg-black text-white text-sm hover:bg-gray-800': primary,
-        //'py-6 px-8 bg-while text-black font-bold hover:bg-[#f76d1b] hover:text-white': secondary,
-        'py-6 px-8 bg-while text-black hover:bg-[#f76d1b] hover:text-white': secondary && !active,
-        'py-6 px-8 bg-[#f76d1b] text-white': secondary && active,
-        'py-1 px-6 border bg-gray-900 text-white text-sm hover:bg-gray-500': ternary,
-        'py-1 px-6 border text-black bg-white hover:bg-[#f76d1b] hover:text-white': submit,
-        'py-1 px-6 border text-white bg-[#f76d1b] hover:bg-white hover:text-black': add,
+        'py-3 px-24 rounded-md bg-white text-black text-sm hover:bg-[#e93448] hover:text-white': primary,
+        'py-3 px-24 rounded-md bg-white text-black text-sm hover:bg-[#3b3c5e] hover:text-gray-400': primaryTwo,
+        'py-6 px-8 bg-gray-100 text-[#3b3c5e] font-bold hover:bg-[#e93448] hover:text-white': secondary && !active,
+        'py-6 px-8 bg-[#3b3c5e] text-white': secondary && active,
+        'py-1 px-6 border bg-[#e93448] text-white text-sm hover:bg-[#3b3c5e]': ternary,
+        'py-1 px-6 border text-black bg-white hover:bg-[#e93448] hover:text-white': submit,
+        'py-1 px-6 border text-white bg-[#e93448] hover:bg-white hover:text-black': add,
         'rounded-[1vw]': rounded,
         'bg-white': outline,
         'opacity-50 cursor-not-allowed': disabled,

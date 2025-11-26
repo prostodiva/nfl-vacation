@@ -27,7 +27,7 @@ function ErrorState({ error }: { error: string }) {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center p-8"
         >
-            <p className="text-red-600">Error: {error}</p>
+            <p className="text-[#e93448]">Error: {error}</p>
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -94,7 +94,7 @@ function Map({ algorithm }: MapProps) {
     const visitOrder = algorithmData.visitOrder || algorithmData.levels?.flat() || [];
 
      return (
-        <div className="bg-[#262422] min-h-screen w-screen">
+        <div className="bg-[#c1cde2] min-h-screen w-screen">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

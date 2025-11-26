@@ -17,7 +17,7 @@ function Header() {
   };
 
   return (
-    <div className="flex flex-row justify-between items-center w-full px-4 bg-gray-100">
+    <div className="flex flex-row justify-between items-center w-full px-4 bg-[#34355f] text-white">
       <Navbar />
       {user ? (
         <Button ternary rounded onClick={handleLogout}>Logout</Button>

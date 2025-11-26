@@ -6,6 +6,8 @@ export default {
       colors: {
         'dark-bg': '#262422',
         'orange-button': '#f76d1b',
+        'customHover': '#3b3c5e',
+        'custom-Red': '#e93448'
       },
     },
   },

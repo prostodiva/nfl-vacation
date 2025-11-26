@@ -59,17 +59,17 @@ function SortingSection() {
                     {/* Conditional Rendering */}
                     {activeTab === 'teams' ? (
                         <FilterSection 
-                        filters={teamFilters} 
-                        title="Filter Teams" 
-                        enableSorting={false}
-                        viewType="teams"
+                            filters={teamFilters} 
+                            title="Filter Teams" 
+                            enableSorting={false}
+                            viewType="teams"
                         />
                     ) : (
                         <FilterSection 
-                        filters={stadiumFilters}
-                        title="Filter Stadiums"
-                        enableSorting={true}
-                        viewType="stadiums"
+                            filters={stadiumFilters}
+                            title="Filter Stadiums"
+                            enableSorting={true}
+                            viewType="stadiums"
                         />
                     )}
                 </div>

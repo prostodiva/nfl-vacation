@@ -78,7 +78,7 @@ function Dropdown({
     const renderedOptions = options.map((option) => {
         return (
             <div
-                className={`hover:bg-sky-100 rounded cursor-pointer p-1 ${optionClassName}`}
+                className={`hover:font-bold hover:text-white rounded cursor-pointer p-1 ${optionClassName}`}
                 onClick={() => handleOptionClick(option)}
                 onKeyDown={(e) => handleOptionKeyDown(e, option)}
                 key={option.value}
@@ -101,7 +101,7 @@ function Dropdown({
             aria-disabled={disabled}
         >
             <div
-                className={`flex justify-between items-center cursor-pointer border border-gray-300 rounded px-3 py-2 bg-white hover:border-gray-400 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${panelClassName}`}
+                className={`flex justify-between items-center cursor-pointer border border-gray-300 rounded px-3 py-2 bg-white text-gray-400 hover:bg-[#3b3c5e] hover:border-gray-400 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${panelClassName}`}
                 onClick={handleClick}
                 onKeyDown={handleKeyDown}
                 tabIndex={disabled ? -1 : 0}
@@ -112,12 +112,12 @@ function Dropdown({
                     {value?.label || placeholder}
                 </span>
                 <GoChevronDown
-                    className={`text-lg transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    className={`text-lg text-white transition-transform ${isOpen ? 'rotate-180' : ''}`}
                 />
             </div>
             {isOpen && (
                 <div
-                    className="absolute top-full mt-1 w-full border border-gray-300 rounded bg-white shadow-lg z-10 max-h-60 overflow-y-auto"
+                    className="absolute top-full mt-1 w-full text-gray-400 border border-gray-300 rounded bg-[#3b3c5e] shadow-lg z-10 max-h-60 overflow-y-auto"
                     role="listbox"
                 >
                     {renderedOptions}
