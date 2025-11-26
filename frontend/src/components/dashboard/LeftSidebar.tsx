@@ -6,7 +6,8 @@ function LeftSidebar({ onTabChange }: { onTabChange: (tab: ActiveTab) => void })
 
     const links: { label: ActiveTab; path: string }[] = [
         {label: 'teams', path: '/'},
-        {label: 'stadiums', path: '/'}
+        {label: 'stadiums', path: '/'},
+        {label: 'souvenirs', path: '/'}
     ];
 
     const handleLinkClick = (tab: ActiveTab) => {

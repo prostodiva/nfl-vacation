@@ -75,31 +75,39 @@ const createSouvenir = async (req, res) => {
 const updateSouvenir = async (req, res) => {
     try {
         const { id } = req.params;
+        
+        const teams = await Team.find({});
+        let foundTeam = null;
+        let foundSouvenir = null;
+        
+        for (const team of teams) {
+            const souvenir = team.souvenirs.id(id);
+            if (souvenir) {
+                foundTeam = team;
+                foundSouvenir = souvenir;
+                break;
+            }
+        }
 
-        // Find the team containing this souvenir
-        const team = await Team.findOne({ 'souvenirs._id': id });
-
-        if (!team) {
+        if (!foundTeam || !foundSouvenir) {
             return res.status(404).json({
                 success: false,
                 message: 'Souvenir not found'
             });
         }
-
-        // Get the souvenir subdocument
-        const souvenir = team.souvenirs.id(id);
         
         // Update the souvenir fields
-        Object.assign(souvenir, req.body);
+        Object.assign(foundSouvenir, req.body);
 
         // Save the team
-        await team.save();
+        await foundTeam.save();
 
         res.status(200).json({
             success: true,
-            data: souvenir
+            data: foundSouvenir
         });
     } catch (error) {
+        console.error('❌ Error in updateSouvenir:', error);
         res.status(400).json({
             success: false,
             message: 'Error updating souvenir',

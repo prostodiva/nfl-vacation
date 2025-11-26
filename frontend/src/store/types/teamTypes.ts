@@ -1,10 +1,43 @@
 //Team types
 export interface Souvenir {
-  _id?: string;
+  _id: string;
   name: string;
   price: number;
   category: 'Apparel' | 'Accessories' | 'Collectibles' | 'Food & Beverage';
   isTraditional: boolean;
+  teamName: string;     
+  stadiumName: string;
+}
+
+export interface SouvenirsResponse {
+  success: boolean;
+  count: number;
+  data: Souvenir[];
+}
+
+export interface SingleSouvenirResponse {
+  success: boolean;
+  data: Souvenir;
+}
+
+export interface CreateSouvenirRequest {
+  teamId: string;
+  souvenir: {
+    name: string;
+    price: number;
+    category: string;
+    isTraditional?: boolean;
+  };
+}
+
+export interface UpdateSouvenirRequest {
+  id: string;
+  souvenir: Partial<{
+    name: string;
+    price: number;
+    category: string;
+    isTraditional: boolean;
+  }>;
 }
 
 export interface Stadium {
@@ -14,6 +47,38 @@ export interface Stadium {
   surfaceType: string;
   roofType: 'Open' | 'Fixed' | 'Retractable';
   yearOpened: number;
+}
+
+// Response types
+export interface StadiumResponse {
+  success: boolean;
+  data: StadiumItem[];
+}
+
+export interface SingleStadiumResponse {
+  success: boolean;
+  data: StadiumItem;
+}
+
+export interface CreateStadiumRequest {
+  teamId: string;
+  stadium: {
+    name: string;
+    location: string;
+    seatingCapacity: number;
+    surfaceType: 'Bermuda grass' | 'Kentucky Bluegrass' | 'FieldTurf' | 'AstroTurf' | 'Natural Grass';
+    roofType: 'Open' | 'Fixed' | 'Retractable';
+    yearOpened: number;
+  };
+}
+
+export interface UpdateStadiumRequest {
+  name?: string
+  location?: string;
+  seatingCapacity?: number;
+  surfaceType?: string;
+  roofType?: string;
+  yearOpened?: number;
 }
 
 export interface Team {
@@ -75,4 +140,4 @@ export interface StadiumsByRoofTypeResponse {
   data: StadiumItem[];
 }
 
-export type ActiveTab = 'teams' | 'stadiums';
+export type ActiveTab = 'teams' | 'stadiums' | 'souvenirs';

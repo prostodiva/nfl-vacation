@@ -1,20 +1,12 @@
 import pandas as pd
 import pymongo
 from pymongo import MongoClient
+from bson import ObjectId
 
 # MongoDB connection
 client = MongoClient('mongodb://localhost:27017/')
 db = client['nfl-vacation']
 teams_collection = db['teams']
-
-# Default souvenirs for each team
-default_souvenirs = [
-    {"name": "Signed helmets", "price": 74.99, "category": "Collectibles", "isTraditional": True},
-    {"name": "Autographed Football", "price": 79.89, "category": "Collectibles", "isTraditional": True},
-    {"name": "Team pennant", "price": 17.99, "category": "Accessories", "isTraditional": True},
-    {"name": "Team picture", "price": 29.99, "category": "Collectibles", "isTraditional": True},
-    {"name": "Team jersey", "price": 199.99, "category": "Apparel", "isTraditional": True}
-]
 
 def import_teams():
     try:
@@ -53,7 +45,13 @@ def import_teams():
                         "roofType": str(row['Roof Type']).strip() if pd.notna(row['Roof Type']) else "",
                         "yearOpened": int(float(row['Opened'])) if pd.notna(row['Opened']) else 0
                     },
-                    "souvenirs": default_souvenirs
+                    "souvenirs": [
+                        {"_id": ObjectId(), "name": "Signed helmets", "price": 74.99, "category": "Collectibles", "isTraditional": True},
+                        {"_id": ObjectId(), "name": "Autographed Football", "price": 79.89, "category": "Collectibles", "isTraditional": True},
+                        {"_id": ObjectId(), "name": "Team pennant", "price": 17.99, "category": "Accessories", "isTraditional": True},
+                        {"_id": ObjectId(), "name": "Team picture", "price": 29.99, "category": "Collectibles", "isTraditional": True},
+                        {"_id": ObjectId(), "name": "Team jersey", "price": 199.99, "category": "Apparel", "isTraditional": True}
+                    ]
                 }
                 
                 # Only add if all required fields are present

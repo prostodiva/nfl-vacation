@@ -4,6 +4,7 @@ import { algorithmApi } from './apis/algorithmApi';
 import { adminApi } from './apis/adminApi';
 import authReducer from './slices/authSlice';
 import { stadiumApi } from './apis/stadiumsApi';
+import { souvenirsApi } from './apis/souvenirsApi';
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     [stadiumApi.reducerPath]: stadiumApi.reducer,
     [algorithmApi.reducerPath]: algorithmApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
+    [souvenirsApi.reducerPath]: souvenirsApi.reducer,
     auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -19,6 +21,7 @@ const store = configureStore({
       .concat(stadiumApi.middleware)
       .concat(algorithmApi.middleware)
       .concat(adminApi.middleware)
+      .concat(souvenirsApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -1,37 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { StadiumsByRoofTypeResponse, StadiumItem } from '../types/teamTypes';
+import type { StadiumsByRoofTypeResponse, StadiumResponse, SingleStadiumResponse, CreateStadiumRequest} from '../types/teamTypes';
 
-// Response types
-interface StadiumResponse {
-  success: boolean;
-  data: StadiumItem[];
-}
-
-interface SingleStadiumResponse {
-  success: boolean;
-  data: StadiumItem;
-}
-
-interface CreateStadiumRequest {
-  teamId: string;
-  stadium: {
-    name: string;
-    location: string;
-    seatingCapacity: number;
-    surfaceType: 'Bermuda grass' | 'Kentucky Bluegrass' | 'FieldTurf' | 'AstroTurf' | 'Natural Grass';
-    roofType: 'Open' | 'Fixed' | 'Retractable';
-    yearOpened: number;
-  };
-}
-
-interface UpdateStadiumRequest {
-  name?: string
-  location?: string;
-  seatingCapacity?: number;
-  surfaceType?: string;
-  roofType?: string;
-  yearOpened?: number;
-}
 
 export const stadiumApi = createApi({
   reducerPath: 'stadiumApi',
