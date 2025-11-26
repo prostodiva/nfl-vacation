@@ -31,11 +31,6 @@ app.use('/api', graphRoutes);
 app.use('/api', customRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/stadiums', stadiumRoutes);
-app.use('/api/souvenirs', (req, res, next) => {
-    console.log(`${req.method} ${req.originalUrl}`);
-    console.log('Body:', req.body);
-    next();
-});
 app.use('/api/souvenirs', souvenirRoutes);
 
 

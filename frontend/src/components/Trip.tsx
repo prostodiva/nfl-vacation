@@ -1,6 +1,5 @@
 import type { TripProps } from '../store/types/algorithmTypes';
 import CustomTrip from './CustomTrip';
-import EfficientTrip from './EfficientTrip';
 import OptimalTrip from './OptimalTrip';
 
 function Trip({ trip }: TripProps ) {
@@ -11,8 +10,6 @@ function Trip({ trip }: TripProps ) {
                 return <CustomTrip />;
             case 'OPTIMAL':
                 return <OptimalTrip />;
-            case 'Efficient':
-                return <EfficientTrip />;
             default:
                 return null;
         }

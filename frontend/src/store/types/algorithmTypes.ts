@@ -8,7 +8,7 @@ export interface MapProps {
 
 export interface TripProps {
     trip: {
-        type: 'CUSTOM' | 'OPTIMAL' | 'Efficient';
+        type: 'CUSTOM' | 'OPTIMAL';
         team: string;
     } | null;
 }
@@ -52,4 +52,19 @@ export interface CustomRouteData {
 export interface CustomRouteResponse {
     success: boolean;
     data: CustomRouteData;
+}
+
+
+export interface RecursiveRouteData {
+    algorithm: string;
+    startTeam: string; 
+    route: string[];
+    edges: Edge[];
+    totalDistance: number;
+    teamCount: number;
+}
+
+export interface RecursiveRouteResponse {
+    success: boolean;
+    data: RecursiveRouteData; 
 }

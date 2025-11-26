@@ -3,16 +3,12 @@ import Button from "../components/Button";
 import Trip from "../components/Trip";
 
 type Trip = {
-  type: 'CUSTOM' | 'OPTIMAL' | 'Efficient';
+  type: 'CUSTOM' | 'OPTIMAL';
   team: string;
 } | null;
 
 function TripPage() {
 const [selectedTrip, setSelectedTrip] = useState<Trip>(null);
-
-  const handleEfficientCustomClick = () => {
-     setSelectedTrip({ type: 'Efficient', team: ''})
-  }
 
   const handleCustomTripClick = () => {
     setSelectedTrip({ type: 'CUSTOM', team: ''})
@@ -40,15 +36,6 @@ const [selectedTrip, setSelectedTrip] = useState<Trip>(null);
                 >
                   CUSTOM TRIP<br></br>CREATE YOUR OWN NFL DREAM TRIP(Dijkstra's)
                 </Button>
-                
-                {/*<Button */}
-                {/*  secondary */}
-                {/*  rounded */}
-                {/*  active={selectedTrip?.type === 'Efficient'}*/}
-                {/*  onClick={handleEfficientCustomClick}*/}
-                {/*>*/}
-                {/*  EFFICIENT CUSTOM TRIP<br></br>Minimize travel time and distance*/}
-                {/*</Button>*/}
                 
                 <Button 
                   secondary 

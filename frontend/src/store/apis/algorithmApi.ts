@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { AlgorithmData } from '../types/algorithmTypes';
-import type { CustomRouteRequest, CustomRouteResponse } from '../types/algorithmTypes';
+import type { CustomRouteRequest, CustomRouteResponse, RecursiveRouteData, RecursiveRouteResponse} from '../types/algorithmTypes';
 
 interface AlgorithmResponse {
     success: boolean;
@@ -48,7 +48,16 @@ export const algorithmApi = createApi({
             }),
             invalidatesTags: ['Algorithm'],
         }),
+
+      //recursive route endpoint
+        calculateRecursiveRoute: builder.mutation<RecursiveRouteResponse, void>({
+            query: () => ({
+                url: '/recursive',
+                method: 'POST',
+            }),
+            invalidatesTags: ['Algorithm'],
+        })
     }),
 });
 
-export const { useGetAlgorithmDataQuery, useCalculateCustomRouteMutation } = algorithmApi;
+export const { useGetAlgorithmDataQuery, useCalculateCustomRouteMutation, useCalculateRecursiveRouteMutation } = algorithmApi;

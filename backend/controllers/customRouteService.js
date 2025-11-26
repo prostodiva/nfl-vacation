@@ -10,6 +10,7 @@ const getTeamFromStadium = (stadiumName, teams) => {
 
 // Controller function for Custom Distance Route calculation using Dijkstra's
 const calculateCustomRoute = async (req, res) => {
+      console.log('🔥 RECURSIVE ROUTE HIT!'); 
     try {
         const { teamIds } = req.body;
 
@@ -146,6 +147,137 @@ const calculateCustomRoute = async (req, res) => {
     }
 };
 
+// Recursive function to calculate shortest distance from New England Patriots
+const calculateRecursiveRoute = async (req, res) => {
+    try {
+        const teams = await Team.find({}).lean();
+        const distances = await mongoose.connection.db
+            .collection('distances')
+            .find({})
+            .toArray();
+
+        // Build team lookup
+        const teamById = {};
+        teams.forEach(team => {
+            teamById[team._id.toString()] = team;
+        });
+
+        // Transform distances into edges format for GraphService
+        const graphEdges = distances.map(dist => {
+            const toTeam = getTeamFromStadium(dist.endingStadium, teams);
+            return {
+                from: dist.teamName,
+                to: toTeam,
+                distance: dist.distance
+            };
+        }).filter(edge => edge.to !== null);
+
+        // Create graph service
+        const graphService = new GraphService(teams, graphEdges);
+
+        // Starting point
+        const startTeam = 'New England Patriots';
+        
+        // Track visited teams to avoid cycles
+        const visited = new Set([startTeam]);
+        const route = [startTeam];
+        const routeEdges = [];
+        let totalDistance = 0;
+
+        // Recursive helper function to find shortest unvisited neighbor
+        const findShortestPath = (currentTeam) => {
+            // Base case: all teams visited
+            if (visited.size === teams.length) {
+                return;
+            }
+
+            // Run Dijkstra from current team to find distances to all other teams
+            const dijkstraResult = graphService.runDijkstra(currentTeam);
+            
+            // Find the closest unvisited team
+            let closestTeam = null;
+            let shortestDistance = Infinity;
+
+            for (const team of teams) {
+                const teamName = team.teamName;
+                if (!visited.has(teamName)) {
+                    const distance = dijkstraResult.distances[teamName];
+                    if (distance !== undefined && distance < shortestDistance) {
+                        shortestDistance = distance;
+                        closestTeam = teamName;
+                    }
+                }
+            }
+
+            // If no unvisited team is reachable, stop
+            if (closestTeam === null || shortestDistance === Infinity) {
+                return;
+            }
+
+            // Get the path to the closest team
+            const path = dijkstraResult.paths[closestTeam];
+            
+            // Add ALL edges from the Dijkstra path (including through visited cities)
+            for (let i = 0; i < path.length - 1; i++) {
+                const fromTeam = path[i];
+                const toTeam = path[i + 1];
+                
+                // Find edge distance
+                const edgeDistance = graphEdges.find(e => 
+                    (e.from === fromTeam && e.to === toTeam) ||
+                    (e.from === toTeam && e.to === fromTeam)
+                )?.distance;
+
+                if (edgeDistance) {
+                    routeEdges.push({
+                        from: fromTeam,
+                        to: toTeam,
+                        distance: edgeDistance
+                    });
+                }
+            }
+            
+            // Add only NEW teams to the route (skip already visited)
+            for (let i = 1; i < path.length; i++) {
+                const currTeam = path[i];
+                if (!visited.has(currTeam)) {
+                    route.push(currTeam);
+                    visited.add(currTeam);
+                }
+            }
+
+            // Add distance
+            totalDistance += shortestDistance;
+
+            // Recursive call with the new current team
+            findShortestPath(closestTeam);
+        };
+
+        // Start the recursive search
+        findShortestPath(startTeam);
+
+        res.json({
+            success: true,
+            data: {
+                algorithm: 'RECURSIVE_NEAREST_NEIGHBOR',
+                startTeam: startTeam,
+                route: route,
+                edges: routeEdges,
+                totalDistance: Math.round(totalDistance * 100) / 100,
+                teamCount: visited.size
+            }
+        });
+
+    } catch (error) {
+        console.error('Recursive Route Error:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     calculateCustomRoute,
+    calculateRecursiveRoute
 };
