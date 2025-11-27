@@ -1,6 +1,15 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { LoginCredentials, User } from '../types/adminTypes';
 
+interface ImportResponse {
+    success: boolean;
+    message: string;
+    output?: string;
+    importedCount?: number;
+    type?: 'teams' | 'distances';
+    error?: string;
+}
+
 export const adminApi = createApi({
     reducerPath: 'adminApi',
     baseQuery: fetchBaseQuery({
@@ -14,8 +23,16 @@ export const adminApi = createApi({
                 body: credentials
             })
         }),
+          importFromExcel: builder.mutation<ImportResponse, FormData>({
+            query: (formData) => ({
+                url: '/admin/import',
+                method: 'POST',
+                body: formData,
+                // Don't set Content-Type header - browser will set it with boundary for multipart/form-data
+            })
+        }),
     })
 });
 
-export const { useLoginMutation } = adminApi;
+export const { useLoginMutation, useImportFromExcelMutation } = adminApi;
 

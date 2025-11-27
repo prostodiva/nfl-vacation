@@ -1,15 +1,33 @@
+import { useRef } from 'react';
 import Button from '../Button';
 import type { ActiveTab } from '../../store/types/teamTypes';
 import { IoIosAddCircle } from "react-icons/io";
 
 interface DashboardActionsProps {
     activeTab: ActiveTab;
-    onAdd: () => void;
+    onAdd: (file: File) => void;
+    isLoading?: boolean;
 }
 
-function DashboardActions({ activeTab, onAdd }: DashboardActionsProps) {
+function DashboardActions({ activeTab, onAdd, isLoading = false }: DashboardActionsProps) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const entityName = activeTab === 'teams' ? 'TEAM' : 'STADIUM';
     
+    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            onAdd(file);
+        }
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const handleAddClick = () => {
+        fileInputRef.current?.click();
+    }
+ 
     return (
         <div className="rounded-lg justify-between items-center">
             <div className="flex flex-row justify-between">
@@ -17,12 +35,25 @@ function DashboardActions({ activeTab, onAdd }: DashboardActionsProps) {
                     YOU CAN ADD, EDIT, OR DELETE {entityName} ONLY HERE.
                 </h3>
                 <div className="flex gap-4">
-                    <Button rounded submit outline>
-                        ADD {entityName}s
-                    </Button>
+                    <p className="mt-2">
+                        ADD {entityName}
+                    </p>
                     <IoIosAddCircle className="size-10"/>
-                    <Button rounded add onClick={onAdd}>
-                        ADD
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                        disabled={isLoading}
+                    />
+                    <Button 
+                        rounded 
+                        add 
+                        onClick={handleAddClick}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'IMPORTING...' : 'ADD'}
                     </Button>
                 </div>
             </div>

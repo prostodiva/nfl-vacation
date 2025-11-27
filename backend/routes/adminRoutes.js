@@ -2,7 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const Admin = require('../models/Admin');
-const { createAdmin, loginAdmin } = require('../controllers/adminService');
+const { createAdmin, loginAdmin, importFromExcel } = require('../controllers/adminService');
+const upload = require('../middleware/upload');
 
 router.post('/create', async (req, res) => {
     try {
@@ -59,5 +60,16 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.post('/import', upload.single('file'), async (req, res) => {
+    try {
+        await importFromExcel(req, res);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error importing data',
+            error: error.message
+        });
+    }
+});
 
 module.exports = router;
