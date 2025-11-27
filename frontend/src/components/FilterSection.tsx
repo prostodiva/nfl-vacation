@@ -1,17 +1,17 @@
 import { useMemo, useState } from 'react';
 import type { FilterConfig } from "../config/filterConfigs.ts";
 import { useFilter } from "../hooks/useFilter";
-import { useGetStadiumsByRoofTypeQuery } from "../store/apis/stadiumsApi.ts"
+import { useGetStadiumsByRoofTypeQuery } from "../store/apis/stadiumsApi.ts";
 import {
     useGetAllTeamsByConferenceQuery,
     useGetAllTeamsQuery,
     useGetTeamsByStadiumsQuery
 } from "../store/apis/teamsApi";
 import type { Team } from "../store/types/teamTypes.ts";
+import Button from "./Button.tsx";
 import Dropdown, { type DropdownOption } from './Dropdown';
 import Skeleton from "./Skeleton";
 import TeamCard from "./TeamCard";
-import Button from "./Button.tsx";
 
 interface FilterSectionProps {
     filters: FilterConfig[];
@@ -149,6 +149,12 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                 // Don't re-sort - backend already sorted by conference, then teamName
                 return finalFilteredData;
             }
+            // When viewing stadiums, sort by stadium name; otherwise sort by teamName
+            if (viewType === 'stadiums') {
+                return [...finalFilteredData].sort((a, b) =>
+                    a.stadium.name.localeCompare(b.stadium.name)
+                );
+            }
             // Otherwise, sort alphabetically by teamName (matches getAllTeams)
             return [...finalFilteredData].sort((a, b) =>
                 a.teamName.localeCompare(b.teamName)
@@ -175,7 +181,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                 ? valueA - valueB
                 : valueB - valueA;
         });
-    }, [finalFilteredData, sortBy, sortOrder, sortByConference]);  // Add sortByConference to dependencies
+    }, [finalFilteredData, sortBy, sortOrder, sortByConference, viewType]);  // Add viewType to dependencies
 
     const uniqueStadiumCount = useMemo(() => {
         if (isRoofTypeData && roofTypeData) {
