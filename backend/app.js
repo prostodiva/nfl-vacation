@@ -10,6 +10,7 @@ const customRoutes = require('./routes/customRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const stadiumRoutes = require('./routes/stadiumRoutes');
 const souvenirRoutes = require('./routes/souvenirsRoutes');
+const purchaseRoutes = require('./routes/purchaseRoutes');
 
 const app = express();
 
@@ -32,7 +33,7 @@ app.use('/api', customRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/stadiums', stadiumRoutes);
 app.use('/api/souvenirs', souvenirRoutes);
-
+app.use('/api/purchases', purchaseRoutes);
 
 //test route
 app.get('/api/test', (req, res) => {

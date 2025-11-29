@@ -103,7 +103,7 @@ function AdminDashboard() {
     };
 
     return (
-        <div className="bg-gray-100 min-h-screen relative">
+        <div className="bg-gray-100 min-h-screen">
             <LeftSidebar onTabChange={setActiveTab} />
 
             <div className="px-8 py-8">

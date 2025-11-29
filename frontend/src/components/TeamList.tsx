@@ -75,7 +75,7 @@ if (!isInteractive) {
               items={teams.map(team => team._id)}
               strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-4">
+            <div className="gap-4 space-y-2">
               {teams.map((team) => (
                   <DraggableTeamCard
                       key={team._id}
