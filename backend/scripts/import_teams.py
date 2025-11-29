@@ -57,37 +57,51 @@ def import_teams(file_path=None):
                 # Check if team already exists
                 existing_team = teams_collection.find_one({"teamName": team_name})
                 
-                if existing_team:
-                    print(f"⏭️  Team '{team_name}' already exists, skipping...", flush=True)
-                    skipped_count += 1
-                    continue
-                
-                # Create new team document
-                team = {
-                    "teamName": team_name,
-                    "conference": conference,
-                    "division": division,
-                    "stadium": {
+                # Prepare stadium data
+                stadium_data = {
                         "name": stadium_name,
                         "location": str(row['Location']).strip() if pd.notna(row['Location']) else "",
                         "seatingCapacity": int(float(row['Capacity'])) if pd.notna(row['Capacity']) else 0,
                         "surfaceType": str(row['Surface']).strip() if pd.notna(row['Surface']) else "",
                         "roofType": str(row['Roof Type']).strip() if pd.notna(row['Roof Type']) else "",
                         "yearOpened": int(float(row['Opened'])) if pd.notna(row['Opened']) else 0
-                    },
-                    "souvenirs": [
-                        {"_id": ObjectId(), "name": "Signed helmets", "price": 74.99, "category": "Collectibles", "isTraditional": True},
-                        {"_id": ObjectId(), "name": "Autographed Football", "price": 79.89, "category": "Collectibles", "isTraditional": True},
-                        {"_id": ObjectId(), "name": "Team pennant", "price": 17.99, "category": "Accessories", "isTraditional": True},
-                        {"_id": ObjectId(), "name": "Team picture", "price": 29.99, "category": "Collectibles", "isTraditional": True},
-                        {"_id": ObjectId(), "name": "Team jersey", "price": 199.99, "category": "Apparel", "isTraditional": True}
-                    ]
-                }
+                    }
                 
-                # Insert new team
-                teams_collection.insert_one(team)
-                inserted_count += 1
-                print(f"✅ Inserted: {team_name} - {stadium_name} ({team['stadium']['seatingCapacity']})", flush=True)
+                if existing_team:
+                    # Update existing team - preserve souvenirs but update other fields
+                    update_data = {
+                        "$set": {
+                            "conference": conference,
+                            "division": division,
+                            "stadium": stadium_data
+                        }
+                    }
+                    teams_collection.update_one(
+                        {"teamName": team_name},
+                        update_data
+                    )
+                    updated_count += 1
+                    print(f"🔄 Updated: {team_name} - {stadium_name} (preserved {len(existing_team.get('souvenirs', []))} souvenirs)", flush=True)
+                else:
+                    # Create new team document with default souvenirs
+                    team = {
+                        "teamName": team_name,
+                        "conference": conference,
+                        "division": division,
+                        "stadium": stadium_data,
+                        "souvenirs": [
+                            {"_id": ObjectId(), "name": "Signed helmets", "price": 74.99, "category": "Collectibles", "isTraditional": True},
+                            {"_id": ObjectId(), "name": "Autographed Football", "price": 79.89, "category": "Collectibles", "isTraditional": True},
+                            {"_id": ObjectId(), "name": "Team pennant", "price": 17.99, "category": "Accessories", "isTraditional": True},
+                            {"_id": ObjectId(), "name": "Team picture", "price": 29.99, "category": "Collectibles", "isTraditional": True},
+                            {"_id": ObjectId(), "name": "Team jersey", "price": 199.99, "category": "Apparel", "isTraditional": True}
+                        ]
+                    }
+                    
+                    # Insert new team
+                    teams_collection.insert_one(team)
+                    inserted_count += 1
+                    print(f"✅ Inserted: {team_name} - {stadium_name} ({team['stadium']['seatingCapacity']}) with {len(team['souvenirs'])} default souvenirs", flush=True)
                     
             except KeyError as e:
                 print(f"❌ Column not found: {e}", flush=True)
@@ -101,7 +115,8 @@ def import_teams(file_path=None):
         # Print summary
         print(f"\n📊 Import Summary:", flush=True)
         print(f"   ✅ Inserted: {inserted_count} teams", flush=True)
-        print(f"   ⏭️  Skipped: {skipped_count} teams (already exist or invalid)", flush=True)
+        print(f"   🔄 Updated: {updated_count} teams", flush=True)
+        print(f"   ⏭️  Skipped: {skipped_count} teams (invalid data)", flush=True)
         
         # Verify total count
         total_count = teams_collection.count_documents({})

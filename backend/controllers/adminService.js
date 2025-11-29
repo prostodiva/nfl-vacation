@@ -52,12 +52,15 @@ const importFromExcel = async (req, res) => {
         } else if (filename.includes('stadium-distances') || filename === 'stadium-distances.xlsx') {
             importType = 'distances';
             scriptName = 'import_distances.py';
+        } else if (filename.includes('souvenirs') || filename === 'souvenirs.xlsx') {
+            importType = 'souvenirs';
+            scriptName = 'import_souvenirs.py';
         } else {
             // Clean up uploaded file
             fs.unlinkSync(uploadedFilePath);
             return res.status(400).json({
                 success: false,
-                message: 'Invalid filename. File must be named "teams-stadiums.xlsx" or "stadium-distances.xlsx"'
+                message: 'Invalid filename. File must be named "teams-stadiums.xlsx", "stadium-distances.xlsx", or "souvenirs.xlsx"'
             });
         }
 
@@ -105,7 +108,7 @@ const importFromExcel = async (req, res) => {
         }
 
         // Extract count from stdout if available
-        const countMatch = stdout.match(/(\d+)\s+(teams|distances|records)/i);
+        const countMatch = stdout.match(/(\d+)\s+(teams|distances|records|souvenirs)/i);
         const importedCount = countMatch ? parseInt(countMatch[1]) : null;
 
         res.status(200).json({

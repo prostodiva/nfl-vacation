@@ -1,6 +1,6 @@
 // hooks/useSouvenirEdit.ts
 import { useState } from 'react';
-import { useUpdateSouvenirMutation } from '../store/apis/souvenirsApi';
+import { useUpdateSouvenirMutation, useDeleteSouvenirMutation } from '../store/apis/souvenirsApi';
 import { souvenirFields } from '../config/formFields';
 import type { Souvenir } from '../store/types/teamTypes';
 
@@ -8,6 +8,7 @@ import type { Souvenir } from '../store/types/teamTypes';
 export function useSouvenirEdit() {
   const [editingItem, setEditingItem] = useState<Souvenir | null>(null);
   const [updateSouvenir, { isLoading, error }] = useUpdateSouvenirMutation();
+  const [deleteSouvenir, { isLoading: isDeleting }] = useDeleteSouvenirMutation();
 
   const handleEdit = (item: Souvenir) => {
     console.log('Editing souvenir:', item);
@@ -58,13 +59,28 @@ export function useSouvenirEdit() {
 
   const handleClose = () => setEditingItem(null);
 
+  const handleDelete = async (souvenirId: string) => {
+    if (!window.confirm('Are you sure you want to delete this souvenir?')) {
+      return;
+    }
+
+    try {
+      await deleteSouvenir(souvenirId).unwrap();
+      console.log('Souvenir deleted successfully');
+    } catch (err: any) {
+      console.error('Failed to delete souvenir:', err);
+      alert(`Failed to delete souvenir: ${err.data?.message || 'Unknown error'}`);
+    }
+  };
+
   return {
     editingItem,
-    isLoading,
+    isLoading: isLoading || isDeleting,
     error,
     fields: souvenirFields,
     handleEdit,
     handleSave,
-    handleClose
+    handleClose,
+    handleDelete
   };
 }

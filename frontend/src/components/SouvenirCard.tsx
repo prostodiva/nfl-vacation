@@ -1,15 +1,15 @@
-import Button from './Button';
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { CiEdit } from "react-icons/ci";
 import { FiTag } from "react-icons/fi";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import type { Souvenir } from '../store/types/teamTypes';
+import Button from './Button';
 
 interface SouvenirCardProps {
     souvenir: Souvenir;
     isAdmin?: boolean;
     onEdit?: (souvenir: Souvenir) => void;
     onDelete?: (souvenirId: string) => void;
-    onAddToCart?: (souvenirId: string) => void;
+    onAddToCart?: (souvenirId: string, event?: React.MouseEvent<HTMLButtonElement>) => void;
     showAddToCart?: boolean;
 }
 
@@ -49,8 +49,8 @@ function SouvenirCard({
                     </div>
                 </div>
 
-                {/* Category and Tags */}
-                <div className="flex flex-wrap gap-2 mb-3">
+                {/* Category, Tags, and Action Buttons in one line */}
+                <div className="flex flex-wrap items-center gap-2 mt-3">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${categoryColors[souvenir.category]}`}>
                         <FiTag className="inline mr-1" />
                         {souvenir.category}
@@ -60,19 +60,13 @@ function SouvenirCard({
                             Traditional
                         </span>
                     )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 mt-4">
                     {showAddToCart && onAddToCart && (
-                        <Button
-                            onClick={() => onAddToCart(souvenir._id)}
-                            className="flex items-center"
-                            add
-                            rounded
+                        <button
+                            onClick={(e: React.MouseEvent<HTMLButtonElement>) => onAddToCart(souvenir._id, e)}
+                            className="flex items-center ml-auto py-1 px-6 border text-white bg-[#e93448] hover:bg-white hover:text-black rounded-[1vw]"
                         >
                             ADD
-                        </Button>
+                        </button>
                     )}
                     {isAdmin && onEdit && onDelete && (
                         <>

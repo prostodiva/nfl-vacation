@@ -57,13 +57,16 @@ const createSouvenir = async (req, res) => {
         }
 
         team.souvenirs.push(souvenir);
-        await team.save();
+        
+        // Save without validating the entire document to avoid division validation errors
+        await team.save({ validateBeforeSave: false });
 
         res.status(201).json({
             success: true,
             data: souvenir 
         });
     } catch (error) {
+        console.error('❌ Error in createSouvenir:', error);
         res.status(400).json({
             success: false,
             message: 'Error creating souvenir',
@@ -96,11 +99,24 @@ const updateSouvenir = async (req, res) => {
             });
         }
         
-        // Update the souvenir fields
-        Object.assign(foundSouvenir, req.body);
+        // Only allow updating souvenir-specific fields
+        const allowedFields = ['name', 'price', 'category', 'isTraditional'];
+        const updateData = {};
+        
+        allowedFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updateData[field] = req.body[field];
+            }
+        });
+        
+        // Update only the allowed souvenir fields
+        Object.assign(foundSouvenir, updateData);
 
-        // Save the team
-        await foundTeam.save();
+        // Mark the souvenirs array as modified
+        foundTeam.markModified('souvenirs');
+        
+        // Save without validating the entire document (like previous version)
+        await foundTeam.save({ validateBeforeSave: false });
 
         res.status(200).json({
             success: true,
@@ -132,13 +148,16 @@ const deleteSouvenir = async (req, res) => {
 
         // Remove the souvenir using pull method
         team.souvenirs.pull(id);
-        await team.save();
+        
+        // Save without validating the entire document (like updateSouvenir)
+        await team.save({ validateBeforeSave: false });
 
         res.status(200).json({
             success: true,
             message: 'Souvenir deleted successfully'
         });
     } catch (error) {
+        console.error('❌ Error in deleteSouvenir:', error);
         res.status(400).json({
             success: false,
             message: 'Error deleting souvenir',

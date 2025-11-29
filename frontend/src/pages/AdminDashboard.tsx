@@ -14,7 +14,7 @@ import { useSouvenirEdit } from "../hooks/useSouvenirEdit";
 import { useStadiumEdit } from "../hooks/useStadiumEdit";
 import { useTeamEdit } from "../hooks/useTeamEdit";
 import { useImportFromExcelMutation } from "../store/apis/adminApi";
-import { useGetAllSouvenirsQuery } from "../store/apis/souvenirsApi";
+import { souvenirsApi, useGetAllSouvenirsQuery } from "../store/apis/souvenirsApi";
 import { stadiumApi, useGetAllStadiumsQuery } from "../store/apis/stadiumsApi";
 import { teamsApi, useGetAllTeamsQuery } from "../store/apis/teamsApi";
 import type { ActiveTab } from "../store/types/teamTypes";
@@ -46,10 +46,10 @@ function AdminDashboard() {
         try {
             // Validate file name
             const filename = file.name.toLowerCase();
-            const validFilenames = ['teams-stadiums.xlsx', 'stadium-distances.xlsx'];
+            const validFilenames = ['teams-stadiums.xlsx', 'stadium-distances.xlsx', 'souvenirs.xlsx'];
             
             if (!validFilenames.includes(filename)) {
-                alert(`Invalid filename. File must be named "teams-stadiums.xlsx" or "stadium-distances.xlsx"`);
+                alert(`Invalid filename. File must be named "teams-stadiums.xlsx", "stadium-distances.xlsx", or "souvenirs.xlsx"`);
                 return;
             }
             
@@ -87,6 +87,20 @@ function AdminDashboard() {
                     }
                     if (activeTab === 'stadiums') {
                         await stadiumsQuery.refetch();
+                    }
+                } else if (result.type === 'souvenirs') {
+                    // Invalidate souvenirs cache
+                    dispatch(souvenirsApi.util.invalidateTags(['Souvenir']));
+                    
+                    // Also invalidate teams since souvenirs are part of teams
+                    dispatch(teamsApi.util.invalidateTags(['Team']));
+                    
+                    // Refetch only if queries are enabled (not skipped)
+                    if (activeTab === 'souvenirs') {
+                        await souvenirsQuery.refetch();
+                    }
+                    if (activeTab === 'teams') {
+                        await teamsQuery.refetch();
                     }
                 }
                 
@@ -137,8 +151,9 @@ function AdminDashboard() {
                             <SouvenirsList
                                 souvenirs={souvenirsQuery.data?.data}
                                 isLoading={souvenirsQuery.isLoading}
+                                isAdmin={true}
                                 onEdit={souvenirs.handleEdit}
-                                onDelete={(souvenirId) => console.log('Delete souvenir:', souvenirId)}
+                                onDelete={souvenirs.handleDelete}
                             />
                         )}
                     </div>

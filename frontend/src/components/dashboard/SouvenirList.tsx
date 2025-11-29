@@ -1,45 +1,122 @@
-// components/SouvenirsList.tsx
-import SouvenirCard from '../SouvenirCard'
-
-interface Souvenir {
-    _id: string;
-    name: string;
-    price: number;
-    category: 'Apparel' | 'Accessories' | 'Collectibles' | 'Food & Beverage';
-    isTraditional: boolean;
-    teamName: string;
-    stadiumName: string;
-}
+import { useMemo } from 'react';
+import { FiShoppingBag } from 'react-icons/fi';
+import { useGetAllSouvenirsQuery } from '../../store/apis/souvenirsApi';
+import type { Souvenir } from '../../store/types/teamTypes';
+import SouvenirCard from '../SouvenirCard';
 
 interface SouvenirsListProps {
     souvenirs?: Souvenir[];
-    isLoading: boolean;
-    onEdit: (souvenir: Souvenir) => void;
-    onDelete: (souvenirId: string) => void;
+    teamName?: string;
+    stadiumName?: string;
+    isLoading?: boolean;
+    // Admin mode
+    isAdmin?: boolean;
+    onEdit?: (souvenir: Souvenir) => void;
+    onDelete?: (souvenirId: string) => void;
+    // Shopping mode
+    showAddToCart?: boolean;
+    onAddToCart?: (souvenirId: string) => void;
+    // Display options
+    compact?: boolean;
+    maxItems?: number;
+    showTitle?: boolean;
+    title?: string;
+    // Styling
+    variant?: 'admin' | 'shopping' | 'trip';
 }
 
-function SouvenirsList({ souvenirs, isLoading, onEdit, onDelete }: SouvenirsListProps) {
+function SouvenirsList({ 
+    souvenirs: providedSouvenirs,
+    teamName,
+    stadiumName,
+    isLoading: providedIsLoading = false,
+    isAdmin = false,
+    onEdit,
+    onDelete,
+    showAddToCart = false,
+    onAddToCart,
+    maxItems,
+    showTitle = true,
+    title,
+    variant = 'admin'
+}: SouvenirsListProps) {
+    // If souvenirs are provided, use them; otherwise fetch from API
+    const { data: souvenirsData, isLoading: apiIsLoading } = useGetAllSouvenirsQuery(
+        undefined,
+        { skip: !!providedSouvenirs } // Skip API call if souvenirs are provided
+    );
+
+    const isLoading = providedSouvenirs ? providedIsLoading : apiIsLoading;
+
+    // Filter and sort souvenirs based on props
+    const filteredSouvenirs = useMemo(() => {
+        // Create a copy of the array to avoid mutating read-only arrays from RTK Query
+        const sourceArray = providedSouvenirs || souvenirsData?.data || [];
+        let filtered: Souvenir[] = [...sourceArray];
+        
+        // Filter by team if specified
+        if (teamName) {
+            filtered = filtered.filter(s => s.teamName === teamName);
+        }
+        
+        // Filter by stadium if specified
+        if (stadiumName) {
+            filtered = filtered.filter(s => s.stadiumName === stadiumName);
+        }
+        
+        // Sort by stadium name in admin mode
+        if (isAdmin) {
+            filtered = filtered.sort((a, b) => {
+                const stadiumA = a.stadiumName || '';
+                const stadiumB = b.stadiumName || '';
+                return stadiumA.localeCompare(stadiumB);
+            });
+        }
+        
+        // Limit items if specified
+        if (maxItems) {
+            filtered = filtered.slice(0, maxItems);
+        }
+        
+        return filtered;
+    }, [providedSouvenirs, souvenirsData, teamName, stadiumName, maxItems, isAdmin]);
+
+    // Loading state
     if (isLoading) {
-        return <div className="text-white text-center py-8">Loading souvenirs...</div>;
+        return (
+            <div className={`text-center py-8 ${variant === 'admin' ? 'text-white' : 'text-gray-500'}`}>
+                Loading souvenirs...
+            </div>
+        );
     }
 
-    if (!souvenirs || souvenirs.length === 0) {
-        return <div className="text-white text-center py-8">No souvenirs found.</div>;
+    // Empty state
+    if (!filteredSouvenirs || filteredSouvenirs.length === 0) {
+        return (
+            <div className={`text-center py-8 ${variant === 'admin' ? 'text-white' : 'text-gray-500'} bg-[#3b3c5e] rounded-md`}>
+                <FiShoppingBag className="inline-block mr-2 opacity-50" />
+                No souvenirs found.
+            </div>
+        );
     }
 
     return (
         <div className="space-y-2">
-            <h2 className="text-white text-2xl font-bold mb-4">
-                Souvenirs ({souvenirs.length})
-            </h2>
-            <div className="gap-4 space-y-2">
-                {souvenirs.map((souvenir) => (
+            {showTitle && (
+                <h2 className={`text-2xl font-bold mb-4 ${variant === 'admin' ? 'text-white' : 'text-gray-800'}`}>
+                    {title || `Souvenirs (${filteredSouvenirs.length})`}
+                </h2>
+            )}
+            <div className="space-y-2">
+                {filteredSouvenirs.map((souvenir) => (
                     <SouvenirCard
                         key={souvenir._id}
                         souvenir={souvenir}
-                        isAdmin={true}
-                        onEdit={() => onEdit(souvenir)}
-                        onDelete={() => onDelete(souvenir._id)}
+                        isAdmin={isAdmin}
+                        onEdit={onEdit ? () => onEdit(souvenir) : undefined}
+                        onDelete={onDelete ? () => onDelete(souvenir._id) : undefined}
+                        showAddToCart={showAddToCart}
+                        onAddToCart={onAddToCart}
                     />
                 ))}
             </div>

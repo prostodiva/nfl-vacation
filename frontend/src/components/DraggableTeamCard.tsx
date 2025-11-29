@@ -1,14 +1,26 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import TeamCard from './TeamCard';
+import { useState } from 'react';
 import type { Team } from '../store/types/teamTypes';
+import Button from './Button';
+import TeamCard from './TeamCard';
 
 interface DraggableTeamCardProps {
     team: Team;
     onRemove: (id: string) => void;
+    showSouvenirs?: boolean;
+    showAddToCart?: boolean;
+    onAddToCart?: (souvenirId: string) => void;
 }
 
-function DraggableTeamCard({ team, onRemove }: DraggableTeamCardProps) {
+function DraggableTeamCard({ 
+  team, 
+  onRemove,
+  showSouvenirs = false,
+  showAddToCart = false,
+  onAddToCart
+}: DraggableTeamCardProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
     const {
         attributes,
         listeners,
@@ -28,39 +40,47 @@ function DraggableTeamCard({ team, onRemove }: DraggableTeamCardProps) {
         <div
             ref={setNodeRef}
             style={style}
-            className="relative"
+            className="relative w-full"
         >
-            {/* Drag Handle */}
-            <div
-                {...attributes}
-                {...listeners}
-                className="absolute left-2 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing z-10 bg-gray-200 hover:bg-gray-300 rounded p-2"
-                aria-label="Drag to reorder"
-            >
-                <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="text-gray-600"
+            {/* Drag Handle - Hide when souvenirs are expanded */}
+            {!isExpanded && (
+                <div
+                    {...attributes}
+                    {...listeners}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing z-10 bg-gray-200 hover:bg-[#3b3c5e] rounded p-2"
+                    aria-label="Drag to reorder"
                 >
-                    <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
-                </svg>
-            </div>
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="text-gray-400"
+                    >
+                        <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
+                    </svg>
+                </div>
+            )}
 
-            {/* Team Card with margin for drag handle */}
-            <div className="ml-12">
-                <TeamCard team={team} />
+            {/* Team Card with margin for drag handle - keep margin consistent */}
+            <div className="ml-12 w-full">
+                <TeamCard 
+                  team={team}
+                  showSouvenirs={showSouvenirs}
+                  showAddToCart={showAddToCart}
+                  onAddToCart={onAddToCart}
+                  onExpandedChange={setIsExpanded}
+                />
             </div>
 
             {/* Remove Button */}
-            <button
+            <Button
                 onClick={() => onRemove(team._id)}
-                className="absolute top-12 right-4 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors z-10"
+                className="absolute top-12 right-4 hover:text-black text-white rounded-full z-10"
                 aria-label="Remove team"
             >
                 ✕
-            </button>
+            </Button>
         </div>
     );
 }

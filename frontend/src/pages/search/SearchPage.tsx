@@ -67,7 +67,7 @@ function SearchPage() {
             <div className="space-y-6">
               {filteredTeams.length > 0 ? (
                   filteredTeams.map((team) => (
-                      <TeamCard key={team._id} team={team} />
+                      <TeamCard key={team._id} team={team} showSouvenirs={true} />
                   ))
               ) : (
                   <div className="bg-white rounded-lg shadow p-12 text-center">

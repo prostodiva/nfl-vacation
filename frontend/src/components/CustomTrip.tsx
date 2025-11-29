@@ -1,12 +1,13 @@
 import { useState } from 'react';
+import { useCalculateCustomRouteMutation } from "../store/apis/algorithmApi.ts";
+import { useAddToCartMutation } from '../store/apis/purchaseApi';
+import { useGetAllTeamsQuery } from '../store/apis/teamsApi';
+import type { Team } from '../store/types/teamTypes';
+import Button from './Button';
 import type { DropdownOption } from './Dropdown';
 import Dropdown from './Dropdown';
-import { useGetAllTeamsQuery } from '../store/apis/teamsApi';
 import Skeleton from './Skeleton';
-import Button from './Button';
-import type { Team } from '../store/types/teamTypes';
 import TeamList from './TeamList';
-import { useCalculateCustomRouteMutation } from "../store/apis/algorithmApi.ts";
 
 
 function CustomTrip() {
@@ -16,6 +17,10 @@ function CustomTrip() {
     const [routeError, setRouteError] = useState<string | null>(null);
     const [calculateRoute, { data: routeData, isLoading: isCalculating, isError: hasError, reset }] =
     useCalculateCustomRouteMutation();
+
+    const [addToCart] = useAddToCartMutation();
+    const [showCartNotification, setShowCartNotification] = useState(false);
+    const [notificationPosition, setNotificationPosition] = useState<{ top: number; left: number } | null>(null);
 
     const teamOptions: DropdownOption[] = teamsData?.data.map(team => ({
         value: team._id,
@@ -56,6 +61,38 @@ function CustomTrip() {
         } catch (error: any) {
             const errorMessage = error.data?.error || 'Failed to calculate route. Please try again.';
             setRouteError(errorMessage);
+        }
+    };
+
+    const handleAddToCart = async (souvenirId: string, event?: React.MouseEvent<HTMLButtonElement>) => {
+        try {
+            await addToCart({ souvenirId, quantity: 1 }).unwrap();
+            
+            // Get button position if event is provided
+            let position = { top: 80, left: window.innerWidth - 100 };
+            
+            if (event && event.currentTarget) {
+                try {
+                    const button = event.currentTarget;
+                    const rect = button.getBoundingClientRect();
+                    position = {
+                        top: rect.top + window.scrollY - 40,
+                        left: rect.left + window.scrollX + rect.width / 2
+                    };
+                } catch (err) {
+                    console.warn('Could not calculate button position, using fallback');
+                }
+            }
+            
+            setNotificationPosition(position);
+            setShowCartNotification(true);
+            
+            setTimeout(() => {
+                setShowCartNotification(false);
+                setNotificationPosition(null);
+            }, 3000);
+        } catch (error) {
+            console.error('Failed to add to cart:', error);
         }
     };
 
@@ -115,11 +152,28 @@ function CustomTrip() {
                 )}
             </div>
 
-            <TeamList
+           <TeamList
                 teams={addedTeams}
                 onReorder={handleReorder}
                 onRemoveTeam={handleRemoveTeam}
+                showSouvenirs={true}
+                showAddToCart={true}
+                onAddToCart={handleAddToCart}
             />
+
+             {/* Add notification */}
+            {showCartNotification && notificationPosition && (
+                <div 
+                    className="fixed text-black px-4 py-2 z-[9999] pointer-events-none whitespace-nowrap"
+                    style={{
+                        top: `${notificationPosition.top}px`,
+                        left: `${notificationPosition.left}px`,
+                        transform: 'translateX(-50%)'
+                    }}
+                >
+                    Item added to cart 🛒
+                </div>
+            )}
 
             {routeError && (
                 <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg max-w-4xl">
