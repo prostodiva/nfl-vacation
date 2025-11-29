@@ -8,7 +8,7 @@ import {
 } from '../../store/apis/purchaseApi';
 import Button from '../Button';
 import { FiDollarSign, FiMapPin, FiShoppingBag, FiFileText } from 'react-icons/fi';
-import { FiRefreshCw, FiTrash2 } from 'react-icons/fi'; 
+import { FiTrash2 } from 'react-icons/fi'; 
 
 function PurchaseTracking() {
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null);
@@ -46,16 +46,16 @@ function PurchaseTracking() {
     <div className="space-y-6">
 
        {(purchases.length > 0 || stadiumSpending.length > 0) && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="mb-6 max-w-3xl mx-auto rounded-md shadow p-4 bg-[#3b3c5e] text-white">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="font-semibold text-yellow-800">Reset Tracking Data</h3>
-              <p className="text-sm text-yellow-700">Clear all purchase history and start fresh</p>
+              <h3 className="font-semibold">Reset Tracking Data</h3>
+              <p className="text-sm text-gray-400">Clear all purchase history and start fresh</p>
             </div>
             <Button
               onClick={handleClearAll}
               disabled={isClearing}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="text-white"
             >
               <FiTrash2 className="inline mr-2" />
               {isClearing ? 'Clearing...' : 'Clear All Data'}
@@ -66,7 +66,7 @@ function PurchaseTracking() {
   
       {/* Grand Total Card */}
       {grandTotal && (
-        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
+        <div className="mb-6 max-w-3xl mx-auto rounded-md shadow p-4 bg-[#3b3c5e] text-white">
           <div className="flex items-center gap-4">
             <FiDollarSign size={40} />
             <div>
@@ -84,7 +84,7 @@ function PurchaseTracking() {
 
       {/* Spending by Stadium */}
       {stadiumSpending.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="mb-6 max-w-3xl mx-auto rounded-md shadow p-4 bg-[#3b3c5e] text-white">
           <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
             <FiMapPin />
             Spending by Stadium
@@ -97,18 +97,18 @@ function PurchaseTracking() {
               >
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-semibold text-lg">{stadium.stadiumName}</h3>
-                  <span className="text-xl font-bold text-green-600">
+                  <span className="text-xl font-bold text-[#e93448]">
                     ${stadium.totalSpent.toFixed(2)}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-sm text-gray-400 mb-3">
                   {stadium.itemCount} item{stadium.itemCount !== 1 ? 's' : ''}
                 </p>
                 <div className="space-y-2">
                   {stadium.items.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex justify-between text-sm bg-gray-50 p-2 rounded"
+                      className="flex justify-between text-sm bg-gray-100 p-2 rounded text-black"
                     >
                       <span>
                         {item.souvenirName} × {item.quantity}
@@ -125,7 +125,7 @@ function PurchaseTracking() {
 
       {/* Purchase History */}
       {purchases.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="mb-6 max-w-3xl mx-auto rounded-md shadow p-4 bg-[#3b3c5e] text-white">
           <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
             <FiShoppingBag />
             Purchase History
@@ -138,15 +138,15 @@ function PurchaseTracking() {
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-400">
                       {new Date(purchase.purchaseDate).toLocaleDateString()}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-400">
                       {new Date(purchase.purchaseDate).toLocaleTimeString()}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold text-green-600">
+                    <p className="text-xl font-bold text-[#e93448]">
                       ${purchase.totalAmount.toFixed(2)}
                     </p>
                     <p className="text-sm text-gray-600">
@@ -158,7 +158,7 @@ function PurchaseTracking() {
                   {purchase.items.map((item) => (
                     <div
                       key={item._id}
-                      className="flex justify-between text-sm bg-gray-50 p-2 rounded"
+                      className="flex justify-between text-sm bg-gray-100 p-2 rounded text-black"
                     >
                       <span>
                         {item.souvenirName} × {item.quantity}
@@ -245,7 +245,6 @@ function PurchaseTracking() {
               </Button>
               <Button
                 onClick={() => setSelectedPurchaseId(null)}
-                variant="outline"
                 className="w-full"
               >
                 Close
@@ -256,7 +255,7 @@ function PurchaseTracking() {
       )}
 
       {purchases.length === 0 && stadiumSpending.length === 0 && (
-        <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+        <div className="mb-6 max-w-3xl mx-auto rounded-md shadow p-4 bg-[#3b3c5e] text-white">
           <FiShoppingBag size={48} className="mx-auto mb-4 opacity-50" />
           <p>No purchases yet. Start shopping to track your spending!</p>
         </div>

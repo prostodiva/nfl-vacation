@@ -20,10 +20,12 @@ function DashboardGreeting({ userName }: DashboardGreetingProps) {
                 <img
                     src={girl}
                     alt="Avatar"
-                    className="absolute right-130 top-35 h-full pointer-events-none"
+                    className="flex h-full pointer-events-none -mt-[15%] -ml-[10%] -mr-15"
                     style={{
                         objectFit: 'contain',
                         maxHeight: '180px',
+                        height: '280px',
+                        transform: 'scale(1.25)', 
                     }}
                 />
             </div>

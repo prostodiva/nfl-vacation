@@ -72,64 +72,52 @@ function ShoppingPage() {
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-8 py-8">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="flex flex-col items-center space-y-2 mb-8">
           <div>
-            <h1 className="text-4xl font-bold">Souvenir Shop</h1>
+            <h1 
+              className="text-5xl leading-tight text-black mt-6" 
+              style={{ fontFamily: 'SCHABO, sans-serif' }}
+            >
+              Souvenir Shop
+            </h1>
             {selectedStadium && (
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-gray-600">Viewing souvenirs for:</span>
-                <span className="font-semibold text-[#e93448]">{selectedStadium}</span>
+              <div className="mt-2 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">Viewing souvenirs for:</span>
+                  <span className="font-semibold text-[#e93448]">{selectedStadium}</span>
+                </div>
+                <div className="flex gap-4">
+                  <Button onClick={() => setShowTracking(!showTracking)}>
+                    <FiBarChart2 className="inline mr-2" />
+                    {showTracking ? 'Hide' : 'View'} Tracking
+                  </Button>
+                  <Button onClick={() => setShowCart(true)}>
+                    <FiShoppingCart className="inline mr-2" />
+                    Cart
+                  </Button>
+                </div>
               </div>
             )}
           </div>
-          <div className="flex gap-4">
-            <Button onClick={() => setShowTracking(!showTracking)}>
-              <FiBarChart2 className="inline mr-2" />
-              {showTracking ? 'Hide' : 'View'} Tracking
-            </Button>
-            <Button onClick={() => setShowCart(true)}>
-              <FiShoppingCart className="inline mr-2" />
-              Cart
-            </Button>
-          </div>
-        </div>
 
+          {!selectedStadium && (
+            <div className="flex gap-4">
+              <Button onClick={() => setShowTracking(!showTracking)}>
+                <FiBarChart2 className="inline mr-2" />
+                {showTracking ? 'Hide' : 'View'} Tracking
+              </Button>
+              <Button onClick={() => setShowCart(true)}>
+                <FiShoppingCart className="inline mr-2" />
+                Cart
+              </Button>
+            </div>
+          )}
+        </div>
+        
         {/* Purchase Tracking Section */}
         {showTracking && (
           <div className="mb-8">
             <PurchaseTracking />
-          </div>
-        )}
-
-        {/* View Mode Toggle */}
-        {!showTracking && (
-          <div className="mb-6 flex gap-4 items-center">
-            <div className="flex bg-gray-100 rounded-lg shadow p-1">
-              <Button
-                onClick={() => {
-                  setViewMode('stadiums');
-                  setSelectedStadium(null);
-                }}
-                className={`px-4 py-2 rounded transition ${
-                  viewMode === 'stadiums'
-                    ? 'bg-[#e93448] text-white'
-                    : 'text-gray-600 hover:bg-[#3b3c5e] hover:text-white'
-                }`}
-              >
-                <FiFilter className="inline mr-2" />
-                Browse by Stadium
-              </Button>
-              <button
-                onClick={() => setViewMode('souvenirs')}
-                className={`px-4 py-2 rounded transition ${
-                  viewMode === 'souvenirs'
-                    ? 'bg-[#e93448] text-white'
-                    : 'text-gray-600 hover:bg-[#3b3c5e] hover:text-white'
-                }`}
-              >
-                View All Souvenirs
-              </button>
-            </div>
           </div>
         )}
 

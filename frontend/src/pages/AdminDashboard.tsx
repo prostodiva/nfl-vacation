@@ -104,9 +104,8 @@ function AdminDashboard() {
 
     return (
         <div className="bg-gray-100 min-h-screen">
-            <LeftSidebar onTabChange={setActiveTab} />
-
-            <div className="px-8 py-8">
+            <div className="container mx-auto px-8 py-8">
+                <LeftSidebar onTabChange={setActiveTab} />
                 <DashboardHeader />
 
                 <div className="ml-[350px] max-w-5xl mx-auto space-y-6">

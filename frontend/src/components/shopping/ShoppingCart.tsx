@@ -39,7 +39,7 @@ function ShoppingCart({ isOpen, onClose, onCheckoutSuccess }: ShoppingCartProps)
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-[#3b3c5e] bg-opacity-90 z-50 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <div className="p-6 border-b flex justify-between items-center">
           <h2 className="text-2xl font-bold flex items-center gap-2">
