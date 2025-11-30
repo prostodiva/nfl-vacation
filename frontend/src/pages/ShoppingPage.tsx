@@ -78,7 +78,7 @@ function ShoppingPage() {
               className="text-5xl leading-tight text-black mt-6" 
               style={{ fontFamily: 'SCHABO, sans-serif' }}
             >
-              Souvenir Shop
+              SOUVENIR SHOP
             </h1>
             {selectedStadium && (
               <div className="mt-2 flex flex-col gap-2">

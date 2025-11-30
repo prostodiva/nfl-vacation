@@ -19,7 +19,6 @@ import { stadiumApi, useGetAllStadiumsQuery } from "../store/apis/stadiumsApi";
 import { teamsApi, useGetAllTeamsQuery } from "../store/apis/teamsApi";
 import type { ActiveTab } from "../store/types/teamTypes";
 
-
 function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<ActiveTab>('teams');
     const dispatch = useDispatch();
