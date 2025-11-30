@@ -3,6 +3,7 @@ import Button from './Button';
 import SearchInput from './SearchInput';
 import player from '../assets/player.png'
 import ball from '../assets/ball.png'
+import plate from '../assets/plate.png'
 
 function Hero() {
   const navigate = useNavigate();
@@ -38,9 +39,20 @@ function Hero() {
                     transformOrigin: 'left bottom',
                 }}
             />
+            <img
+                src={plate}
+                alt="plate"
+                className="absolute inset-0 h-full z-0 pointer-events-none mt-80"
+                style={{
+                    objectPosition: 'center',
+                    maxHeight: '20%',
+                    transform: 'translateX(200%)',
+                    transformOrigin: 'left bottom',
+                }}
+            />
             <div className="relative z-10 flex flex-col items-start space-y-2 w-[1079px] ml-30">
               <h1 className="text-[160px] leading-tight text-white" style={{ fontFamily: 'SCHABO, sans-serif'}}>
-                Explore the Home of Champions <span className="text-[110px] -rotate-8 inline-block relative top-[-30px]"> NFL / JOURNEY</span>
+                Explore the Home of Champions <span className="text-[70px] -rotate-5 inline-block relative top-[-40px] ml-20"> NFL / JOURNEY</span>
               </h1>
               <p className="text-xl leading-relaxed text-white">
                 From historic arenas to modern domes - discover <br></br> legends
