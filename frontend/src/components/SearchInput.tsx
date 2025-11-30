@@ -23,7 +23,7 @@ export default function SearchInput({ className = '' }: SearchInputProps) {
         <input
           value={term}
           onChange={(e) => setTerm(e.target.value)}
-          className={`h-[50px] px-6 py-[30px] opacity-70 rounded-md border border-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent ${className}`}
+          className={`h-[50px] px-6 py-[30px] opacity-70 rounded-md border border-white text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent ${className}`}
           placeholder="Search teams..."
         />
       </div>
