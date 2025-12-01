@@ -1,6 +1,31 @@
+/**
+ * @fileoverview Stadium service controller - Handles all stadium-related API endpoints
+ * @module stadiumService
+ */
+
 const Team = require('../models/Team');
 
-// Returns unique stadiums (if two teams share a stadium, count once)
+/**
+ * Get stadiums by roof type
+ * Returns unique stadiums filtered by roof type (if two teams share a stadium, count once)
+ * 
+ * @route GET /api/stadiums/roof
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} req.query.roofType - Roof type: 'Open', 'Fixed', or 'Retractable'
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status, count, and stadium data
+ * @example
+ * // Request: GET /api/stadiums/roof?roofType=Open
+ * // Response:
+ * {
+ *   success: true,
+ *   count: 15,
+ *   totalTeams: 20,
+ *   roofType: 'Open',
+ *   data: [/* array of unique stadiums *\/]
+ * }
+ */
 const getStadiumsByRoofType = async (req, res) => {
   try {
     const { roofType } = req.query;
@@ -65,6 +90,23 @@ const getStadiumsByRoofType = async (req, res) => {
   }
 };
 
+/**
+ * Get all unique stadiums
+ * Returns all unique stadiums from all teams (if two teams share a stadium, count once)
+ * 
+ * @route GET /api/stadiums/all-stadiums
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status, count, and stadium data
+ * @example
+ * // Request: GET /api/stadiums/all-stadiums
+ * // Response:
+ * {
+ *   success: true,
+ *   count: 30,
+ *   data: [/* array of unique stadiums *\/]
+ * }
+ */
 const getAllStadiums = async (req, res) => {
   try {
     // Get all teams (no roof type filter)
@@ -118,6 +160,17 @@ const getAllStadiums = async (req, res) => {
   }
 };
 
+/**
+ * Create new stadium
+ * Creates a new stadium (Admin only)
+ * 
+ * @route POST /api/stadiums
+ * @access Private (Admin only)
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Stadium data to create
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and created stadium data
+ */
 const createStadium = async (req, res) => {
     try {
         const stadiums = await Team.stadium.create(req.body);
@@ -135,6 +188,20 @@ const createStadium = async (req, res) => {
     }
 };
 
+/**
+ * Update stadium
+ * Updates an existing stadium by team ID (Admin only)
+ * Updates the stadium information for the team
+ * 
+ * @route PUT /api/stadiums/:id
+ * @access Private (Admin only)
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request parameters
+ * @param {string} req.params.id - Team ID whose stadium to update
+ * @param {Object} req.body - Updated stadium data
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and updated stadium data
+ */
 const updateStadium = async (req, res) => {
     try {
         const { id } = req.params;
@@ -175,6 +242,19 @@ const updateStadium = async (req, res) => {
     }
 };
 
+/**
+ * Delete stadium
+ * Deletes a stadium by removing it from the team (Admin only)
+ * Uses $unset to remove the stadium field from the team document
+ * 
+ * @route DELETE /api/stadiums/:id
+ * @access Private (Admin only)
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request parameters
+ * @param {string} req.params.id - Team ID whose stadium to delete
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and message
+ */
 const deleteStadium = async (req, res) => {
     try {
         const { id } = req.params;

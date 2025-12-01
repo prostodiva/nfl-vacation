@@ -1,3 +1,8 @@
+/**
+ * @fileoverview FilterSection component - Advanced filtering and sorting for teams/stadiums
+ * @module FilterSection
+ */
+
 import { useMemo, useState } from 'react';
 import type { FilterConfig } from "../config/filterConfigs.ts";
 import { useFilter } from "../hooks/useFilter";
@@ -13,13 +18,37 @@ import Dropdown, { type DropdownOption } from './Dropdown';
 import Skeleton from "./Skeleton";
 import TeamCard from "./TeamCard";
 
+/**
+ * Props for FilterSection component
+ */
 interface FilterSectionProps {
+    /** Array of filter configurations */
     filters: FilterConfig[];
+    /** Optional title for the filter section */
     title?: string;
+    /** Whether to enable sorting functionality */
     enableSorting?: boolean;
+    /** Type of view: 'teams' or 'stadiums' */
     viewType?: 'teams' | 'stadiums';
 }
 
+/**
+ * FilterSection component
+ * Provides advanced filtering, sorting, and display of teams or stadiums
+ * Supports multiple filter types, sorting options, and roof type filtering
+ * 
+ * @param {FilterSectionProps} props - Component props
+ * @returns {JSX.Element} Filter section with teams/stadiums display
+ * 
+ * @example
+ * ```tsx
+ * <FilterSection
+ *   filters={teamFilters}
+ *   enableSorting={true}
+ *   viewType="teams"
+ * />
+ * ```
+ */
 function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: FilterSectionProps) {
     const {
         data: allTeamsData,

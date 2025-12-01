@@ -1,13 +1,47 @@
+/**
+ * @fileoverview Purchase service controller - Handles shopping cart and purchase operations
+ * @module purchaseService
+ */
+
 const Purchase = require('../models/Purchase');
 const Team = require('../models/Team');
 const { v4: uuidv4 } = require('uuid');
 
-// Generate or get session ID
+/**
+ * Generate or get session ID from request
+ * Checks headers first, then body, then generates new UUID
+ * 
+ * @param {Object} req - Express request object
+ * @returns {string} Session ID
+ * @private
+ */
 const getSessionId = (req) => {
   return req.headers['x-session-id'] || req.body.sessionId || uuidv4();
 };
 
-// Add item to cart (creates or updates cart)
+/**
+ * Add item to cart
+ * Creates a new cart or adds/updates item in existing pending cart
+ * Automatically increments quantity if item already exists
+ * 
+ * @route POST /api/purchases/add-to-cart
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.souvenirId - ID of souvenir to add
+ * @param {number} [req.body.quantity=1] - Quantity to add
+ * @param {string} [req.body.sessionId] - Optional session ID (generated if not provided)
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status, cart data, and sessionId
+ * @example
+ * // Request: POST /api/purchases/add-to-cart
+ * // Body: { souvenirId: '...', quantity: 2 }
+ * // Response:
+ * {
+ *   success: true,
+ *   data: { /* cart object *\/ },
+ *   sessionId: 'uuid-here'
+ * }
+ */
 const addToCart = async (req, res) => {
   try {
     const { souvenirId, quantity = 1 } = req.body;
@@ -93,7 +127,6 @@ const addToCart = async (req, res) => {
   }
 };
 
-// Get current cart
 const getCart = async (req, res) => {
   try {
     const sessionId = req.headers['x-session-id'] || req.query.sessionId;
@@ -125,7 +158,20 @@ const getCart = async (req, res) => {
   }
 };
 
-// Update cart item quantity
+/**
+ * Update cart item quantity
+ * Updates the quantity of an item in the cart
+ * 
+ * @route PUT /api/purchases/update-cart/:itemId
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request parameters
+ * @param {string} req.params.itemId - Cart item ID to update
+ * @param {Object} req.body - Request body
+ * @param {number} req.body.quantity - New quantity
+ * @param {string} [req.body.sessionId] - Session ID
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and updated cart data
+ */
 const updateCartItem = async (req, res) => {
   try {
     const { itemId, quantity } = req.body;
@@ -187,7 +233,19 @@ const updateCartItem = async (req, res) => {
   }
 };
 
-// Remove item from cart
+/**
+ * Remove item from cart
+ * Removes an item from the shopping cart
+ * 
+ * @route DELETE /api/purchases/remove-from-cart/:itemId
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request parameters
+ * @param {string} req.params.itemId - Cart item ID to remove
+ * @param {string} [req.headers['x-session-id']] - Session ID from header
+ * @param {string} [req.query.sessionId] - Session ID from query parameter
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and updated cart data
+ */
 const removeFromCart = async (req, res) => {
   try {
     const { itemId } = req.params;
@@ -234,7 +292,17 @@ const removeFromCart = async (req, res) => {
   }
 };
 
-// Checkout (complete purchase)
+/**
+ * Checkout (complete purchase)
+ * Completes a purchase by changing cart status from 'pending' to 'completed'
+ * 
+ * @route POST /api/purchases/checkout
+ * @param {Object} req - Express request object
+ * @param {string} [req.headers['x-session-id']] - Session ID from header
+ * @param {string} [req.body.sessionId] - Session ID from body
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and completed purchase data
+ */
 const checkout = async (req, res) => {
   try {
     const sessionId = req.headers['x-session-id'] || req.body.sessionId;
@@ -277,7 +345,17 @@ const checkout = async (req, res) => {
   }
 };
 
-// Get purchase history
+/**
+ * Get purchase history
+ * Retrieves all completed purchases for a session
+ * 
+ * @route GET /api/purchases/history
+ * @param {Object} req - Express request object
+ * @param {string} [req.headers['x-session-id']] - Session ID from header
+ * @param {string} [req.query.sessionId] - Session ID from query parameter
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status, count, and purchase history
+ */
 const getPurchaseHistory = async (req, res) => {
   try {
     const sessionId = req.headers['x-session-id'] || req.query.sessionId;
@@ -309,7 +387,17 @@ const getPurchaseHistory = async (req, res) => {
   }
 };
 
-// Get spending summary by stadium
+/**
+ * Get spending summary by stadium
+ * Calculates total spending grouped by stadium for a session
+ * 
+ * @route GET /api/purchases/spending-by-stadium
+ * @param {Object} req - Express request object
+ * @param {string} [req.headers['x-session-id']] - Session ID from header
+ * @param {string} [req.query.sessionId] - Session ID from query parameter
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and spending summary by stadium
+ */
 const getSpendingByStadium = async (req, res) => {
   try {
     const sessionId = req.headers['x-session-id'] || req.query.sessionId;
@@ -368,7 +456,17 @@ const getSpendingByStadium = async (req, res) => {
   }
 };
 
-// Get grand total spending
+/**
+ * Get grand total spending
+ * Calculates total spending and item count across all purchases for a session
+ * 
+ * @route GET /api/purchases/grand-total
+ * @param {Object} req - Express request object
+ * @param {string} [req.headers['x-session-id']] - Session ID from header
+ * @param {string} [req.query.sessionId] - Session ID from query parameter
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status, grand total, and total items
+ */
 const getGrandTotal = async (req, res) => {
   try {
     const sessionId = req.headers['x-session-id'] || req.query.sessionId;
@@ -416,7 +514,19 @@ const getGrandTotal = async (req, res) => {
   }
 };
 
-// Get purchase receipt
+/**
+ * Get purchase receipt
+ * Retrieves a specific completed purchase receipt by ID
+ * 
+ * @route GET /api/purchases/receipt/:purchaseId
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request parameters
+ * @param {string} req.params.purchaseId - Purchase ID
+ * @param {string} [req.headers['x-session-id']] - Session ID from header
+ * @param {string} [req.query.sessionId] - Session ID from query parameter
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and purchase receipt data
+ */
 const getReceipt = async (req, res) => {
   try {
     const { purchaseId } = req.params;

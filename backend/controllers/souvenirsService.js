@@ -1,5 +1,38 @@
+/**
+ * @fileoverview Souvenir service controller - Handles all souvenir-related API endpoints
+ * @module souvenirsService
+ */
+
 const Team = require('../models/Team');
 
+/**
+ * Get all souvenirs
+ * Retrieves all souvenirs from all teams, flattened with team and stadium information
+ * 
+ * @route GET /api/souvenirs
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status, count, and souvenir data
+ * @example
+ * // Request: GET /api/souvenirs
+ * // Response:
+ * {
+ *   success: true,
+ *   count: 150,
+ *   data: [
+ *     {
+ *       _id: '...',
+ *       name: 'Team Jersey',
+ *       price: 99.99,
+ *       category: 'Apparel',
+ *       teamName: 'Green Bay Packers',
+ *       stadiumName: 'Lambeau Field',
+ *       ...
+ *     },
+ *     ...
+ *   ]
+ * }
+ */
 const getAllSouvenirs = async (req, res) => {
   try {
     const teams = await Team.find({}, 'teamName souvenirs stadium');
@@ -75,6 +108,20 @@ const createSouvenir = async (req, res) => {
     }
 }; 
 
+/**
+ * Update souvenir
+ * Updates an existing souvenir by ID (Admin only)
+ * Only allows updating name, price, category, and isTraditional fields
+ * 
+ * @route PUT /api/souvenirs/:id
+ * @access Private (Admin only)
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request parameters
+ * @param {string} req.params.id - Souvenir ID to update
+ * @param {Object} req.body - Updated souvenir data (name, price, category, isTraditional)
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and updated souvenir data
+ */
 const updateSouvenir = async (req, res) => {
     try {
         const { id } = req.params;
@@ -132,6 +179,19 @@ const updateSouvenir = async (req, res) => {
     }
 };
 
+/**
+ * Delete souvenir
+ * Deletes a souvenir by ID (Admin only)
+ * Removes the souvenir from the team's souvenirs array
+ * 
+ * @route DELETE /api/souvenirs/:id
+ * @access Private (Admin only)
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request parameters
+ * @param {string} req.params.id - Souvenir ID to delete
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and message
+ */
 const deleteSouvenir = async (req, res) => {
     try {
         const { id } = req.params;

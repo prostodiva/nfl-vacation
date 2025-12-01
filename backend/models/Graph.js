@@ -1,20 +1,50 @@
+/**
+ * @fileoverview GraphService class for running graph algorithms on NFL teams
+ * @module GraphService
+ */
+
 const mongoose = require('mongoose');
 const { PriorityQueue, UnionFind } = require('../utils/dataStructures');
 const { stadiumCoordinates } = require('../utils/stadiumCoordinates');
 
+/**
+ * GraphService class for executing graph algorithms
+ * Implements DFS, BFS, Dijkstra's, A*, and Kruskal's algorithms
+ * Uses adjacency matrix representation for graph storage
+ * 
+ * @class GraphService
+ */
 class GraphService {
 
+    /**
+     * Creates a new GraphService instance
+     * @param {Array<Object>} teams - Array of team objects
+     * @param {Array<Object>} edges - Array of edge objects with distance information
+     * @constructor
+     */
     constructor(teams, edges) {
+        /** @type {Array<Object>} Array of team objects */
         this.teams = teams;
+        /** @type {Array<Object>} Array of edge objects */
         this.edges = edges;
+        /** @type {Array<Array<number>>|null} Adjacency matrix representation */
         this.adjacencyMatrix = null;
+        /** @type {Array<string>} Array of team names indexed by position */
         this.teamNames = [];
+        /** @type {Object<string, number>} Map from team name to index */
         this.nameToIndex = {};
+        /** @type {Object<string, number>} Map from team ID to index */
         this.idToIndex = {};
 
         this.buildGraph();
     }
 
+    /**
+     * Builds the adjacency matrix from teams and edges
+     * Creates mappings for team names and IDs to matrix indices
+     * @returns {void}
+     * @timeComplexity O(N² + E) where N = teams, E = edges
+     */
     buildGraph() {
         // Build team mappings
         this.teams.forEach((team, index) => {
@@ -58,6 +88,22 @@ class GraphService {
 
 // ==================== DFS ALGORITHM ====================
 
+    /**
+     * Runs Depth-First Search algorithm starting from a given team
+     * Explores the graph by going as deep as possible before backtracking
+     * 
+     * @param {string} startTeamName - Name of the starting team
+     * @returns {Object} Result object containing:
+     *   - algorithm: 'DFS'
+     *   - startCity: Starting team name
+     *   - visitOrder: Array of teams visited in order
+     *   - discoveryEdges: Array of edges used in traversal
+     *   - backEdges: Array of back edges found
+     *   - totalDistance: Total distance traveled
+     * @throws {Error} If startTeamName is not found
+     * @timeComplexity O(N²) where N = number of teams
+     * @spaceComplexity O(N + E) for visited array and recursion stack
+     */
     runDFS(startTeamName) {
         const startIndex = this.nameToIndex[startTeamName];
         if (startIndex === undefined) {
@@ -130,6 +176,22 @@ class GraphService {
 
     // ==================== BFS ALGORITHM ====================
 
+    /**
+     * Runs Breadth-First Search algorithm starting from a given team
+     * Explores the graph level by level
+     * 
+     * @param {string} startTeamName - Name of the starting team
+     * @returns {Object} Result object containing:
+     *   - algorithm: 'BFS'
+     *   - startCity: Starting team name
+     *   - levels: Array of arrays representing each level
+     *   - discoveryEdges: Array of edges used in traversal
+     *   - crossEdges: Array of cross edges found
+     *   - totalDistance: Total distance traveled
+     * @throws {Error} If startTeamName is not found
+     * @timeComplexity O(N²) where N = number of teams
+     * @spaceComplexity O(N) for queue and visited array
+     */
     runBFS(startTeamName) {
         const startIndex = this.nameToIndex[startTeamName];
         if (startIndex === undefined) {
@@ -222,6 +284,25 @@ class GraphService {
 
     // ==================== DIJKSTRA'S ALGORITHM ====================
 
+    /**
+     * Runs Dijkstra's shortest path algorithm
+     * Finds shortest paths from start team to all other teams (or specific end team)
+     * Uses PriorityQueue for efficient implementation
+     * 
+     * @param {string} startTeamName - Name of the starting team
+     * @param {string|null} [endTeamName=null] - Optional end team name for single destination
+     * @returns {Object} Result object containing:
+     *   - algorithm: 'DIJKSTRA'
+     *   - startCity: Starting team name
+     *   - distances: Object mapping team names to shortest distances
+     *   - paths: Object mapping team names to shortest paths
+     *   - discoveryEdges: Array of edges in shortest paths
+     *   - visitOrder: Array of teams visited in order
+     *   - totalDistance: Total distance (if endTeam specified, distance to end)
+     * @throws {Error} If startTeamName is not found
+     * @timeComplexity O(N² log N) where N = number of teams
+     * @spaceComplexity O(N²) for adjacency matrix + O(N) for arrays
+     */
     runDijkstra(startTeamName, endTeamName = null) {
         const startIndex = this.nameToIndex[startTeamName];
         if (startIndex === undefined) {
@@ -355,6 +436,25 @@ class GraphService {
 
     // ==================== A* ALGORITHM ====================
 
+    /**
+     * Runs A* search algorithm for finding optimal path
+     * Uses heuristic function based on stadium coordinates
+     * More efficient than Dijkstra's when searching for specific destination
+     * 
+     * @param {string} startTeamName - Name of the starting team
+     * @param {string} endTeamName - Name of the destination team
+     * @returns {Object} Result object containing:
+     *   - algorithm: 'A*'
+     *   - startCity: Starting team name
+     *   - endCity: Destination team name
+     *   - path: Array of team names in optimal path
+     *   - pathDistance: Total distance of optimal path
+     *   - discoveryEdges: Array of edges in the path
+     *   - visitOrder: Array of teams visited during search
+     * @throws {Error} If startTeamName or endTeamName is not found, or if endTeamName is missing
+     * @timeComplexity O(N² log N) worst case, but typically better than Dijkstra's
+     * @spaceComplexity O(N²) for adjacency matrix + O(N) for arrays
+     */
     runAStar(startTeamName, endTeamName) {
         if (!endTeamName) {
             throw new Error('A* algorithm requires both startTeam and endTeam');
@@ -465,7 +565,16 @@ class GraphService {
         return result;
     }
 
-    // Heuristic function: estimates distance from current to goal
+    /**
+     * Heuristic function for A* algorithm
+     * Estimates distance using Euclidean distance between stadium coordinates
+     * 
+     * @param {number} currentIndex - Index of current team
+     * @param {number} goalIndex - Index of goal team
+     * @returns {number} Estimated distance (Euclidean distance in pixel space)
+     * @timeComplexity O(1)
+     * @private
+     */
     heuristic(currentIndex, goalIndex) {
         const currentTeam = this.teamNames[currentIndex];
         const goalTeam = this.teamNames[goalIndex];
@@ -484,6 +593,24 @@ class GraphService {
 
     // ==================== KRUSKAL'S ALGORITHM ====================
 
+    /**
+     * Runs Kruskal's algorithm to find Minimum Spanning Tree (MST)
+     * Finds the minimum cost set of edges that connects all teams
+     * Uses UnionFind data structure to detect cycles
+     * 
+     * @returns {Object} Result object containing:
+     *   - algorithm: 'KRUSKAL'
+     *   - totalVertices: Number of vertices (teams)
+     *   - totalEdges: Total number of edges in graph
+     *   - mstEdges: Number of edges in MST
+     *   - totalDistance: Total weight of MST
+     *   - discoveryEdges: Array of edges in MST
+     *   - visitOrder: Array of all teams in MST
+     *   - sortedEdges: All edges sorted by weight
+     *   - processedEdges: Array showing which edges were added/rejected
+     * @timeComplexity O(E log E) where E = number of edges (dominated by sorting)
+     * @spaceComplexity O(N²) for adjacency matrix + O(E) for edges
+     */
     runKruskal() {
         const N = this.adjacencyMatrix.length;
         

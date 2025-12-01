@@ -1,14 +1,48 @@
+/**
+ * @fileoverview Custom route service controller - Handles custom and recursive route calculations
+ * @module customRouteService
+ */
+
 const Team = require('../models/Team');
 const { GraphService } = require('../models/Graph');
 const mongoose = require('mongoose');
 
-// Helper function to get team name from stadium name
+/**
+ * Helper function to get team name from stadium name
+ * @param {string} stadiumName - Name of the stadium
+ * @param {Array<Object>} teams - Array of team objects
+ * @returns {string|null} Team name or null if not found
+ * @private
+ */
 const getTeamFromStadium = (stadiumName, teams) => {
     const team = teams.find(t => t.stadium?.name === stadiumName);
     return team ? team.teamName : null;
 };
 
-// Controller function for Custom Distance Route calculation using Dijkstra's
+/**
+ * Calculate custom route
+ * Calculates optimal route between multiple teams using Dijkstra's algorithm
+ * Finds shortest path between each consecutive pair of teams
+ * 
+ * @route POST /api/custom-route
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {Array<string>} req.body.teamIds - Array of team IDs in desired order
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and route data
+ * @example
+ * // Request: POST /api/custom-route
+ * // Body: { teamIds: ['id1', 'id2', 'id3'] }
+ * // Response:
+ * {
+ *   success: true,
+ *   data: {
+ *     route: ['Team1', 'Team2', 'Team3'],
+ *     totalDistance: 1234.56,
+ *     routeEdges: [...]
+ *   }
+ * }
+ */
 const calculateCustomRoute = async (req, res) => {
       console.log('🔥 RECURSIVE ROUTE HIT!'); 
     try {
@@ -147,7 +181,28 @@ const calculateCustomRoute = async (req, res) => {
     }
 };
 
-// Recursive function to calculate shortest distance from New England Patriots
+/**
+ * Calculate recursive route
+ * Calculates a route visiting all teams starting from New England Patriots
+ * Uses greedy approach: always visits the closest unvisited team
+ * 
+ * @route POST /api/recursive
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and route data
+ * @example
+ * // Request: POST /api/recursive
+ * // Response:
+ * {
+ *   success: true,
+ *   data: {
+ *     algorithm: 'DIJKSTRA',
+ *     route: ['New England Patriots', '...', '...'],
+ *     totalDistance: 12345.67,
+ *     routeEdges: [...]
+ *   }
+ * }
+ */
 const calculateRecursiveRoute = async (req, res) => {
     try {
         const teams = await Team.find({}).lean();

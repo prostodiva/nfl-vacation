@@ -1,23 +1,57 @@
-
-/*
-// Usage:
-// GET /api/dfs?startTeam=Minnesota Vikings
-// GET /api/bfs?startTeam=Los Angeles Rams
-// GET /api/dijkstra?startTeam=Green Bay Packers
-// GET /api/A?startTeam=Green Bay Packers
-*/
+/**
+ * @fileoverview Graph algorithm controllers - Handles all graph algorithm API endpoints
+ * @module graphService
+ * 
+ * @example
+ * // Usage examples:
+ * // GET /api/dfs?startTeam=Minnesota Vikings
+ * // GET /api/bfs?startTeam=Los Angeles Rams
+ * // GET /api/dijkstra?startTeam=Green Bay Packers&endTeam=New England Patriots
+ * // GET /api/astar?startTeam=Green Bay Packers&endTeam=New England Patriots
+ * // GET /api/kruskal
+ */
 
 const { GraphService } = require('../models/Graph');
 const Team = require('../models/Team');
 const mongoose = require('mongoose');
 
-// Helper function to get team name from stadium name
+/**
+ * Helper function to get team name from stadium name
+ * @param {string} stadiumName - Name of the stadium
+ * @param {Array<Object>} teams - Array of team objects
+ * @returns {string|null} Team name or null if not found
+ * @private
+ */
 const getTeamFromStadium = (stadiumName, teams) => {
     const team = teams.find(t => t.stadium?.name === stadiumName);
     return team ? team.teamName : null;
 };
 
-// Controller function for DFS
+/**
+ * Run Depth-First Search algorithm
+ * Explores the graph starting from a given team using DFS traversal
+ * 
+ * @route GET /api/dfs
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} [req.query.startTeam='Minnesota Vikings'] - Starting team name
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and algorithm result data
+ * @example
+ * // Request: GET /api/dfs?startTeam=Green%20Bay%20Packers
+ * // Response:
+ * {
+ *   success: true,
+ *   data: {
+ *     algorithm: 'DFS',
+ *     startCity: 'Green Bay Packers',
+ *     visitOrder: [...],
+ *     discoveryEdges: [...],
+ *     backEdges: [...],
+ *     totalDistance: 1234.56
+ *   }
+ * }
+ */
 const runDFS = async (req, res) => {
     try {
         const { startTeam = 'Minnesota Vikings' } = req.query;
@@ -56,7 +90,31 @@ const runDFS = async (req, res) => {
     }
 };
 
-// Controller function for BFS
+/**
+ * Run Breadth-First Search algorithm
+ * Explores the graph starting from a given team using BFS traversal
+ * 
+ * @route GET /api/bfs
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} [req.query.startTeam='Minnesota Vikings'] - Starting team name
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and algorithm result data
+ * @example
+ * // Request: GET /api/bfs?startTeam=Los%20Angeles%20Rams
+ * // Response:
+ * {
+ *   success: true,
+ *   data: {
+ *     algorithm: 'BFS',
+ *     startCity: 'Los Angeles Rams',
+ *     levels: [[...], [...]],
+ *     discoveryEdges: [...],
+ *     crossEdges: [...],
+ *     totalDistance: 1234.56
+ *   }
+ * }
+ */
 const runBFS = async (req, res) => {
     try {
         const { startTeam = 'Minnesota Vikings' } = req.query;
@@ -92,7 +150,34 @@ const runBFS = async (req, res) => {
     }
 };
 
-// Controller for Dijkstra's shortest path
+/**
+ * Run Dijkstra's shortest path algorithm
+ * Finds shortest paths from start team to all teams or specific end team
+ * 
+ * @route GET /api/dijkstra
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} [req.query.startTeam='Green Bay Packers'] - Starting team name
+ * @param {string} [req.query.endTeam] - Optional destination team name
+ * @param {string} [req.query.detailed='false'] - Whether to include detailed path info
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and algorithm result data
+ * @example
+ * // Request: GET /api/dijkstra?startTeam=Green%20Bay%20Packers&endTeam=New%20England%20Patriots
+ * // Response:
+ * {
+ *   success: true,
+ *   algorithm: 'Dijkstra',
+ *   timestamp: '2024-01-01T00:00:00.000Z',
+ *   data: {
+ *     algorithm: 'DIJKSTRA',
+ *     startCity: 'Green Bay Packers',
+ *     path: ['Green Bay Packers', '...', 'New England Patriots'],
+ *     pathDistance: 1234.56,
+ *     ...
+ *   }
+ * }
+ */
 const runDijkstra = async (req, res) => {
     try {
         const {
@@ -149,7 +234,36 @@ const runDijkstra = async (req, res) => {
     }
 };
 
-//controller function for A* from Green Bay Packers
+/**
+ * Run A* search algorithm
+ * Finds optimal path between two teams using heuristic-based search
+ * Requires both startTeam and endTeam parameters
+ * 
+ * @route GET /api/astar
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} [req.query.startTeam='Green Bay Packers'] - Starting team name
+ * @param {string} req.query.endTeam - Destination team name (required)
+ * @param {string} [req.query.detailed='false'] - Whether to include detailed path info
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and algorithm result data
+ * @example
+ * // Request: GET /api/astar?startTeam=Green%20Bay%20Packers&endTeam=New%20England%20Patriots
+ * // Response:
+ * {
+ *   success: true,
+ *   algorithm: 'astar',
+ *   timestamp: '2024-01-01T00:00:00.000Z',
+ *   data: {
+ *     algorithm: 'A*',
+ *     startCity: 'Green Bay Packers',
+ *     endCity: 'New England Patriots',
+ *     path: [...],
+ *     pathDistance: 1234.56,
+ *     ...
+ *   }
+ * }
+ */
 const runAStar = async (req, res) => {
     try {
         const {
@@ -204,7 +318,32 @@ const runAStar = async (req, res) => {
     }
 }
 
-// Controller function for Kruskal's Minimum Spanning Tree
+/**
+ * Run Kruskal's Minimum Spanning Tree algorithm
+ * Finds the minimum cost set of edges that connects all teams
+ * 
+ * @route GET /api/kruskal
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status and MST result data
+ * @example
+ * // Request: GET /api/kruskal
+ * // Response:
+ * {
+ *   success: true,
+ *   algorithm: 'Kruskal',
+ *   timestamp: '2024-01-01T00:00:00.000Z',
+ *   data: {
+ *     algorithm: 'KRUSKAL',
+ *     totalVertices: 32,
+ *     totalEdges: 496,
+ *     mstEdges: 31,
+ *     totalDistance: 12345.67,
+ *     discoveryEdges: [...],
+ *     ...
+ *   }
+ * }
+ */
 const runKruskal = async (req, res) => {
     try {
         // Fetch teams and distances from database

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Admin service controller - Handles admin authentication and data import
+ * @module adminService
+ */
+
 const Admin = require('../models/Admin');
 const { exec } = require('child_process');
 const path = require('path');
@@ -5,6 +10,16 @@ const util = require('util');
 const fs = require('fs');
 const execPromise = util.promisify(exec);
 
+/**
+ * Create admin account
+ * Creates a new admin user in the database
+ * 
+ * @param {string} email - Admin email address
+ * @param {string} password - Admin password (stored as plain text - not recommended for production)
+ * @returns {Promise<Object>} Created admin object
+ * @throws {Error} If admin creation fails
+ * @private
+ */
 const createAdmin = async (email, password) => {
     try {
         const admin = await Admin.create({ email, password });
@@ -14,6 +29,16 @@ const createAdmin = async (email, password) => {
     }
 };
 
+/**
+ * Login admin
+ * Authenticates an admin user by email and password
+ * 
+ * @param {string} email - Admin email address
+ * @param {string} password - Admin password
+ * @returns {Promise<Object|null>} Admin object with id and email, or null if invalid
+ * @throws {Error} If login fails
+ * @private
+ */
 const loginAdmin = async (email, password) => {
     try {
         const admin = await Admin.findOne({ email });
@@ -26,6 +51,30 @@ const loginAdmin = async (email, password) => {
     }
 };
 
+/**
+ * Import data from Excel file
+ * Imports teams, distances, or souvenirs from uploaded Excel file
+ * Automatically detects import type from filename
+ * 
+ * @route POST /api/admin/import
+ * @access Private (Admin only)
+ * @param {Object} req - Express request object
+ * @param {Object} req.file - Uploaded file (multer)
+ * @param {string} req.file.originalname - Original filename (must be 'teams-stadiums.xlsx', 'stadium-distances.xlsx', or 'souvenirs.xlsx')
+ * @param {string} req.file.path - Temporary file path
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with success status, message, and import count
+ * @example
+ * // Request: POST /api/admin/import
+ * // FormData with file: teams-stadiums.xlsx
+ * // Response:
+ * {
+ *   success: true,
+ *   message: 'Successfully imported teams from Excel',
+ *   importedCount: 32,
+ *   type: 'teams'
+ * }
+ */
 const importFromExcel = async (req, res) => {
     let uploadedFilePath = null;
     let targetFilePath = null;
