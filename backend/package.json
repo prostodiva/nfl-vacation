@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
     "dev": "nodemon server.js",
     "docs": "jsdoc controllers/ models/ routes/ middleware/ utils/ *.js -d docs -r",
     "docs:watch": "jsdoc controllers/ models/ routes/ middleware/ utils/ *.js -d docs -r --watch"

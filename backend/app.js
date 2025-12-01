@@ -14,15 +14,26 @@ const purchaseRoutes = require('./routes/purchaseRoutes');
 
 const app = express();
 
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nfl-vacation';
+
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/nfl-vacation', {
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
 .then(() => console.log('MongoDB connected'))
 .catch((err) => console.error('MongoDB connection error:', err));
 
-app.use(cors());
+// CORS configuration - allow your frontend domain
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:3001'];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(basicMiddleware);
 
