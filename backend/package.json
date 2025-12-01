@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "docs": "jsdoc controllers/ models/ routes/ middleware/ utils/ *.js -d docs -r",
+    "docs:watch": "jsdoc controllers/ models/ routes/ middleware/ utils/ *.js -d docs -r --watch"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +22,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "jsdoc": "^4.0.5",
     "nodemon": "^3.1.10"
   }
 }
