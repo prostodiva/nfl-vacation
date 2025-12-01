@@ -15,7 +15,7 @@ function CustomTrip() {
     const [addedTeams, setAddedTeams] = useState<Team[]>([]);
     const { data: teamsData, isLoading, isError } = useGetAllTeamsQuery();
     const [routeError, setRouteError] = useState<string | null>(null);
-    const [calculateRoute, { data: routeData, isLoading: isCalculating, isError: hasError, reset }] =
+    const [calculateRoute, { data: routeData, isLoading: isCalculating, reset }] =
     useCalculateCustomRouteMutation();
 
     const [addToCart] = useAddToCartMutation();

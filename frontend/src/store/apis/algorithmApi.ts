@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { AlgorithmData } from '../types/algorithmTypes';
-import type { CustomRouteRequest, CustomRouteResponse, RecursiveRouteData, RecursiveRouteResponse} from '../types/algorithmTypes';
+import type { AlgorithmData, CustomRouteRequest, CustomRouteResponse, RecursiveRouteResponse } from '../types/algorithmTypes';
 
 interface AlgorithmResponse {
     success: boolean;

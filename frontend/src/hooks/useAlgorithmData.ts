@@ -2,7 +2,7 @@ import { useGetAlgorithmDataQuery } from '../store/apis/algorithmApi';
 
 export function useAlgorithmData(algorithmType: string | null) {
     const { data, isLoading, isError, error } = useGetAlgorithmDataQuery(
-        algorithmType || '',
+        algorithmType ? { algorithmType } : { algorithmType: '' },
         { skip: !algorithmType } 
     );
 

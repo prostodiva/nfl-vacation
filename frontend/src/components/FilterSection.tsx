@@ -29,29 +29,31 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
 
     const {
         data: stadiumsData,
-        isLoading: isLoadingStadiums,
-        isError: isErrorStadiums
+        isLoading: isLoadingStadiums
     } = useGetTeamsByStadiumsQuery(undefined, {
         skip: viewType !== 'stadiums'  // Only fetch when on stadiums tab
     });
 
     const {
         data: conferenceData,
-        isLoading: isLoadingConference,
-        isError: isErrorConference
+        isLoading: isLoadingConference
     } = useGetAllTeamsByConferenceQuery(undefined, {
         skip: viewType !== 'teams'  // Only fetch when on teams tab
     });
 
     // Get the selected roof type from filters
     const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
-    const selectedRoofType = activeFilters['roofType'] as 'Open' | 'Dome' | 'Retractable' | undefined;
+    const roofTypeFilter = activeFilters['roofType'];
+    // Map 'Dome' to 'Fixed' for API compatibility, or use as-is if it's already a valid type
+    const selectedRoofType = roofTypeFilter === 'Dome' 
+        ? 'Fixed' as const
+        : (roofTypeFilter as 'Open' | 'Fixed' | 'Retractable' | undefined);
 
     // Fetch stadiums by roof type when a roof type is selected
     const {
         data: roofTypeData,
         isLoading: isLoadingRoofType
-    } = useGetStadiumsByRoofTypeQuery(selectedRoofType!, {
+    } = useGetStadiumsByRoofTypeQuery(selectedRoofType as 'Open' | 'Fixed' | 'Retractable', {
         skip: !selectedRoofType || viewType !== 'stadiums'  // Only fetch when roof type is selected and on stadiums tab
     });
     const [sortByConference, setSortByConference] = useState<boolean>(false);
@@ -131,7 +133,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         filteredData: finalFilteredData,
         setFilter: setClientFilter,
         clearAllFilters: clearClientFilters,
-        hasActiveFilters: hasClientFilters
+        hasActiveFilters: _hasClientFilters
     } = useFilter(displayData, filterConfig);
 
     // Now all the sorting/filtering code can safely access team.stadium without optional chaining
@@ -249,7 +251,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
             setSortBy(null);
             setSortOrder(null);
         } else {
-            const [field, order] = option.value.split('-');
+            const [field, order] = String(option.value).split('-');
             setSortBy(field);
             setSortOrder(order as 'asc' | 'desc');
         }
@@ -308,7 +310,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                         key={filter.key}
                         options={dropdownOptions[filter.key]}
                         value={getSelectedOption(filter.key)}
-                        onChange={(opt) => handleFilterChange(filter.key, opt.value)} 
+                        onChange={(opt) => handleFilterChange(filter.key, String(opt.value))} 
                         placeholder={filter.placeholder}
                         className="w-54"
                     />

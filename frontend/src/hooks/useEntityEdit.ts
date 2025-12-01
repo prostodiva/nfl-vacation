@@ -21,7 +21,7 @@ export function useEntityEdit<T extends { _id: string }, TUpdate>({
     try {
       const transformedData = transformData(updatedData);
       
-      const result = await updateItem({
+      await updateItem({
         id: editingItem._id,
         ...transformedData  
       }).unwrap();

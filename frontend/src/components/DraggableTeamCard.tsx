@@ -10,7 +10,7 @@ interface DraggableTeamCardProps {
     onRemove: (id: string) => void;
     showSouvenirs?: boolean;
     showAddToCart?: boolean;
-    onAddToCart?: (souvenirId: string) => void;
+    onAddToCart?: (souvenirId: string, quantity: number) => void;
 }
 
 function DraggableTeamCard({ 

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { StadiumsByRoofTypeResponse, StadiumResponse, SingleStadiumResponse, CreateStadiumRequest} from '../types/teamTypes';
+import type { CreateStadiumRequest, SingleStadiumResponse, StadiumResponse, StadiumsByRoofTypeResponse, UpdateStadiumRequest } from '../types/teamTypes';
 
 
 export const stadiumApi = createApi({

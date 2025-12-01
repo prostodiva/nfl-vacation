@@ -47,7 +47,7 @@ export const teamsApi = createApi({
     // Get team by ID
     getTeamById: builder.query<TeamsResponse, string>({
       query: (teamId) => `/${teamId}`, // GET /api/teams/:id
-      providesTags: (result, error, teamId) => [{ type: 'Team', id: teamId }],
+      providesTags: (_result, _error, teamId) => [{ type: 'Team', id: teamId }],
     }),
 
     // store/apis/teamsApi.ts

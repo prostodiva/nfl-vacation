@@ -1,11 +1,13 @@
+import { useState } from "react";
 import TeamsList from "../components/TeamList.tsx";
-import {useState} from "react";
+import { useGetAllTeamsQuery } from '../store/apis/teamsApi';
 
 function TeamsPage() {
-  const showTeams = useState(false);
+  const [showTeams] = useState(false);
+  const { data: teamsData } = useGetAllTeamsQuery();
 
   return <div>
-    {showTeams && <TeamsList />}
+    {showTeams && teamsData?.data && <TeamsList teams={teamsData.data} />}
   </div>;
 }
 

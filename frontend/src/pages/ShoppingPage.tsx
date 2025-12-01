@@ -7,7 +7,7 @@ import StadiumCardShopping from '../components/shopping/StadiumCardShopping';
 import ShoppingCart from '../components/shopping/ShoppingCart';
 import PurchaseTracking from '../components/shopping/PurchaseTracking';
 import Button from '../components/Button';
-import { FiShoppingCart, FiBarChart2, FiX, FiFilter } from 'react-icons/fi';
+import { FiShoppingCart, FiBarChart2, FiX } from 'react-icons/fi';
 
 function ShoppingPage() {
   const [showCart, setShowCart] = useState(false);
