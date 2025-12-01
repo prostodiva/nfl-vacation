@@ -46,26 +46,17 @@ jobs:
           cd backend
           npm run docs
       
-      # Upload documentation as artifact
+      # Upload documentation as artifacts (downloadable)
       - name: Upload Frontend Docs
         uses: actions/upload-artifact@v4
         with:
           name: frontend-docs
           path: frontend/docs/
-          retention-days: 30
+          retention-days: 90
       
       - name: Upload Backend Docs
         uses: actions/upload-artifact@v4
         with:
           name: backend-docs
           path: backend/docs/
-          retention-days: 30
-      
-      # Optional: Deploy to GitHub Pages
-      - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs-combined
-          destination_dir: ./docs
+          retention-days: 90
