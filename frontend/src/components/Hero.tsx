@@ -17,7 +17,7 @@ function Hero() {
       <img
           src={player}
           alt="NFL Player"
-          className="absolute left-0 top-0 z-[1] pointer-events-none"
+          className="absolute top-0 -mt-[5vw] z-[1] pointer-events-none"
           style={{
               objectPosition: 'left top',
               height: '100%',
@@ -25,7 +25,7 @@ function Hero() {
               transformOrigin: 'left top',
           }}
       />
-      <div className="w-full mx-auto px-4 py-8 flex justify-center items-center bg-[#3b3c5e] h-[80vh] relative z-0">
+      <div className="w-full mx-auto px-4 py-8 flex justify-center items-center bg-[#3b3c5e] h-[90vh] relative z-0">
 
         <div className="relative z-10 flex flex-col items-center space-y-4 w-[70vw] ml-[5vw] mt-[5vh]">
           <h1 className="text-[10vw] leading-none text-white self-start tracking-normal" 
@@ -42,7 +42,7 @@ function Hero() {
                 alt="plate"
                 className="absolute rotate-5 z-0 pointer-events-none left-[40%] -translate-x-1/2 top-1/2 -translate-y-1/2"
                 style={{
-                  width: '15vw',
+                  width: '16vw',
                   transform: 'scale(1.7)',
                 }}
               />

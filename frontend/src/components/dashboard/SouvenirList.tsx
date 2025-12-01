@@ -15,7 +15,7 @@ interface SouvenirsListProps {
     onDelete?: (souvenirId: string) => void;
     // Shopping mode
     showAddToCart?: boolean;
-    onAddToCart?: (souvenirId: string) => void;
+    onAddToCart?: (souvenirId: string, quantity: number) => void;
     // Display options
     compact?: boolean;
     maxItems?: number;

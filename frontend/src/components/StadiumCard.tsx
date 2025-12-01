@@ -1,7 +1,7 @@
+import { CiEdit } from "react-icons/ci";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import type { StadiumItem } from '../store/types/teamTypes';
 import Button from './Button';
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { CiEdit } from "react-icons/ci";
 
 
 interface StadiumCardProps {
@@ -25,13 +25,13 @@ function StadiumCard({ stadium, isAdmin = false, onEdit, onDelete }: StadiumCard
       <div className="text-xs flex gap-15 mb-2 flex-wrap">
           <p className="text-sm font-semibold">{stadium.location}</p>
           <p className="text-sm font-semibold">
-            {stadium.seatingCapacity.toLocaleString()}
+            {stadium.seatingCapacity?.toLocaleString() ?? 'N/A'}
           </p>
           <p className="text-sm font-semibold">
-            {stadium.yearOpened}
+            {stadium.yearOpened || 'N/A'}
           </p>
-          <p className="text-sm font-semibold">{stadium.surfaceType}</p>
-          <p className="text-sm font-semibold">{stadium.roofType}</p>
+          <p className="text-sm font-semibold">{stadium.surfaceType || 'N/A'}</p>
+          <p className="text-sm font-semibold">{stadium.roofType || 'N/A'}</p>
       </div>
       
       {isAdmin && onEdit && onDelete && (

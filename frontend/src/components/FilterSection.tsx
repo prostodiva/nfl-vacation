@@ -50,51 +50,44 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     // Fetch stadiums by roof type when a roof type is selected
     const {
         data: roofTypeData,
+        isLoading: isLoadingRoofType
     } = useGetStadiumsByRoofTypeQuery(selectedRoofType!, {
         skip: !selectedRoofType || viewType !== 'stadiums'  // Only fetch when roof type is selected and on stadiums tab
     });
     const [sortByConference, setSortByConference] = useState<boolean>(false);
 
-    const { data, isLoading, isError } = useMemo(() => {
+    // Compute combined loading state based on viewType
+    const isLoading = useMemo(() => {
         if (viewType === 'stadiums') {
-            return {
-                data: stadiumsData,
-                isLoading: isLoadingStadiums,
-                isError: isErrorStadiums
-            };
-        } else {
-            // Use conference-sorted data if toggle is on
-            if (sortByConference) {
-                // Return conference data if available, otherwise show loading state
-                return {
-                    data: conferenceData,
-                    isLoading: isLoadingConference,
-                    isError: isErrorConference
-                };
-            }
-            // Otherwise use alphabetical sorting
-            return {
-                data: allTeamsData,
-                isLoading: isLoadingAll,
-                isError: isErrorAll
-            };
+            return isLoadingStadiums || (selectedRoofType ? isLoadingRoofType : false);
         }
-    }, [
-        viewType,
-        stadiumsData,
-        conferenceData,
-        allTeamsData,
-        isLoadingStadiums,
-        isLoadingConference,
-        isLoadingAll,
-        isErrorStadiums,
-        isErrorConference,
-        isErrorAll,
-        sortByConference
-    ]);
+        if (viewType === 'teams') {
+            return isLoadingConference || isLoadingAll;
+        }
+        return isLoadingAll;
+    }, [viewType, isLoadingStadiums, isLoadingConference, isLoadingAll, isLoadingRoofType, selectedRoofType]);
+
+    // Add a helper function at the top
+    const filterTeamsWithStadiums = (teams: Team[] | undefined): Team[] => {
+        if (!teams) return [];
+        return teams.filter(team => team.stadium != null);
+    };
+
+    // Then use it when getting data
+    const teams = useMemo(() => {
+        if (viewType === 'stadiums' && stadiumsData?.data) {
+            return filterTeamsWithStadiums(stadiumsData.data);
+        }
+        if (viewType === 'teams' && conferenceData?.data) {
+            return filterTeamsWithStadiums(conferenceData.data);
+        }
+        if (allTeamsData?.data) {
+            return filterTeamsWithStadiums(allTeamsData.data);
+        }
+        return [];
+    }, [viewType, stadiumsData, conferenceData, allTeamsData]);
 
     // Get teams or stadium items based on data type
-    const teams = data?.data || [];
     const isRoofTypeData = selectedRoofType && viewType === 'stadiums' && roofTypeData;
 
     const [sortBy, setSortBy] = useState<string | null>(null);
@@ -141,6 +134,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         hasActiveFilters: hasClientFilters
     } = useFilter(displayData, filterConfig);
 
+    // Now all the sorting/filtering code can safely access team.stadium without optional chaining
     const sortedAndFilteredTeams = useMemo(() => {
         // If no explicit sorting is selected
         if (!sortBy || !sortOrder) {
@@ -281,7 +275,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         );
     }
 
-    if (isError) {
+    if (isErrorAll) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <p className="text-red-500">Error loading teams</p>

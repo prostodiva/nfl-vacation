@@ -12,7 +12,9 @@ import TeamsListDash from "../components/dashboard/TeamListDash";
 import { souvenirFields } from "../config/formFields";
 import { useSouvenirEdit } from "../hooks/useSouvenirEdit";
 import { useStadiumEdit } from "../hooks/useStadiumEdit";
+import { useDeleteStadium } from "../hooks/useStadiumEdit";
 import { useTeamEdit } from "../hooks/useTeamEdit";
+import { useDeleteTeam } from "../hooks/useTeamEdit";
 import { useImportFromExcelMutation } from "../store/apis/adminApi";
 import { souvenirsApi, useGetAllSouvenirsQuery } from "../store/apis/souvenirsApi";
 import { stadiumApi, useGetAllStadiumsQuery } from "../store/apis/stadiumsApi";
@@ -37,6 +39,9 @@ function AdminDashboard() {
     const stadium = useStadiumEdit();
     const team = useTeamEdit();
     const souvenirs = useSouvenirEdit();
+
+    const { deleteTeam } = useDeleteTeam();
+    const { deleteStadium } = useDeleteStadium();
     
     // Import mutation
     const [importFromExcel, { isLoading: isImporting }] = useImportFromExcelMutation();
@@ -115,6 +120,29 @@ function AdminDashboard() {
         }
     };
 
+     const handleDeleteTeam = async (teamId: string) => {
+        const result = await deleteTeam(teamId);
+        if (result?.success) {
+            // Invalidate and refetch teams
+            dispatch(teamsApi.util.invalidateTags(['Team']));
+            if (activeTab === 'teams') {
+                await teamsQuery.refetch();
+            }
+        }
+    };
+
+    const handleDeleteStadium = async (stadiumId: string) => {
+        const result = await deleteStadium(stadiumId);
+        if (result?.success) {
+            // Invalidate and refetch stadiums
+            dispatch(stadiumApi.util.invalidateTags(['StadiumItem']));
+            if (activeTab === 'stadiums') {
+                await stadiumsQuery.refetch();
+            }
+        }
+    };
+
+
     return (
         <div className="bg-gray-100 min-h-screen">
             <div className="container mx-auto px-8 py-8">
@@ -122,7 +150,7 @@ function AdminDashboard() {
                 <DashboardHeader />
 
                 <div className="ml-[350px] max-w-5xl mx-auto space-y-6">
-                    <DashboardGreeting userName="RITA" />
+                    <DashboardGreeting userName="RITA" activeTab={activeTab} />
 
                     <DashboardActions 
                         activeTab={activeTab}
@@ -137,14 +165,14 @@ function AdminDashboard() {
                                 teams={teamsQuery.data?.data}
                                 isLoading={teamsQuery.isLoading}
                                 onEdit={team.handleEdit}
-                                onDelete={(teamId) => console.log('Delete team:', teamId)}
+                                onDelete={(teamId) => handleDeleteTeam(teamId)}
                             />
                         ) : activeTab === 'stadiums' ? (
                             <StadiumsList 
                                 stadiums={stadiumsQuery.data?.data}
                                 isLoading={stadiumsQuery.isLoading}
                                 onEdit={stadium.handleEdit}
-                                onDelete={(stadiumId) => console.log('Delete stadium:', stadiumId)}
+                                onDelete={(stadium) => handleDeleteStadium(stadium)}
                             />
                         ) : (
                             <SouvenirsList

@@ -17,9 +17,9 @@ function OptimalTrip() {
     const [showCartNotification, setShowCartNotification] = useState(false);
     const [notificationPosition, setNotificationPosition] = useState<{ top: number; left: number } | null>(null);
 
-    const handleAddToCart = async (souvenirId: string, event?: React.MouseEvent<HTMLButtonElement>) => {
+    const handleAddToCart = async (souvenirId: string, quantity: number, event?: React.MouseEvent<HTMLButtonElement>) => {
         try {
-            await addToCart({ souvenirId, quantity: 1 }).unwrap();
+            await addToCart({ souvenirId, quantity }).unwrap();
             
             // Get button position if event is provided
             let position = { top: 80, left: window.innerWidth - 100 };

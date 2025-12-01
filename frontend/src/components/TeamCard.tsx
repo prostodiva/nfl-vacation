@@ -13,7 +13,7 @@ interface TeamCardProps {
   onDelete?: (teamId: string) => void;
   showSouvenirs?: boolean;
   showAddToCart?: boolean;
-  onAddToCart?: (souvenirId: string) => void;
+  onAddToCart?: (souvenirId: string, quantity: number) => void;
   onExpandedChange?: (isExpanded: boolean) => void;
 }
 
@@ -57,7 +57,7 @@ function TeamCard({
         <div className="flex justify-between items-start mb-2">
           <div>
             <h2 className="text-2xl font-bold">{team.teamName}</h2>
-            <p>{team.stadium.name}</p>
+            <p>{team.stadium?.name || 'N/A'}</p>
           </div>
           <div className="text-right flex items-center gap-2">
             {showSouvenirs && (
@@ -73,15 +73,15 @@ function TeamCard({
         </div>
 
         <div className="text-xs flex gap-15 mb-2 flex-wrap">
-            <p className="text-sm font-semibold">{team.stadium.location}</p>
+            <p className="text-sm font-semibold">{team.stadium?.location || 'N/A'}</p>
             <p className="text-sm font-semibold">
-              {team.stadium.seatingCapacity.toLocaleString()}
+              {team.stadium?.seatingCapacity?.toLocaleString() ?? 'N/A'}
             </p>
             <p className="text-sm font-semibold">
-              {team.stadium.yearOpened}
+              {team.stadium?.yearOpened || 'N/A'}
             </p>
-            <p className="text-sm font-semibold">{team.stadium.surfaceType}</p>
-            <p className="text-sm font-semibold">{team.stadium.roofType}</p>
+            <p className="text-sm font-semibold">{team.stadium?.surfaceType || 'N/A'}</p>
+            <p className="text-sm font-semibold">{team.stadium?.roofType || 'N/A'}</p>
         </div>
         
         {showSouvenirs && (
@@ -113,12 +113,12 @@ function TeamCard({
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
               <FiShoppingBag />
-              Souvenirs at {team.stadium.name}
+              Souvenirs at {team.stadium?.name || 'N/A'}
             </h3>
           </div>
           <SouvenirsList
             teamName={team.teamName}
-            stadiumName={team.stadium.name}
+            stadiumName={team.stadium?.name || 'N/A'}
             showAddToCart={showAddToCart}
             onAddToCart={onAddToCart}
             compact={true}

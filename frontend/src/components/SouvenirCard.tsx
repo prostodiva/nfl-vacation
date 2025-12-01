@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CiEdit } from "react-icons/ci";
 import { FiTag } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -9,7 +10,7 @@ interface SouvenirCardProps {
     isAdmin?: boolean;
     onEdit?: (souvenir: Souvenir) => void;
     onDelete?: (souvenirId: string) => void;
-    onAddToCart?: (souvenirId: string, event?: React.MouseEvent<HTMLButtonElement>) => void;
+    onAddToCart?: (souvenirId: string, quantity: number, event?: React.MouseEvent<HTMLButtonElement>) => void;
     showAddToCart?: boolean;
 }
 
@@ -21,11 +22,20 @@ function SouvenirCard({
     onAddToCart,
     showAddToCart = false
 }: SouvenirCardProps) {
+    const [quantity, setQuantity] = useState<number>(1);
+    
     const categoryColors = {
         'Apparel': 'bg-blue-100 text-black',
         'Accessories': 'bg-green-100 text-black',
         'Collectibles': 'bg-purple-100 text-black',
         'Food & Beverage': 'bg-orange-100 text-black'
+    };
+
+    const handleAddClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (onAddToCart && quantity > 0) {
+            onAddToCart(souvenir._id, quantity, e);
+            setQuantity(1); 
+        }
     };
 
     return (
@@ -61,12 +71,25 @@ function SouvenirCard({
                         </span>
                     )}
                     {showAddToCart && onAddToCart && (
-                        <button
-                            onClick={(e: React.MouseEvent<HTMLButtonElement>) => onAddToCart(souvenir._id, e)}
-                            className="flex items-center ml-auto py-1 px-6 border text-white bg-[#e93448] hover:bg-white hover:text-black rounded-[1vw]"
-                        >
-                            ADD
-                        </button>
+                        <div className="flex items-center gap-2 ml-auto">
+                            <input
+                                type="number"
+                                min="1"
+                                value={quantity}
+                                onChange={(e) => {
+                                    const val = parseInt(e.target.value) || 1;
+                                    setQuantity(Math.max(1, val));
+                                }}
+                                className="w-16 px-2 py-1 border rounded text-center text-sm text-gray-400"
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                            <button
+                                onClick={handleAddClick}
+                                className="flex items-center py-1 px-6 border text-white bg-[#e93448] hover:text-black rounded-[1vw]"
+                            >
+                                ADD
+                            </button>
+                        </div>
                     )}
                     {isAdmin && onEdit && onDelete && (
                         <>

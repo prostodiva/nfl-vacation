@@ -1,5 +1,5 @@
+import { FiCalendar, FiHome, FiMapPin, FiUsers } from 'react-icons/fi';
 import type { StadiumItem } from '../../store/types/teamTypes';
-import { FiMapPin, FiUsers, FiCalendar, FiHome } from 'react-icons/fi';
 
 interface StadiumCardShoppingProps {
   stadium: StadiumItem;
@@ -31,7 +31,7 @@ function StadiumCardShopping({
         <h3 className="text-xl font-bold mb-1">{stadium.stadiumName}</h3>
         <div className="flex items-center gap-2 text-sm opacity-90">
           <FiMapPin className="text-[#e93448]" />
-          <span>{stadium.location}</span>
+          <span>{stadium.location || 'N/A'}</span>
         </div>
       </div>
 
@@ -39,15 +39,15 @@ function StadiumCardShopping({
       <div className="p-4 space-y-2">
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <FiUsers className="text-[#3b3c5e]" />
-          <span>{stadium.seatingCapacity.toLocaleString()} seats</span>
+          <span>{stadium.seatingCapacity?.toLocaleString() ?? 'N/A'} seats</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <FiCalendar className="text-[#3b3c5e]" />
-          <span>Opened {stadium.yearOpened}</span>
+          <span>Opened {stadium.yearOpened || 'N/A'}</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <FiHome className="text-[#3b3c5e]" />
-          <span>{stadium.roofType} • {stadium.surfaceType}</span>
+          <span>{stadium.roofType || 'N/A'} • {stadium.surfaceType || 'N/A'}</span>
         </div>
       </div>
 
