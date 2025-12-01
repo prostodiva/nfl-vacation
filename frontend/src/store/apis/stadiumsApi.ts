@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { CreateStadiumRequest, SingleStadiumResponse, StadiumResponse, StadiumsByRoofTypeResponse, UpdateStadiumRequest } from '../types/teamTypes';
+import { API_BASE_URL } from '../../config/api';
 
 
 export const stadiumApi = createApi({
   reducerPath: 'stadiumApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/stadiums',
+    baseUrl: API_BASE_URL ? `${API_BASE_URL}/api` : '/api',
   }),
   tagTypes: ['StadiumItem'],
   endpoints: (builder) => ({

@@ -1,12 +1,13 @@
 // store/apis/souvenirsApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { SouvenirsResponse, SingleSouvenirResponse, CreateSouvenirRequest, UpdateSouvenirRequest } from '../types/teamTypes';
+import { API_BASE_URL } from '../../config/api';
 
 // store/apis/souvenirsApi.ts
 export const souvenirsApi = createApi({
   reducerPath: 'souvenirsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/souvenirs',
+    baseUrl:  API_BASE_URL ? `${API_BASE_URL}/api` : '/api',
   }),
   tagTypes: ['Souvenir'],
   keepUnusedDataFor: 0, 

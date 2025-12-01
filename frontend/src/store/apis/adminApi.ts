@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { LoginCredentials, User } from '../types/adminTypes';
+import { API_BASE_URL } from '../../config/api';
 
 interface ImportResponse {
     success: boolean;
@@ -13,7 +14,7 @@ interface ImportResponse {
 export const adminApi = createApi({
     reducerPath: 'adminApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: '/api'
+        baseUrl: API_BASE_URL ? `${API_BASE_URL}/api` : '/api',
     }),
     endpoints: (builder) => ({
         login: builder.mutation<User, LoginCredentials>({

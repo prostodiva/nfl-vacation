@@ -8,6 +8,7 @@ import type {
   UpdateCartItemRequest,
   Purchase
 } from '../types/purchaseTypes';
+import { API_BASE_URL } from '../../config/api';
 
 // Get session ID from localStorage
 const getSessionId = (): string => {
@@ -22,7 +23,7 @@ const getSessionId = (): string => {
 export const purchaseApi = createApi({
   reducerPath: 'purchaseApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/purchases',
+    baseUrl:  API_BASE_URL ? `${API_BASE_URL}/api` : '/api',
     prepareHeaders: (headers) => {
       const sessionId = getSessionId();
       headers.set('x-session-id', sessionId);
