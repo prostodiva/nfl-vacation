@@ -8,7 +8,7 @@
     "dev": "nodemon server.js",
     "docs": "jsdoc controllers/ models/ routes/ middleware/ utils/ *.js -d docs -r",
     "docs:watch": "jsdoc controllers/ models/ routes/ middleware/ utils/ *.js -d docs -r --watch",
-    "build": "npm install && cd scripts && python3 -m pip install --user pandas pymongo openpyxl",
+    "build": "npm install && cd scripts && python3 -m pip install pandas pymongo openpyxl",
     "postinstall": "echo 'Python packages will be installed during build'"
   },
   "keywords": [],
