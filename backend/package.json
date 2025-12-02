@@ -8,8 +8,8 @@
     "dev": "nodemon server.js",
     "docs": "jsdoc controllers/ models/ routes/ middleware/ utils/ *.js -d docs -r",
     "docs:watch": "jsdoc controllers/ models/ routes/ middleware/ utils/ *.js -d docs -r --watch",
-    "build": "npm install && cd scripts && (python3 -m pip install --break-system-packages -r requirements.txt || python3 -m pip install --user -r requirements.txt || echo 'Python dependencies installation skipped')",
-    "postinstall": "cd scripts && if [ -d 'venv' ]; then echo 'Venv exists, skipping Python install'; elif [ -z \"$RENDER\" ]; then echo 'Local environment - skipping Python install (use venv)'; else python3 -m pip install --user -r requirements.txt || echo 'Python install skipped'; fi"
+    "build": "npm install && cd scripts && python3 -m pip install --user pandas pymongo openpyxl",
+    "postinstall": "echo 'Python packages will be installed during build'"
   },
   "keywords": [],
   "author": "",
