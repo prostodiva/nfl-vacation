@@ -9,7 +9,7 @@
  * // GET /api/dijkstra?startTeam=Green Bay Packers&endTeam=New England Patriots
  * // GET /api/astar?startTeam=Green Bay Packers&endTeam=New England Patriots
  * // GET /api/kruskal
- */
+*/
 
 const { GraphService } = require('../models/Graph');
 const Team = require('../models/Team');

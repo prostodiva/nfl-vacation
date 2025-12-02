@@ -87,6 +87,9 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     });
     const [sortByConference, setSortByConference] = useState<boolean>(false);
 
+    // Add state to track if showing all teams
+    const [showAllTeams, setShowAllTeams] = useState(false);
+
     // Compute combined loading state based on viewType
     const isLoading = useMemo(() => {
         if (viewType === 'stadiums') {
@@ -314,6 +317,17 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         );
     }
 
+    // Determine which teams to display
+    const displayedTeams = useMemo(() => {
+        if (showAllTeams) {
+            return sortedAndFilteredTeams;
+        }
+        return sortedAndFilteredTeams.slice(0, 3);
+    }, [sortedAndFilteredTeams, showAllTeams]);
+    
+    // Check if there are more than 3 teams
+    const hasMoreTeams = sortedAndFilteredTeams.length > 3;
+
     return (
         <div className="flex flex-col items-center space-y-6 w-full">
             {/* Toggle for conference sorting (only show on teams tab) */}
@@ -394,13 +408,39 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
             </div>
 
             {/* Display Filtered Teams */}
-             <div className="w-full max-w-6xl ml-50">
+             <div className="w-full max-w-4xl mx-auto">
                 {sortedAndFilteredTeams.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
-                        {sortedAndFilteredTeams.map(team => (
-                            <TeamCard key={team._id} team={team} />
-                        ))}
-                    </div>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
+                            {displayedTeams.map(team => (
+                                <TeamCard key={team._id} team={team} />
+                            ))}
+                        </div>
+                        
+                        {hasMoreTeams && !showAllTeams && (
+                            <div className="flex justify-center mt-6">
+                                <Button
+                                    primary
+                                    rounded
+                                    onClick={() => setShowAllTeams(true)}
+                                >
+                                    See All Results ({sortedAndFilteredTeams.length} teams)
+                                </Button>
+                            </div>
+                        )}
+                        
+                        {hasMoreTeams && showAllTeams && (
+                            <div className="flex justify-center mt-6">
+                                <Button
+                                    primaryTwo
+                                    rounded
+                                    onClick={() => setShowAllTeams(false)}
+                                >
+                                    Show Less
+                                </Button>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="text-center text-gray-500 py-8">
                         No teams match the selected filters
