@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoChevronDown } from 'react-icons/go';
 
 export interface DropdownOption {
@@ -15,6 +15,7 @@ interface DropdownProps {
     disabled?: boolean;
     panelClassName?: string;
     optionClassName?: string;
+    triggerClassName?: string; // Add this
 }
 
 function Dropdown({
@@ -25,7 +26,8 @@ function Dropdown({
                       className = '',
                       disabled = false,
                       panelClassName = '',
-                      optionClassName = ''
+                      optionClassName = '',
+                      triggerClassName = ''
                   }: DropdownProps) {
     const [isOpen, setIsOpen] = useState(false);
     const divEl = useRef<HTMLDivElement>(null);
@@ -101,14 +103,14 @@ function Dropdown({
             aria-disabled={disabled}
         >
             <div
-                className={`flex justify-between items-center cursor-pointer border border-gray-300 rounded px-3 py-2 bg-white text-gray-400 hover:bg-[#3b3c5e] hover:border-gray-400 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${panelClassName}`}
+                className={`flex justify-between items-center cursor-pointer border border-gray-300 rounded px-3 py-2 bg-white text-gray-400 hover:bg-[#3b3c5e] hover:border-gray-400 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${panelClassName} ${triggerClassName}`}
                 onClick={handleClick}
                 onKeyDown={handleKeyDown}
                 tabIndex={disabled ? -1 : 0}
                 role="button"
                 aria-label="Select option"
             >
-                <span className={value ? 'text-gray-900' : 'text-gray-400'}>
+                <span className={`${value ? 'text-gray-900' : 'text-gray-400'} hover:text-white`}>
                     {value?.label || placeholder}
                 </span>
                 <GoChevronDown

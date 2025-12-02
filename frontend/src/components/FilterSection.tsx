@@ -318,7 +318,11 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
                 </div>
             )}
 
-            {(Object.keys(activeFilters).length > 0 || sortBy || sortByConference) && (
+            {(Object.keys(activeFilters).length > 0 || 
+              Object.keys(clientFilters).some(key => clientFilters[key]) || 
+              sortBy || 
+              sortOrder || 
+              sortByConference) && (
                 <Button primaryTwo rounded onClick={handleClearFilters}>
                     Clear All Filters
                 </Button>
