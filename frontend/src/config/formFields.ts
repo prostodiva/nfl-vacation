@@ -79,3 +79,18 @@ export const souvenirFields: FieldConfig[] = [
     },
     { name: 'isTraditional', label: 'Traditional', type: 'checkbox' }
 ];
+
+// Function to get souvenir fields with team selection for creating new souvenirs
+export const getSouvenirFieldsWithTeam = (teams: Array<{ _id: string; teamName: string }>): FieldConfig[] => [
+    {
+        name: 'teamId',
+        label: 'Team',
+        type: 'select',
+        required: true,
+        options: teams.map(team => ({
+            value: team._id,
+            label: team.teamName
+        }))
+    },
+    ...souvenirFields
+];
