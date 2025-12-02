@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface EditModalProps<T> {
   title: string;
@@ -39,7 +39,7 @@ function EditModal<T extends Record<string, any>>({
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? Number(value) : value
+      [name]: type === 'number' ? Number(value) : type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }));
   };
 
@@ -60,7 +60,15 @@ function EditModal<T extends Record<string, any>>({
             <div key={field.name}>
               <label className="block text-sm font-semibold mb-1">{field.label}</label>
               
-              {field.type === 'select' ? (
+              {field.type === 'checkbox' ? (
+                <input
+                  type="checkbox"
+                  name={field.name}
+                  checked={(formData[field.name as keyof T] as boolean) || false}
+                  onChange={handleChange}
+                  className="w-4 h-4"
+                />
+              ) : field.type === 'select' ? (
                 <select
                   name={field.name}
                   value={(formData[field.name as keyof T] as string) || ''}

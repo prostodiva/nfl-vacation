@@ -1,63 +1,96 @@
 // hooks/useSouvenirEdit.ts
 import { useState } from 'react';
-import { useUpdateSouvenirMutation, useDeleteSouvenirMutation } from '../store/apis/souvenirsApi';
 import { souvenirFields } from '../config/formFields';
+import { useCreateSouvenirMutation, useDeleteSouvenirMutation, useUpdateSouvenirMutation } from '../store/apis/souvenirsApi';
 import type { Souvenir } from '../store/types/teamTypes';
 
-// hooks/useSouvenirEdit.ts
 export function useSouvenirEdit() {
   const [editingItem, setEditingItem] = useState<Souvenir | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
   const [updateSouvenir, { isLoading, error }] = useUpdateSouvenirMutation();
+  const [createSouvenir, { isLoading: isCreatingLoading }] = useCreateSouvenirMutation();
   const [deleteSouvenir, { isLoading: isDeleting }] = useDeleteSouvenirMutation();
 
   const handleEdit = (item: Souvenir) => {
     console.log('Editing souvenir:', item);
     setEditingItem(item);
+    setIsCreating(false);
   };
 
-  const handleSave = async (updatedData: Partial<Souvenir>) => {
-  if (!editingItem?._id) {
-    console.error('No souvenir ID found');
-    return;
-  }
+  const handleCreate = () => {
+    setEditingItem({} as Souvenir); // Empty object for new souvenir
+    setIsCreating(true);
+  };
 
-  console.log('Saving souvenir ID:', editingItem._id);
-  console.log('Update data:', updatedData);
+  const handleSave = async (updatedData: Partial<Souvenir & { teamId?: string }>) => {
+    // If creating new souvenir
+    if (isCreating) {
+      const { teamId, ...souvenirData } = updatedData;
+      
+      if (!teamId) {
+        alert('Please select a team');
+        return;
+      }
 
-  try {
-    const { _id, teamName: _, stadiumName: __, ...cleanData } = updatedData;
-    
-    console.log('Clean data being sent:', cleanData);
-
-    const result = await updateSouvenir({
-      id: editingItem._id,
-      souvenir: cleanData
-    }).unwrap();
-    
-    console.log('Update successful:', result);
-    setEditingItem(null);
-  } catch (err: any) {
-    console.error('Failed to update souvenir:', err);
-    
-    // Handle 404 specifically - the souvenir was deleted
-    if (err.status === 404) {
-      alert('This souvenir has been deleted and no longer exists.');
-      setEditingItem(null); // Close the modal
-      // The cache will be refreshed automatically due to invalidatesTags
-    } else {
-      // Handle other errors
-      alert(`Failed to update souvenir: ${err.data?.message || 'Unknown error'}`);
+      try {
+        await createSouvenir({
+          teamId: teamId as string,
+          souvenir: {
+            name: souvenirData.name as string,
+            price: souvenirData.price as number,
+            category: souvenirData.category as string,
+            isTraditional: souvenirData.isTraditional ?? true
+          }
+        }).unwrap();
+        
+        console.log('Souvenir created successfully');
+        setEditingItem(null);
+        setIsCreating(false);
+      } catch (err: any) {
+        console.error('Failed to create souvenir:', err);
+        alert(`Failed to create souvenir: ${err.data?.message || 'Unknown error'}`);
+      }
+      return;
     }
-    
-    console.error('Error details:', {
-      status: err.status,
-      data: err.data,
-      originalStatus: err.originalStatus
-    });
-  }
-};
 
-  const handleClose = () => setEditingItem(null);
+    // If updating existing souvenir
+    if (!editingItem?._id) {
+      console.error('No souvenir ID found');
+      return;
+    }
+
+    console.log('Saving souvenir ID:', editingItem._id);
+    console.log('Update data:', updatedData);
+
+    try {
+      const { _id, teamName: _, stadiumName: __, teamId: ___, ...cleanData } = updatedData;
+      
+      console.log('Clean data being sent:', cleanData);
+
+      const result = await updateSouvenir({
+        id: editingItem._id,
+        souvenir: cleanData
+      }).unwrap();
+      
+      console.log('Update successful:', result);
+      setEditingItem(null);
+      setIsCreating(false);
+    } catch (err: any) {
+      console.error('Failed to update souvenir:', err);
+      
+      if (err.status === 404) {
+        alert('This souvenir has been deleted and no longer exists.');
+        setEditingItem(null);
+      } else {
+        alert(`Failed to update souvenir: ${err.data?.message || 'Unknown error'}`);
+      }
+    }
+  };
+
+  const handleClose = () => {
+    setEditingItem(null);
+    setIsCreating(false);
+  };
 
   const handleDelete = async (souvenirId: string) => {
     if (!window.confirm('Are you sure you want to delete this souvenir?')) {
@@ -75,10 +108,12 @@ export function useSouvenirEdit() {
 
   return {
     editingItem,
-    isLoading: isLoading || isDeleting,
+    isCreating,
+    isLoading: isLoading || isDeleting || isCreatingLoading,
     error,
     fields: souvenirFields,
     handleEdit,
+    handleCreate,
     handleSave,
     handleClose,
     handleDelete

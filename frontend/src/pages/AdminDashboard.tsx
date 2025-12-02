@@ -9,12 +9,10 @@ import LeftSidebar from "../components/dashboard/LeftSidebar";
 import SouvenirsList from "../components/dashboard/SouvenirList";
 import StadiumsList from "../components/dashboard/StadiumList";
 import TeamsListDash from "../components/dashboard/TeamListDash";
-import { souvenirFields } from "../config/formFields";
+import { getSouvenirFieldsWithTeam, souvenirFields } from "../config/formFields";
 import { useSouvenirEdit } from "../hooks/useSouvenirEdit";
-import { useStadiumEdit } from "../hooks/useStadiumEdit";
-import { useDeleteStadium } from "../hooks/useStadiumEdit";
-import { useTeamEdit } from "../hooks/useTeamEdit";
-import { useDeleteTeam } from "../hooks/useTeamEdit";
+import { useDeleteStadium, useStadiumEdit } from "../hooks/useStadiumEdit";
+import { useDeleteTeam, useTeamEdit } from "../hooks/useTeamEdit";
 import { useImportFromExcelMutation } from "../store/apis/adminApi";
 import { souvenirsApi, useGetAllSouvenirsQuery } from "../store/apis/souvenirsApi";
 import { stadiumApi, useGetAllStadiumsQuery } from "../store/apis/stadiumsApi";
@@ -142,6 +140,12 @@ function AdminDashboard() {
         }
     };
 
+    // Get teams for team selection dropdown
+    const teamsForSelection = teamsQuery.data?.data?.map(team => ({
+        _id: team._id,
+        teamName: team.teamName
+    })) || [];
+
 
     return (
         <div className="bg-gray-100 min-h-screen">
@@ -155,6 +159,7 @@ function AdminDashboard() {
                     <DashboardActions 
                         activeTab={activeTab}
                         onAdd={handleImport}
+                        onAddSouvenir={souvenirs.handleCreate}
                         isLoading={isImporting}
                     />
 
@@ -189,13 +194,13 @@ function AdminDashboard() {
 
             {/* Modals */}
             <EditModal
-                title="Edit Stadium"
-                isOpen={!!stadium.editingItem}
-                data={stadium.editingItem || {}}
-                fields={stadium.fields}
-                isLoading={stadium.isLoading}
-                onSave={stadium.handleSave}
-                onClose={stadium.handleClose}
+                title={souvenirs.isCreating ? "Add New Souvenir" : "Edit Souvenir"}
+                isOpen={!!souvenirs.editingItem} 
+                data={souvenirs.editingItem || {}} 
+                fields={souvenirs.isCreating ? getSouvenirFieldsWithTeam(teamsForSelection) : souvenirFields}
+                isLoading={souvenirs.isLoading}
+                onSave={souvenirs.handleSave}
+                onClose={souvenirs.handleClose}
             />
 
             <EditModal

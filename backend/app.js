@@ -12,6 +12,8 @@ const stadiumRoutes = require('./routes/stadiumRoutes');
 const souvenirRoutes = require('./routes/souvenirsRoutes');
 const purchaseRoutes = require('./routes/purchaseRoutes');
 
+require('./models/Distance'); 
+
 const app = express();
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nfl-vacation';
