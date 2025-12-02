@@ -5,8 +5,9 @@ from bson import ObjectId
 import sys
 import os
 
-# MongoDB connection
-client = MongoClient('mongodb://localhost:27017/')
+# MongoDB connection - use environment variable or default to localhost
+MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
+client = MongoClient(MONGODB_URI)
 db = client['nfl-vacation']
 teams_collection = db['teams']
 

@@ -1,10 +1,12 @@
 import pymongo
 import sys
+import os
 from pymongo import MongoClient
 from bson import ObjectId
 
-# MongoDB connection
-client = MongoClient('mongodb://localhost:27017/')
+# MongoDB connection - use environment variable or default to localhost
+MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
+client = MongoClient(MONGODB_URI)
 db = client['nfl-vacation']
 teams_collection = db['teams']
 

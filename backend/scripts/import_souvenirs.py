@@ -6,7 +6,8 @@ import sys
 import os
 
 # MongoDB connection
-client = MongoClient('mongodb://localhost:27017/')
+MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
+client = MongoClient(MONGODB_URI)
 db = client['nfl-vacation']
 teams_collection = db['teams']
 

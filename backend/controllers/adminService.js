@@ -131,10 +131,19 @@ const importFromExcel = async (req, res) => {
         // Execute Python script with file path as argument
         const command = `cd "${scriptsDir}" && ${pythonCommand} "${scriptPath}" "${targetFilePath}"`;
         console.log('Executing command:', command);
-        
+
+        // Pass environment variables to Python script
+        const env = {
+            ...process.env, // Include all existing environment variables
+            MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/'
+        };
+
         const { stdout, stderr } = await execPromise(
             command,
-            { maxBuffer: 1024 * 1024 * 10 } // 10MB buffer
+            { 
+                maxBuffer: 1024 * 1024 * 10, // 10MB buffer
+                env: env // Pass environment variables
+            }
         );
 
         // Clean up uploaded file

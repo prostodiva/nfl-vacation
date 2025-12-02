@@ -228,3 +228,4 @@ app.use(cors({
 - Always use environment variables for sensitive data
 - Test locally with production URLs before deploying
 
+

@@ -5,7 +5,8 @@ import sys
 import os
 
 # MongoDB connection
-client = MongoClient('mongodb://localhost:27017/')
+MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
+client = MongoClient(MONGODB_URI)
 db = client['nfl-vacation']
 distances_collection = db['distances']
 
@@ -66,7 +67,7 @@ def import_distances(file_path=None):
                     if not team_name:
                         # Try to find team by stadium name
                         from pymongo import MongoClient as MC
-                        temp_client = MC('mongodb://localhost:27017/')
+                        temp_client = MC(MONGODB_URI)
                         temp_db = temp_client['nfl-vacation']
                         temp_teams = temp_db['teams']
                         team_doc = temp_teams.find_one({"stadium.name": beginning_stadium})
