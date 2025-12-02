@@ -1,14 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_BASE_URL } from '../../config/api';
 import type {
+  AddToCartRequest,
   CartResponse,
+  GrandTotalResponse,
+  Purchase,
   PurchaseHistoryResponse,
   SpendingByStadiumResponse,
-  GrandTotalResponse,
-  AddToCartRequest,
-  UpdateCartItemRequest,
-  Purchase
+  UpdateCartItemRequest
 } from '../types/purchaseTypes';
-import { API_BASE_URL } from '../../config/api';
 
 // Get session ID from localStorage
 const getSessionId = (): string => {
@@ -23,7 +23,7 @@ const getSessionId = (): string => {
 export const purchaseApi = createApi({
   reducerPath: 'purchaseApi',
   baseQuery: fetchBaseQuery({
-    baseUrl:  API_BASE_URL ? `${API_BASE_URL}/api` : '/api',
+    baseUrl:  API_BASE_URL ? `${API_BASE_URL}/api/purchases` : '/api/purchases', // Fixed: /api/purchases (plural)
     prepareHeaders: (headers) => {
       const sessionId = getSessionId();
       headers.set('x-session-id', sessionId);

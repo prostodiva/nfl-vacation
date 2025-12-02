@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Team } from '../types/teamTypes';
 import { API_BASE_URL } from '../../config/api';
+import type { Team } from '../types/teamTypes';
 
 interface TeamsResponse {
   success: boolean;
@@ -17,7 +17,7 @@ interface SingleTeamResponse {
 export const teamsApi = createApi({
   reducerPath: 'teamsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl:  API_BASE_URL ? `${API_BASE_URL}/api` : '/api',
+    baseUrl:  API_BASE_URL ? `${API_BASE_URL}/api/teams` : '/api/teams',
   }),
   tagTypes: ['Team'],
   endpoints: (builder) => ({

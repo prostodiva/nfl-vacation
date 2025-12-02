@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { AlgorithmData, CustomRouteRequest, CustomRouteResponse, RecursiveRouteResponse } from '../types/algorithmTypes';
 import { API_BASE_URL } from '../../config/api';
+import type { AlgorithmData, CustomRouteRequest, CustomRouteResponse, RecursiveRouteResponse } from '../types/algorithmTypes';
 
 interface AlgorithmResponse {
     success: boolean;
@@ -10,7 +10,7 @@ interface AlgorithmResponse {
 export const algorithmApi = createApi({
     reducerPath: 'algorithmApi',
     baseQuery: fetchBaseQuery({
-        baseUrl:  API_BASE_URL ? `${API_BASE_URL}/api` : '/api',
+        baseUrl:  API_BASE_URL ? `${API_BASE_URL}/api` : '/api', // Fixed: both should be /api
     }),
     tagTypes: ['Algorithm'],
     endpoints: (builder) => ({
