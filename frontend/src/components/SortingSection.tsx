@@ -1,9 +1,9 @@
 
-import FilterSection from "./FilterSection";
-import { teamFilters, stadiumFilters } from "../config/filterConfigs";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { stadiumFilters, teamFilters } from "../config/filterConfigs";
 import type { ActiveTab } from "../store/types/teamTypes";
+import FilterSection from "./FilterSection";
 
 function SortingSection() {
     const location = useLocation();
@@ -60,14 +60,12 @@ function SortingSection() {
                     {activeTab === 'teams' ? (
                         <FilterSection 
                             filters={teamFilters} 
-                            title="Filter Teams" 
                             enableSorting={false}
                             viewType="teams"
                         />
                     ) : (
                         <FilterSection 
                             filters={stadiumFilters}
-                            title="Filter Stadiums"
                             enableSorting={true}
                             viewType="stadiums"
                         />
