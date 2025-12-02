@@ -25,6 +25,8 @@ function AdminDashboard() {
     
     // Fetch data based on active tab
     const teamsQuery = useGetAllTeamsQuery(undefined, { skip: activeTab !== 'teams' });
+    // Always fetch teams so they're available for souvenir team selection
+    const allTeamsQuery = useGetAllTeamsQuery(undefined, { skip: false });
     const stadiumsQuery = useGetAllStadiumsQuery(undefined, { skip: activeTab !== 'stadiums' });
     const souvenirsQuery = useGetAllSouvenirsQuery(undefined, { 
         skip: activeTab !== 'souvenirs',
@@ -140,8 +142,8 @@ function AdminDashboard() {
         }
     };
 
-    // Get teams for team selection dropdown
-    const teamsForSelection = teamsQuery.data?.data?.map(team => ({
+    // Get teams for team selection dropdown - use allTeamsQuery so teams are always available
+    const teamsForSelection = allTeamsQuery.data?.data?.map(team => ({
         _id: team._id,
         teamName: team.teamName
     })) || [];
@@ -204,6 +206,16 @@ function AdminDashboard() {
             />
 
             <EditModal
+                title="Edit Stadium"
+                isOpen={!!stadium.editingItem}
+                data={stadium.editingItem || {}}
+                fields={stadium.fields}
+                isLoading={stadium.isLoading}
+                onSave={stadium.handleSave}
+                onClose={stadium.handleClose}
+            />
+
+            <EditModal
                 title="Edit Team"
                 isOpen={!!team.editingItem}
                 data={team.editingItem || {}}
@@ -211,16 +223,6 @@ function AdminDashboard() {
                 isLoading={team.isLoading}
                 onSave={team.handleSave}
                 onClose={team.handleClose}
-            />
-
-            <EditModal
-                title="Edit Souvenir"
-                isOpen={!!souvenirs.editingItem} 
-                data={souvenirs.editingItem || {}} 
-                fields={souvenirFields}
-                isLoading={souvenirs.isLoading}
-                onSave={souvenirs.handleSave}
-                onClose={souvenirs.handleClose}
             />
         </div>
     );

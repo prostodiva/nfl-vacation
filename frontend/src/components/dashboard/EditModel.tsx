@@ -30,8 +30,14 @@ function EditModal<T extends Record<string, any>>({
   const [formData, setFormData] = useState<Partial<T>>({});
 
   useEffect(() => {
-    if (data) {
-      setFormData(data);
+    if (isOpen) {
+      // Reset form data when modal opens
+      if (data) {
+        setFormData(data);
+      } else {
+        // If no data provided, start with empty form
+        setFormData({});
+      }
     }
   }, [data, isOpen]);
 

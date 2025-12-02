@@ -32,6 +32,11 @@ export function useSouvenirEdit() {
         return;
       }
 
+      if (!souvenirData.name || !souvenirData.price || !souvenirData.category) {
+        alert('Please fill in all required fields (name, price, category)');
+        return;
+      }
+
       try {
         await createSouvenir({
           teamId: teamId as string,
@@ -46,6 +51,7 @@ export function useSouvenirEdit() {
         console.log('Souvenir created successfully');
         setEditingItem(null);
         setIsCreating(false);
+        // The cache will be invalidated automatically due to invalidatesTags in the mutation
       } catch (err: any) {
         console.error('Failed to create souvenir:', err);
         alert(`Failed to create souvenir: ${err.data?.message || 'Unknown error'}`);
