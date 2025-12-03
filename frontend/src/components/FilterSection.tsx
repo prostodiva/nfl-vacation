@@ -6,6 +6,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FilterConfig } from "../config/filterConfigs.ts";
 import { useFilter } from "../hooks/useFilter";
+import { useSort } from "../hooks/useSort";
 import { useGetStadiumsByRoofTypeQuery } from "../store/apis/stadiumsApi.ts";
 import {
     useGetAllTeamsByConferenceQuery,
@@ -53,8 +54,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
     const [sortByConference, setSortByConference] = useState<boolean>(false);
     const [showAllTeams, setShowAllTeams] = useState(false);
-    const [sortBy, setSortBy] = useState<string | null>(null);
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
+    const { sortBy, sortOrder, setSortFromOption, getSortValue, clearSort } = useSort();
 
     // Roof type filter logic
     const roofTypeFilter = activeFilters['roofType'];
@@ -202,13 +202,8 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     }, [teams, filters]);
 
     // Handlers
-    const getCurrentSortValue = () => {
-        if (!sortBy) return 'none';
-        return `${sortBy}-${sortOrder}`;
-    };
-
     const selectedSortOption = SORT_OPTIONS.find(opt => 
-        opt.value === getCurrentSortValue()
+        opt.value === getSortValue()
     ) || SORT_OPTIONS[0];
 
     const getSelectedOption = (filterKey: string) => {
@@ -228,21 +223,13 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
     };
 
     const handleSortChange = (option: DropdownOption) => {
-        if (option.value === 'none') {
-            setSortBy(null);
-            setSortOrder(null);
-        } else {
-            const [field, order] = String(option.value).split('-');
-            setSortBy(field);
-            setSortOrder(order as 'asc' | 'desc');
-        }
+        setSortFromOption(String(option.value));
     };
 
     const handleClearFilters = () => {
         setActiveFilters({});
         clearClientFilters();
-        setSortBy(null);
-        setSortOrder(null);
+        clearSort();
         setSortByConference(false);
     };
 
