@@ -77,7 +77,8 @@ const teamSchema = new mongoose.Schema({
 });
 
 // Indexes for better performance
-teamSchema.index({ teamName: 1 });
+// Remove the teamName index since unique: true already creates it
+// teamSchema.index({ teamName: 1 });  // <-- Remove or comment this line
 teamSchema.index({ conference: 1 });
 teamSchema.index({ division: 1 });
 teamSchema.index({ 'stadium.name': 1 });
