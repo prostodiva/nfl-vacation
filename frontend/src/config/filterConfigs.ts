@@ -1,14 +1,14 @@
-import type { Team } from '../store/types/teamTypes';
 import type { DropdownOption } from '../components/Dropdown';
+import type { Team } from '../store/types/teamTypes';
 
 import {
-    transformTeamsToOptions,
     transformConferenceOptions,
     transformDivisionOptions,
-    transformStadiumNameOptions,
-    transformStadiumLocationOptions,
-    transformSurfaceTypeOptions,
     transformRoofTypeOptions,
+    transformStadiumLocationOptions,
+    transformStadiumNameOptions,
+    transformSurfaceTypeOptions,
+    transformTeamsToOptions,
     transformYearOpenedOptions
 } from '../utils/dropdownTransformers';
 
@@ -71,4 +71,12 @@ export const stadiumFilters = [
         getOptions: transformYearOpenedOptions,
         placeholder: 'Select year opened...'
     }
+];
+
+export const SORT_OPTIONS: DropdownOption[] = [
+    { value: 'none', label: 'No sorting' },
+    { value: 'yearOpened-asc', label: 'Oldest first (1924→2023)' },
+    { value: 'yearOpened-desc', label: 'Newest first (2023→1924)' },
+    { value: 'capacity-asc', label: 'Capacity: Smallest first' },
+    { value: 'capacity-desc', label: 'Capacity: Largest first' }
 ];

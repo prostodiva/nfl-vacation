@@ -5,6 +5,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { FilterConfig } from "../config/filterConfigs.ts";
+import { SORT_OPTIONS } from "../config/filterConfigs.ts";
 import { useFilter } from "../hooks/useFilter";
 import { useSort } from "../hooks/useSort";
 import { useGetStadiumsByRoofTypeQuery } from "../store/apis/stadiumsApi.ts";
@@ -25,16 +26,6 @@ interface FilterSectionProps {
     viewType?: 'teams' | 'stadiums';
 }
 
-// Constants moved outside component to avoid recreation
-const SORT_OPTIONS: DropdownOption[] = [
-    { value: 'none', label: 'No sorting' },
-    { value: 'yearOpened-asc', label: 'Oldest first (1924→2023)' },
-    { value: 'yearOpened-desc', label: 'Newest first (2023→1924)' },
-    { value: 'capacity-asc', label: 'Capacity: Smallest first' },
-    { value: 'capacity-desc', label: 'Capacity: Largest first' }
-];
-
-// Helper function moved outside component
 const filterTeamsWithStadiums = (teams: Team[] | undefined): Team[] => {
     if (!teams) return [];
     return teams.filter(team => team.stadium != null);
@@ -218,7 +209,12 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         if (filterKey === 'roofType') {
             setActiveFilters(prev => ({ ...prev, [filterKey]: value }));
         } else {
-            setClientFilter(filterKey, value);
+            // Preserve number type for numeric filters
+            const numericFilters = ['yearOpened'];
+            const filterValue = numericFilters.includes(filterKey) 
+                ? Number(value) 
+                : value;
+            setClientFilter(filterKey, filterValue);
         }
     };
 
