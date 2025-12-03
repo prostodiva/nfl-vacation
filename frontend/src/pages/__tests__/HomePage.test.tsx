@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { store } from '../../store/index';
 import HomePage from '../HomePage';
 
+
+//looks inside Hero component and checks if exists in HomePage
 describe('HomePage', () => {
     it('shows hero section', () => {
         render(
