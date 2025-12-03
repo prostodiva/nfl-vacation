@@ -18,3 +18,18 @@ describe('HomePage', () => {
         expect(heroElement).toBeInTheDocument();
     })
 })
+
+
+describe('HomePage', () => {
+    it('shows sorting section', () => {
+        render(
+            <Provider store={store}>
+                <BrowserRouter>
+                    <HomePage />
+                </BrowserRouter>
+            </Provider>
+        );
+        const sortingElement = screen.getByTestId("sorting");
+        expect(sortingElement).toBeInTheDocument();
+    })
+})
