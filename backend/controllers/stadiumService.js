@@ -242,19 +242,6 @@ const updateStadium = async (req, res) => {
     }
 };
 
-/**
- * Delete stadium
- * Deletes a stadium by removing it from the team (Admin only)
- * Uses $unset to remove the stadium field from the team document
- * 
- * @route DELETE /api/stadiums/:id
- * @access Private (Admin only)
- * @param {Object} req - Express request object
- * @param {Object} req.params - Request parameters
- * @param {string} req.params.id - Team ID whose stadium to delete
- * @param {Object} res - Express response object
- * @returns {Object} JSON response with success status and message
- */
 const deleteStadium = async (req, res) => {
     try {
         const { id } = req.params;
