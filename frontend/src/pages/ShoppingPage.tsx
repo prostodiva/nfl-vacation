@@ -1,13 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { FiBarChart2, FiShoppingCart, FiX } from 'react-icons/fi';
+import Button from '../components/Button';
+import SouvenirCard from '../components/SouvenirCard';
+import PurchaseTracking from '../components/shopping/PurchaseTracking';
+import ShoppingCart from '../components/shopping/ShoppingCart';
+import StadiumCardShopping from '../components/shopping/StadiumCardShopping';
+import { useAddToCartMutation } from '../store/apis/purchaseApi';
 import { useGetAllSouvenirsQuery } from '../store/apis/souvenirsApi';
 import { useGetAllStadiumsQuery } from '../store/apis/stadiumsApi';
-import { useAddToCartMutation } from '../store/apis/purchaseApi';
-import SouvenirCard from '../components/SouvenirCard';
-import StadiumCardShopping from '../components/shopping/StadiumCardShopping';
-import ShoppingCart from '../components/shopping/ShoppingCart';
-import PurchaseTracking from '../components/shopping/PurchaseTracking';
-import Button from '../components/Button';
-import { FiShoppingCart, FiBarChart2, FiX, FiFilter } from 'react-icons/fi';
 
 function ShoppingPage() {
   const [showCart, setShowCart] = useState(false);
