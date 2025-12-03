@@ -6,9 +6,10 @@ import SearchInput from '../SearchInput';
 interface DashboardGreetingProps {
     userName: string;
     activeTab: ActiveTab;
+    onSearchChange?: (term: string) => void;
 }
 
-function DashboardGreeting({ userName, activeTab }: DashboardGreetingProps) {
+function DashboardGreeting({ userName, activeTab, onSearchChange }: DashboardGreetingProps) {
     // Map activeTab to display text
     const getTitle = (tab: ActiveTab): string => {
         switch (tab) {
@@ -20,6 +21,19 @@ function DashboardGreeting({ userName, activeTab }: DashboardGreetingProps) {
                 return 'SEARCH & MANAGE SOUVENIRS';
             default:
                 return 'SEARCH & MANAGE';
+        }
+    };
+
+    const getPlaceholder = (tab: ActiveTab): string => {
+        switch (tab) {
+            case 'teams':
+                return 'Search teams...';
+            case 'stadiums':
+                return 'Search stadiums...';
+            case 'souvenirs':
+                return 'Search souvenirs...';
+            default:
+                return 'Search...';
         }
     };
 
@@ -50,7 +64,12 @@ function DashboardGreeting({ userName, activeTab }: DashboardGreetingProps) {
             <div className="bg-[#3b3c5e] rounded-lg p-6 flex items-center justify-between w-110">
                 <div className="text-white">
                     <h2 className="text-2xl font-bold mb-2">{getTitle(activeTab)}</h2>
-                    <SearchInput className="w-95" />
+                    <SearchInput 
+                        className="w-95" 
+                        onSearchChange={onSearchChange}
+                        disableNavigation={true}
+                        placeholder={getPlaceholder(activeTab)}
+                    />
                 </div>
             </div>
         </div>

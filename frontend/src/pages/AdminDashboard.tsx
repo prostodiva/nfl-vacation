@@ -1,5 +1,5 @@
 // AdminDashboard.tsx
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import DashboardActions from "../components/dashboard/DashboardActions";
 import DashboardGreeting from "../components/dashboard/DashboardGreetings";
@@ -21,6 +21,7 @@ import type { ActiveTab } from "../store/types/teamTypes";
 
 function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<ActiveTab>('teams');
+    const [searchTerm, setSearchTerm] = useState('');
     const dispatch = useDispatch();
     
     // Fetch data based on active tab
@@ -142,6 +143,45 @@ function AdminDashboard() {
         }
     };
 
+    // Filter data based on search term
+    const filteredTeams = useMemo(() => {
+        if (!teamsQuery.data?.data) return [];
+        if (!searchTerm.trim()) return teamsQuery.data.data;
+        
+        const term = searchTerm.toLowerCase();
+        return teamsQuery.data.data.filter(team => 
+            team.teamName.toLowerCase().includes(term) ||
+            team.conference.toLowerCase().includes(term) ||
+            team.division.toLowerCase().includes(term) ||
+            team.stadium.name.toLowerCase().includes(term)
+        );
+    }, [teamsQuery.data?.data, searchTerm]);
+
+    const filteredStadiums = useMemo(() => {
+        if (!stadiumsQuery.data?.data) return [];
+        if (!searchTerm.trim()) return stadiumsQuery.data.data;
+        
+        const term = searchTerm.toLowerCase();
+        return stadiumsQuery.data.data.filter(stadium => 
+            stadium.stadiumName.toLowerCase().includes(term) ||
+            stadium.location.toLowerCase().includes(term) ||
+            stadium.roofType.toLowerCase().includes(term)
+        );
+    }, [stadiumsQuery.data?.data, searchTerm]);
+
+    const filteredSouvenirs = useMemo(() => {
+        if (!souvenirsQuery.data?.data) return [];
+        if (!searchTerm.trim()) return souvenirsQuery.data.data;
+        
+        const term = searchTerm.toLowerCase();
+        return souvenirsQuery.data.data.filter(souvenir => 
+            souvenir.name.toLowerCase().includes(term) ||
+            souvenir.stadiumName.toLowerCase().includes(term) ||
+            souvenir.category.toLowerCase().includes(term) ||
+            souvenir.teamName?.toLowerCase().includes(term)
+        );
+    }, [souvenirsQuery.data?.data, searchTerm]);
+
     // Get teams for team selection dropdown - use allTeamsQuery so teams are always available
     const teamsForSelection = allTeamsQuery.data?.data?.map(team => ({
         _id: team._id,
@@ -156,7 +196,11 @@ function AdminDashboard() {
                 <DashboardHeader />
 
                 <div className="ml-[350px] max-w-5xl mx-auto space-y-6">
-                    <DashboardGreeting userName="RITA" activeTab={activeTab} />
+                    <DashboardGreeting 
+                        userName="RITA" 
+                        activeTab={activeTab}
+                        onSearchChange={setSearchTerm}
+                    />
 
                     <DashboardActions 
                         activeTab={activeTab}
@@ -169,21 +213,21 @@ function AdminDashboard() {
                     <div className="bg-[#3b3c5e] rounded-lg p-6">
                         {activeTab === 'teams' ? (
                             <TeamsListDash
-                                teams={teamsQuery.data?.data}
+                                teams={filteredTeams}
                                 isLoading={teamsQuery.isLoading}
                                 onEdit={team.handleEdit}
                                 onDelete={(teamId) => handleDeleteTeam(teamId)}
                             />
                         ) : activeTab === 'stadiums' ? (
                             <StadiumsList 
-                                stadiums={stadiumsQuery.data?.data}
+                                stadiums={filteredStadiums}
                                 isLoading={stadiumsQuery.isLoading}
                                 onEdit={stadium.handleEdit}
                                 onDelete={(stadium) => handleDeleteStadium(stadium)}
                             />
                         ) : (
                             <SouvenirsList
-                                souvenirs={souvenirsQuery.data?.data}
+                                souvenirs={filteredSouvenirs}
                                 isLoading={souvenirsQuery.isLoading}
                                 isAdmin={true}
                                 onEdit={souvenirs.handleEdit}
