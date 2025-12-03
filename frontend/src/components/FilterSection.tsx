@@ -256,7 +256,7 @@ function FilterSection({ filters, enableSorting = false, viewType = 'teams' }: F
         return (
             <div className="flex flex-col items-center space-y-6 w-full">
                 <Skeleton times={1} className="h-8 w-48" />
-                <div className="flex items-center gap-6 flex-wrap">
+                <div className="flex items-center justify-center gap-6 flex-wrap">
                     <Skeleton times={filters.length} className="h-12 w-64" />
                 </div>
                 <div className="w-full max-w-6xl">

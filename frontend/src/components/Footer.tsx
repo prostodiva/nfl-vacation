@@ -1,3 +1,8 @@
+import f1 from '../assets/f1.png'
+import f2 from '../assets/f2.png'
+import f3 from '../assets/f3.png'
+import f4 from '../assets/f4.png'
+
 function Footer() {
     const teams = [
         "DALLAS COWBOYS",
@@ -34,10 +39,37 @@ function Footer() {
                     ))}
                 </p>
           </div>
-          <div className="w-full h-[281px] pt-[126px] pr-[25px] pb-[27px] pl-[19px] bg-[#e93448]">
-              <p className="text-white font-stretch-condensed text-7xl text-center">KEEP WATCHING THE GAME</p>
+         <div className="w-full h-[281px] bg-[#e93448] text-white text-[70px] font-semibold flex items-center justify-start gap-4">
+              <span>KEEP</span>
+                  <img 
+                      src={f1} 
+                      alt="footer image 1" 
+                      className="inline-block align-middle"
+                      style={{ width: '70px', height: '70px', objectFit: 'contain' }}
+                  />
+                  <span>WATCHING</span>
+                  <img 
+                      src={f2} 
+                      alt="footer image 2" 
+                      className="inline-block align-middle"
+                      style={{ width: '70px', height: '70px', objectFit: 'contain' }}
+                  />
+                  <span>THE</span>
+                  <img 
+                      src={f3} 
+                      alt="footer image 3" 
+                      className="inline-block align-middle"
+                      style={{ width: '70px', height: '70px', objectFit: 'contain' }}
+                  />
+                  <span>GAME</span>
+                  <img 
+                      src={f4} 
+                      alt="footer image 4" 
+                      className="inline-block align-middle"
+                      style={{ width: '70px', height: '70px', objectFit: 'contain' }}
+                  />
+              </div>
           </div>
-      </div>
 
   );
 }
