@@ -8,7 +8,7 @@ export interface MapProps {
 
 export interface TripProps {
     trip: {
-        type: 'CUSTOM' | 'OPTIMAL';
+        type: 'CUSTOM' | 'OPTIMAL' | 'EFFICIENT';
         team: string;
     } | null;
 }

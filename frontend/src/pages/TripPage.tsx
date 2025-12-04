@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import Trip from "../components/Trip";
 
 type Trip = {
-  type: 'CUSTOM' | 'OPTIMAL';
+  type: 'CUSTOM' | 'OPTIMAL' | 'EFFICIENT';
   team: string;
 } | null;
 
@@ -16,6 +16,10 @@ const [selectedTrip, setSelectedTrip] = useState<Trip>(null);
 
   const handleOptimalTripClick = () => {
     setSelectedTrip({ type: 'OPTIMAL', team: ''})
+  }
+
+   const handleEfficientTripClick = () => {
+    setSelectedTrip({ type: 'EFFICIENT', team: ''})
   }
 
   return (
@@ -44,6 +48,15 @@ const [selectedTrip, setSelectedTrip] = useState<Trip>(null);
                   onClick={handleOptimalTripClick}
                 >
                   OPTIMAL TRIP<br></br>Starting from New England Patriots(Recursion)
+                </Button>
+
+                 <Button 
+                  secondary 
+                  rounded 
+                  active={selectedTrip?.type === 'EFFICIENT'}
+                  onClick={handleEfficientTripClick}
+                >
+                  THE MOST EFFICIENT TRIP<br></br>
                 </Button>
             </div>
           </div>
