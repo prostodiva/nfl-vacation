@@ -31,10 +31,10 @@ class GraphService {
         this.adjacencyMatrix = null;
         /** @type {Array<string>} Array of team names indexed by position */
         this.teamNames = [];
-        /** @type {Object<string, number>} Map from team name to index */
-        this.nameToIndex = {};
-        /** @type {Object<string, number>} Map from team ID to index */
-        this.idToIndex = {};
+        /** @type {Map<string, number>} Map from team name to index */
+        this.nameToIndex = new Map();
+        /** @type {Map<string, number>} Map from team ID to index */
+        this.idToIndex = new Map();
 
         this.buildGraph();
     }
@@ -50,8 +50,8 @@ class GraphService {
         this.teams.forEach((team, index) => {
             const teamName = team.teamName || team.name;
             this.teamNames[index] = teamName;
-            this.nameToIndex[teamName] = index;
-            this.idToIndex[team._id || team.id] = index;
+            this.nameToIndex.set(teamName, index);
+            this.idToIndex.set(team._id || team.id, index);
         });
 
         // Initialize adjacency matrix
@@ -65,16 +65,16 @@ class GraphService {
             // Handle different edge formats
             if (edge.from && edge.to) {
                 // Edge has team names directly
-                fromIndex = this.nameToIndex[edge.from];
-                toIndex = this.nameToIndex[edge.to];
+                fromIndex = this.nameToIndex.get(edge.from);
+                toIndex = this.nameToIndex.get(edge.to);
             } else if (edge.teamFrom && edge.teamTo) {
-                // Edge has cteam IDs
-                fromIndex = this.idToIndex[edge.teamFrom];
-                toIndex = this.idToIndex[edge.teamTo];
+                // Edge has team IDs
+                fromIndex = this.idToIndex.get(edge.teamFrom);
+                toIndex = this.idToIndex.get(edge.teamTo);
             } else if (edge.fromCity && edge.toCity) {
                 // Alternative naming
-                fromIndex = this.nameToIndex[edge.fromTeam];
-                toIndex = this.nameToIndex[edge.toTeam];
+                fromIndex = this.nameToIndex.get(edge.fromTeam);
+                toIndex = this.nameToIndex.get(edge.toTeam);
             }
 
             const distance = edge.distance || edge.weight || edge.mileage;
@@ -105,7 +105,7 @@ class GraphService {
      * @spaceComplexity O(N + E) for visited array and recursion stack
      */
     runDFS(startTeamName) {
-        const startIndex = this.nameToIndex[startTeamName];
+        const startIndex = this.nameToIndex.get(startTeamName);
         if (startIndex === undefined) {
             throw new Error(`Team "${startTeamName}" not found`);
         }
@@ -193,7 +193,7 @@ class GraphService {
      * @spaceComplexity O(N) for queue and visited array
      */
     runBFS(startTeamName) {
-        const startIndex = this.nameToIndex[startTeamName];
+        const startIndex = this.nameToIndex.get(startTeamName);
         if (startIndex === undefined) {
             throw new Error(`Team "${startTeamName}" not found`);
         }
@@ -304,7 +304,7 @@ class GraphService {
      * @spaceComplexity O(N²) for adjacency matrix + O(N) for arrays
      */
     runDijkstra(startTeamName, endTeamName = null) {
-        const startIndex = this.nameToIndex[startTeamName];
+        const startIndex = this.nameToIndex.get(startTeamName);
         if (startIndex === undefined) {
             throw new Error(`Team "${startTeamName}" not found`);
         }
@@ -357,7 +357,7 @@ class GraphService {
 
         // If endTeam is specified, only build path to that team
         if (endTeamName) {
-            const endIndex = this.nameToIndex[endTeamName];
+            const endIndex = this.nameToIndex.get(endTeamName);
             
             if (endIndex !== undefined && distances[endIndex] !== Infinity) {
                 // Build path from start to end
@@ -377,8 +377,8 @@ class GraphService {
                 
                 // Build discovery edges for the path
                 for (let i = 1; i < path.length; i++) {
-                    const fromIndex = this.nameToIndex[path[i - 1]];
-                    const toIndex = this.nameToIndex[path[i]];
+                    const fromIndex = this.nameToIndex.get(path[i - 1]);
+                    const toIndex = this.nameToIndex.get(path[i]);
                     result.discoveryEdges.push({
                         from: path[i - 1],
                         to: path[i],
@@ -460,8 +460,8 @@ class GraphService {
             throw new Error('A* algorithm requires both startTeam and endTeam');
         }
 
-        const startIndex = this.nameToIndex[startTeamName];
-        const endIndex = this.nameToIndex[endTeamName];
+        const startIndex = this.nameToIndex.get(startTeamName);
+        const endIndex = this.nameToIndex.get(endTeamName);
 
         if (startIndex === undefined) {
             throw new Error(`Team "${startTeamName}" not found`);
@@ -551,8 +551,8 @@ class GraphService {
 
             // Build discovery edges for the path
             for (let i = 1; i < path.length; i++) {
-                const fromIndex = this.nameToIndex[path[i - 1]];
-                const toIndex = this.nameToIndex[path[i]];
+                const fromIndex = this.nameToIndex.get(path[i - 1]);
+                const toIndex = this.nameToIndex.get(path[i]);
                 result.discoveryEdges.push({
                     from: path[i - 1],
                     to: path[i],

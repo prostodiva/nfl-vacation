@@ -61,10 +61,10 @@ const calculateCustomRoute = async (req, res) => {
             .find({})
             .toArray();
 
-        // Build team lookup
-        const teamById = {};
+        // Build team lookup using Map
+        const teamById = new Map();
         teams.forEach(team => {
-            teamById[team._id.toString()] = team;
+            teamById.set(team._id.toString(), team);
         });
 
         // Transform distances into edges format for GraphService
@@ -86,8 +86,8 @@ const calculateCustomRoute = async (req, res) => {
 
         // Use Dijkstra's algorithm to find shortest path between each consecutive pair
         for (let i = 0; i < teamIds.length - 1; i++) {
-            const currentTeam = teamById[teamIds[i]];
-            const nextTeam = teamById[teamIds[i + 1]];
+            const currentTeam = teamById.get(teamIds[i]);
+            const nextTeam = teamById.get(teamIds[i + 1]);
 
             if (!currentTeam || !nextTeam) {
                 return res.status(400).json({
@@ -213,10 +213,10 @@ const calculateRecursiveRoute = async (req, res) => {
             .find({})
             .toArray();
 
-        // Build team lookup
-        const teamById = {};
+        // Build team lookup using Map
+        const teamById = new Map();
         teams.forEach(team => {
-            teamById[team._id.toString()] = team;
+            teamById.set(team._id.toString(), team);
         });
 
         // Transform distances into edges format for GraphService
