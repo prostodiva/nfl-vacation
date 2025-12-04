@@ -205,6 +205,8 @@ const calculateCustomRoute = async (req, res) => {
  */
 const calculateRecursiveRoute = async (req, res) => {
     try {
+        const { teamIds } = req.body || {}; // Handle undefined req.body
+        
         const teams = await Team.find({}).lean();
         const distances = await mongoose.connection.db
             .collection('distances')
@@ -230,8 +232,22 @@ const calculateRecursiveRoute = async (req, res) => {
         // Create graph service
         const graphService = new GraphService(teams, graphEdges);
 
-        // Starting point
-        const startTeam = 'New England Patriots';
+        // Filter teams if teamIds provided, otherwise use all teams
+        const teamsToVisit = teamIds && teamIds.length > 0
+            ? teams.filter(team => teamIds.includes(team._id.toString()))
+            : teams;
+
+        if (teamsToVisit.length < 2) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide at least 2 teams in the route.'
+            });
+        }
+
+        // Starting point - use first team from selection, or default to New England Patriots
+        const startTeam = teamIds && teamIds.length > 0 && teamsToVisit.length > 0
+            ? teamsToVisit[0].teamName
+            : 'New England Patriots';
         
         // Track visited teams to avoid cycles
         const visited = new Set([startTeam]);
@@ -241,19 +257,19 @@ const calculateRecursiveRoute = async (req, res) => {
 
         // Recursive helper function to find shortest unvisited neighbor
         const findShortestPath = (currentTeam) => {
-            // Base case: all teams visited
-            if (visited.size === teams.length) {
+            // Base case: all selected teams visited
+            if (visited.size === teamsToVisit.length) {
                 return;
             }
 
             // Run Dijkstra from current team to find distances to all other teams
             const dijkstraResult = graphService.runDijkstra(currentTeam);
             
-            // Find the closest unvisited team
+            // Find the closest unvisited team (from selected teams only)
             let closestTeam = null;
             let shortestDistance = Infinity;
 
-            for (const team of teams) {
+            for (const team of teamsToVisit) {
                 const teamName = team.teamName;
                 if (!visited.has(teamName)) {
                     const distance = dijkstraResult.distances[teamName];
@@ -271,6 +287,10 @@ const calculateRecursiveRoute = async (req, res) => {
 
             // Get the path to the closest team
             const path = dijkstraResult.paths[closestTeam];
+            
+            // Create a set of selected team names for quick lookup
+            // When teamIds is not provided (Optimal trip), this will include all teams
+            const selectedTeamNames = new Set(teamsToVisit.map(t => t.teamName));
             
             // Add ALL edges from the Dijkstra path (including through visited cities)
             for (let i = 0; i < path.length - 1; i++) {
@@ -292,10 +312,13 @@ const calculateRecursiveRoute = async (req, res) => {
                 }
             }
             
-            // Add only NEW teams to the route (skip already visited)
+            // Add only NEW teams to the route that are in the selected teams list
+            // For Optimal trip (all teams), this will add all teams
+            // For Efficient trip (selected teams), this will only add selected teams
             for (let i = 1; i < path.length; i++) {
                 const currTeam = path[i];
-                if (!visited.has(currTeam)) {
+                // Only add if it's a selected team and not already visited
+                if (selectedTeamNames.has(currTeam) && !visited.has(currTeam)) {
                     route.push(currTeam);
                     visited.add(currTeam);
                 }

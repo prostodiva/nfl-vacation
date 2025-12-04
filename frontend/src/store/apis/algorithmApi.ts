@@ -50,10 +50,11 @@ export const algorithmApi = createApi({
         }),
 
       //recursive route endpoint
-        calculateRecursiveRoute: builder.mutation<RecursiveRouteResponse, void>({
-            query: () => ({
+        calculateRecursiveRoute: builder.mutation<RecursiveRouteResponse, { teamIds?: string[] } | void>({
+            query: (body) => ({
                 url: '/recursive',
                 method: 'POST',
+                body: body?.teamIds ? { teamIds: body.teamIds } : undefined,
             }),
             invalidatesTags: ['Algorithm'],
         })
